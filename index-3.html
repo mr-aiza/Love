@@ -1,0 +1,1990 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>تعهدنامه جامع رابطه عاشقانه، وفاداری و تعهد متقابل</title>
+<meta name="description" content="سند توافق اخلاقی، عاطفی و رفتاری دوطرفه؛ شامل ۹۱ ماده در ۱۶ فصل، دو پیوست و صفحه امضا. قابل تکمیل، چاپ و امضا.">
+<meta name="theme-color" content="#2a1830">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Vazirmatn:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   متغیرهای طراحی: رنگ، قلم، فاصله
+   ============================================================ */
+:root{
+  --جوهر:#2a1830;
+  --جوهر-روشن:#4a2c52;
+  --شراب:#7d2248;
+  --گل:#c94a76;
+  --گل-کمرنگ:#f6e3ea;
+  --نفتی:#1d4a55;
+  --نفتی-کمرنگ:#e3eef0;
+  --صدف:#faf6f9;
+  --کاغذ:#ffffff;
+  --طلا:#a9803a;
+  --طلا-کمرنگ:#f4ead6;
+  --خط:#e8dde6;
+  --خط-تیره:#cdbccb;
+  --متن:#2f2234;
+  --متن-کمرنگ:#6d5d70;
+  --قلم-متن:'Vazirmatn','Vazir',Tahoma,'Segoe UI',system-ui,sans-serif;
+  --قلم-عنوان:'Aref Ruqaa','Vazirmatn',Tahoma,serif;
+  --ارتفاع-سربرگ:62px;
+  --عرض-کناره:310px;
+}
+
+/* ============================================================
+   پایه
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--ارتفاع-سربرگ) + 14px);-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--صدف);color:var(--متن);
+  font-family:var(--قلم-متن);font-size:16.5px;line-height:2.05;
+  font-feature-settings:"ss01";text-rendering:optimizeLegibility;
+}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--گل);outline-offset:3px;border-radius:6px}
+::selection{background:var(--گل-کمرنگ);color:var(--شراب)}
+h1,h2,h3,h4,p,ol,ul,blockquote{margin:0;padding:0}
+ol,ul{list-style:none}
+.فقط-صفحه‌خوان{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* نوار پیشرفت مطالعه */
+.پیشرفت{position:fixed;inset:0 0 auto 0;height:3px;z-index:60;background:transparent}
+.پیشرفت i{display:block;height:100%;width:0;background:linear-gradient(270deg,var(--گل),var(--طلا))}
+
+/* ============================================================
+   سربرگ سایت
+   ============================================================ */
+.سربرگ{
+  position:sticky;top:0;z-index:50;height:var(--ارتفاع-سربرگ);
+  background:rgba(250,246,249,.88);backdrop-filter:saturate(1.4) blur(14px);
+  -webkit-backdrop-filter:saturate(1.4) blur(14px);
+  border-bottom:1px solid var(--خط);
+}
+.سربرگ-درون{
+  max-width:1320px;height:100%;margin:0 auto;padding:0 20px;
+  display:flex;align-items:center;gap:14px;
+}
+.نشان{display:flex;align-items:center;gap:10px;font-family:var(--قلم-عنوان);font-size:1.3rem;font-weight:700;color:var(--شراب);white-space:nowrap}
+.نشان svg{width:38px;height:24px;flex:none}
+.پیوندهای-سربرگ{display:flex;gap:4px;margin-inline-start:18px}
+.پیوندهای-سربرگ a{padding:6px 12px;border-radius:999px;font-size:.88rem;color:var(--متن-کمرنگ);line-height:1.6;transition:background .2s,color .2s}
+.پیوندهای-سربرگ a:hover{background:var(--گل-کمرنگ);color:var(--شراب)}
+.فاصله{flex:1}
+.دکمه{
+  display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:10px;
+  border:1px solid var(--خط-تیره);background:var(--کاغذ);font-size:.86rem;line-height:1.5;
+  transition:background .2s,border-color .2s,color .2s;
+}
+.دکمه:hover{border-color:var(--شراب);color:var(--شراب)}
+.دکمه.اصلی{background:var(--شراب);border-color:var(--شراب);color:#fff}
+.دکمه.اصلی:hover{background:var(--جوهر);border-color:var(--جوهر);color:#fff}
+.دکمه svg{width:16px;height:16px;flex:none}
+.دکمه-فهرست{display:none}
+
+/* ============================================================
+   بخش اصلی صفحه (هیرو)
+   ============================================================ */
+.هیرو{background:var(--جوهر);color:#f6ecf1;position:relative;overflow:hidden}
+.هیرو-درون{
+  max-width:1320px;margin:0 auto;padding:68px 20px 120px;
+  display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:40px;align-items:center;position:relative;
+}
+.هیرو h1{
+  font-family:var(--قلم-عنوان);font-weight:700;font-size:clamp(2.1rem,5vw,3.7rem);
+  line-height:1.65;color:#fff;
+}
+.هیرو .زیرعنوان{margin-top:14px;font-size:1.15rem;color:#e6cfda;font-weight:300}
+.هیرو .توضیح{margin-top:22px;max-width:56ch;color:#cdb4c2;font-size:.98rem}
+.هیرو-دکمه‌ها{margin-top:30px;display:flex;flex-wrap:wrap;gap:12px}
+.هیرو .دکمه{background:transparent;border-color:#6a4a70;color:#f6ecf1}
+.هیرو .دکمه:hover{border-color:#fff;color:#fff}
+.هیرو .دکمه.اصلی{background:var(--گل);border-color:var(--گل);color:#fff}
+.هیرو .دکمه.اصلی:hover{background:#fff;border-color:#fff;color:var(--شراب)}
+.حلقه‌ها{display:flex;justify-content:center}
+.حلقه‌ها svg{width:min(100%,420px);height:auto;overflow:visible}
+
+/* مشخصات سند: نوار روی لبهٔ هیرو */
+.مشخصات-سند{
+  max-width:1120px;margin:-70px auto 0;padding:0 20px;position:relative;z-index:5;
+}
+.مشخصات-سند dl{
+  margin:0;display:grid;grid-template-columns:repeat(4,1fr);
+  background:var(--کاغذ);border:1px solid var(--خط);border-radius:18px;overflow:hidden;
+  box-shadow:0 18px 40px -22px rgba(42,24,48,.45);
+}
+.مشخصات-سند div{padding:16px 22px;border-inline-start:1px solid var(--خط)}
+.مشخصات-سند div:first-child{border-inline-start:0}
+.مشخصات-سند dt{font-size:.8rem;color:var(--متن-کمرنگ);line-height:1.7}
+.مشخصات-سند dd{margin:2px 0 0;font-weight:500;min-height:2em}
+.مشخصات-سند .ثابت{color:var(--نفتی);font-weight:700}
+
+/* ============================================================
+   چیدمان: کنار + محتوا
+   ============================================================ */
+.قاب{
+  max-width:1320px;margin:0 auto;padding:56px 20px 40px;
+  display:grid;grid-template-columns:var(--عرض-کناره) minmax(0,1fr);gap:48px;align-items:start;
+}
+.کناره{
+  position:sticky;top:calc(var(--ارتفاع-سربرگ) + 18px);
+  max-height:calc(100vh - var(--ارتفاع-سربرگ) - 36px);overflow:auto;
+  padding:18px 14px 18px 10px;border:1px solid var(--خط);border-radius:18px;background:var(--کاغذ);
+  scrollbar-width:thin;scrollbar-color:var(--خط-تیره) transparent;
+}
+.کناره h2{font-family:var(--قلم-عنوان);font-size:1.25rem;color:var(--شراب);padding:0 10px 10px;line-height:1.8}
+.جستجو{position:relative;margin:0 6px 12px}
+.جستجو input{
+  width:100%;padding:9px 38px 9px 12px;border-radius:10px;border:1px solid var(--خط-تیره);
+  background:var(--صدف);font:inherit;font-size:.9rem;color:var(--متن);line-height:1.6;
+}
+.جستجو input:focus{border-color:var(--شراب);outline:none;box-shadow:0 0 0 3px var(--گل-کمرنگ)}
+.جستجو svg{position:absolute;right:12px;top:50%;translate:0 -50%;width:16px;height:16px;color:var(--متن-کمرنگ);pointer-events:none}
+.نتیجه-جستجو{margin:-4px 8px 10px;font-size:.8rem;color:var(--متن-کمرنگ);min-height:1.4em}
+.کناره-فهرست a{
+  display:flex;align-items:baseline;gap:10px;padding:6px 10px;border-radius:9px;
+  font-size:.88rem;line-height:1.75;color:var(--متن-کمرنگ);border-inline-start:3px solid transparent;
+  transition:background .15s,color .15s;
+}
+.کناره-فهرست a:hover{background:var(--صدف);color:var(--جوهر)}
+.کناره-فهرست a.فعال{background:var(--گل-کمرنگ);color:var(--شراب);border-inline-start-color:var(--شراب);font-weight:700}
+.کناره-فهرست .ش{flex:none;min-width:1.7em;text-align:center;font-weight:700;color:var(--طلا)}
+.کناره-فهرست .م{display:none}
+.کناره-فهرست a.فعال .ش{color:var(--شراب)}
+.پرده{display:none}
+
+/* ============================================================
+   بخش‌های متنی عمومی
+   ============================================================ */
+main{min-width:0}
+.بخش{margin-bottom:56px}
+.بخش-عنوان{
+  font-family:var(--قلم-عنوان);font-weight:700;color:var(--جوهر);
+  font-size:clamp(1.6rem,3vw,2.15rem);line-height:1.7;margin-bottom:6px;
+  display:flex;align-items:center;gap:14px;
+}
+.بخش-عنوان::after{content:"";flex:1;height:1px;background:linear-gradient(270deg,var(--خط-تیره),transparent)}
+.بخش-توضیح{color:var(--متن-کمرنگ);margin-bottom:22px;font-size:.96rem}
+
+/* فهرست مطالب (کامل) */
+.فهرست-کامل{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px;
+  border-top:2px solid var(--جوهر);
+}
+.فهرست-کامل a{
+  display:flex;align-items:center;gap:14px;padding:11px 6px;border-bottom:1px solid var(--خط);
+  transition:background .15s,padding .15s;line-height:1.7;
+}
+.فهرست-کامل a:hover{background:var(--گل-کمرنگ);padding-inline-start:14px}
+.فهرست-کامل .ش{
+  flex:none;width:2.3em;height:2.3em;border-radius:50%;display:grid;place-items:center;
+  background:var(--جوهر);color:#fff;font-weight:700;font-size:.9rem;line-height:1;
+}
+.فهرست-کامل .پیوست .ش,.فهرست-کامل .ویژه .ش{background:var(--طلا)}
+.فهرست-کامل .ع{flex:1;font-weight:500;font-size:.95rem}
+.فهرست-کامل .م{flex:none;font-size:.78rem;color:var(--نفتی);background:var(--نفتی-کمرنگ);padding:1px 10px;border-radius:999px;white-space:nowrap}
+
+/* جای خالی قابل تکمیل */
+.جای-خالی,.خط-پر{
+  border-bottom:1.5px dashed var(--طلا);transition:background .15s,border-color .15s;
+  caret-color:var(--شراب);outline:none;
+}
+.جای-خالی{display:inline-block;min-width:4.4em;padding:0 .35em;margin:0 .15em;vertical-align:baseline;text-align:center}
+.خط-پر{display:block;min-height:2.3em;margin:4px 0 10px;padding:2px 6px}
+.جای-خالی:empty::before,.خط-پر:empty::before{content:"\200B"}
+.جای-خالی:hover,.خط-پر:hover{background:var(--طلا-کمرنگ)}
+.جای-خالی:focus,.خط-پر:focus{background:var(--طلا-کمرنگ);border-bottom-style:solid;border-bottom-color:var(--شراب)}
+
+/* مقدمه و مشخصات طرفین */
+.طرف‌ها{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;margin:24px 0}
+.طرف{border:1px solid var(--خط);background:var(--کاغذ);border-radius:16px;padding:22px 22px 14px;position:relative}
+.طرف h3{
+  font-family:var(--قلم-عنوان);font-size:1.35rem;color:var(--شراب);line-height:1.8;margin-bottom:8px;
+  display:flex;align-items:center;gap:10px;
+}
+.طرف h3::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--گل);flex:none}
+.طرف:nth-child(2) h3::before{background:var(--نفتی)}
+.طرف:nth-child(2) h3{color:var(--نفتی)}
+.فیلد{margin-bottom:6px}
+.فیلد label,.فیلد .برچسب{display:block;font-size:.84rem;color:var(--متن-کمرنگ);line-height:1.8}
+.متن-مقدمه p{margin-bottom:14px;max-width:72ch}
+.متن-مقدمه p:last-child{margin-bottom:0}
+.متن-مقدمه .برجسته{
+  border-inline-start:4px solid var(--طلا);background:var(--طلا-کمرنگ);padding:14px 20px;border-radius:0 12px 12px 0;
+}
+
+/* ============================================================
+   فصل‌های کشویی
+   ============================================================ */
+.فصل‌ها{border:1px solid var(--خط-تیره);border-radius:20px;background:var(--کاغذ);overflow:hidden}
+.فصل{border-bottom:1px solid var(--خط)}
+.فصل:last-child{border-bottom:0}
+.فصل-عنوان{font:inherit}
+.فصل-دکمه{
+  width:100%;display:flex;align-items:center;gap:16px;padding:18px 22px;background:transparent;border:0;text-align:right;
+  transition:background .2s;
+}
+.فصل-دکمه:hover{background:var(--صدف)}
+.فصل.باز>.فصل-عنوان .فصل-دکمه{background:var(--گل-کمرنگ)}
+.فصل-شماره{
+  flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;
+  background:var(--جوهر);color:#fff;font-weight:800;font-size:1.15rem;line-height:1;
+  transition:background .2s,transform .3s;
+}
+.فصل.باز .فصل-شماره{background:var(--شراب)}
+.فصل.پیوست .فصل-شماره{background:var(--طلا);border-radius:50%;font-size:.95rem}
+.فصل.پیوست.باز .فصل-شماره{background:var(--شراب)}
+.فصل-متن{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.7}
+.فصل-متن small{font-size:.8rem;color:var(--متن-کمرنگ)}
+.فصل-متن strong{font-size:1.1rem;font-weight:700;color:var(--جوهر)}
+.فصل-بازه{flex:none;font-size:.78rem;color:var(--نفتی);background:var(--نفتی-کمرنگ);padding:2px 12px;border-radius:999px;white-space:nowrap}
+.پیکان{flex:none;width:12px;height:12px;border-inline-end:2.5px solid var(--شراب);border-bottom:2.5px solid var(--شراب);rotate:45deg;margin:0 6px 4px;transition:rotate .3s,margin .3s}
+.فصل.باز .پیکان{rotate:-135deg;margin:4px 6px 0}
+
+/* بدنه کشویی: انیمیشن ارتفاع با ردیف گرید */
+.فصل-بدنه{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s cubic-bezier(.3,.7,.2,1)}
+.فصل.باز>.فصل-بدنه{grid-template-rows:1fr}
+.فصل-درون{overflow:hidden;min-height:0;visibility:hidden;transition:visibility 0s .4s}
+.فصل.باز>.فصل-بدنه>.فصل-درون{visibility:visible;transition-delay:0s}
+.فصل-محتوا{padding:10px 30px 30px 30px}
+
+/* ماده‌ها */
+.ماده{padding:20px 0;border-top:1px solid var(--خط)}
+.ماده:first-child{border-top:0}
+.ماده h3{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:6px;line-height:1.8}
+.ماده-شماره{
+  font-size:.82rem;font-weight:700;color:var(--شراب);background:var(--گل-کمرنگ);
+  padding:1px 12px;border-radius:8px;white-space:nowrap;
+}
+.ماده-عنوان{font-size:1.08rem;font-weight:700;color:var(--جوهر)}
+.بند{display:flex;gap:12px;align-items:baseline;padding:2px 0;max-width:76ch}
+.بند b{flex:none;min-width:2.9em;color:var(--نفتی);font-weight:700;font-size:.88rem;font-variant-numeric:tabular-nums}
+.بند.حرف b{min-width:2.4em}
+.بند.حرف.دور b{min-width:1.6em}
+.متن-ماده{max-width:76ch;margin:2px 0 4px}
+.فیلد-ماده{max-width:76ch}
+.یادآور{
+  margin-top:14px;max-width:76ch;padding:12px 18px;border-radius:12px;
+  background:var(--نفتی-کمرنگ);color:var(--نفتی);font-weight:500;border-inline-start:4px solid var(--نفتی);
+}
+.زیربرچسب{margin-top:10px;font-weight:700;color:var(--جوهر)}
+
+/* قول‌های شخصی (پیوست ۱) */
+.قول-ها{display:grid;gap:8px;margin:14px 0 20px}
+.قول{
+  display:flex;gap:14px;align-items:flex-start;padding:11px 16px;border:1px solid var(--خط);border-radius:12px;
+  background:var(--صدف);cursor:pointer;transition:background .2s,border-color .2s;max-width:80ch;
+}
+.قول:hover{border-color:var(--گل)}
+.قول input{position:absolute;opacity:0;pointer-events:none}
+.قول .تیک{
+  flex:none;width:24px;height:24px;margin-top:5px;border-radius:7px;border:2px solid var(--خط-تیره);background:#fff;
+  display:grid;place-items:center;transition:background .2s,border-color .2s;
+}
+.قول .تیک::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2.5px 2.5px 0;rotate:45deg;margin-top:-2px;scale:0;transition:scale .2s}
+.قول input:checked+.تیک{background:var(--شراب);border-color:var(--شراب)}
+.قول input:checked+.تیک::after{scale:1}
+.قول:has(input:checked){background:var(--گل-کمرنگ);border-color:var(--گل)}
+.قول input:focus-visible+.تیک{outline:3px solid var(--گل);outline-offset:3px}
+
+/* امضا */
+.امضاها{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;margin-top:24px}
+.امضا-کارت{border:1px solid var(--خط-تیره);border-radius:16px;background:var(--کاغذ);padding:20px 22px 22px}
+.امضا-کارت h3{font-family:var(--قلم-عنوان);font-size:1.3rem;color:var(--شراب);margin-bottom:8px;line-height:1.8}
+.امضا-کارت.شاهد h3{color:var(--نفتی);font-size:1.1rem}
+.جعبه-امضا{
+  height:110px;margin-top:6px;border:1.5px dashed var(--طلا);border-radius:12px;background:var(--صدف);
+  display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;color:var(--خط-تیره);font-size:.8rem;
+}
+
+/* یادداشت پایانی */
+.یادداشت{
+  background:var(--جوهر);color:#f1e3ea;border-radius:22px;padding:44px clamp(24px,5vw,60px);position:relative;overflow:hidden;
+}
+.یادداشت h2{font-family:var(--قلم-عنوان);font-size:clamp(1.6rem,3vw,2.1rem);color:#fff;line-height:1.7;margin-bottom:14px}
+.یادداشت p{max-width:66ch;color:#dcc6d2}
+.یادداشت blockquote{
+  margin-top:28px;padding-top:24px;border-top:1px solid #5a3a60;max-width:60ch;
+  font-family:var(--قلم-عنوان);font-size:clamp(1.25rem,2.4vw,1.65rem);line-height:2.1;color:#fff;
+}
+
+/* پاورقی */
+.پاورقی{border-top:1px solid var(--خط);margin-top:30px;padding:26px 20px 40px;text-align:center;color:var(--متن-کمرنگ);font-size:.88rem}
+.پاورقی strong{font-family:var(--قلم-عنوان);color:var(--شراب);font-size:1.1rem;font-weight:700}
+
+/* دکمه بازگشت به بالا */
+.بالا{
+  position:fixed;left:20px;bottom:20px;z-index:40;width:46px;height:46px;border-radius:50%;
+  border:0;background:var(--شراب);color:#fff;display:grid;place-items:center;
+  box-shadow:0 10px 24px -8px rgba(42,24,48,.5);opacity:0;translate:0 14px;pointer-events:none;
+  transition:opacity .25s,translate .25s,background .2s;
+}
+.بالا.دیده‌شود{opacity:1;translate:0 0;pointer-events:auto}
+.بالا:hover{background:var(--جوهر)}
+.بالا svg{width:20px;height:20px}
+
+/* ============================================================
+   واکنش‌گرایی
+   ============================================================ */
+@media (max-width:1060px){
+  .قاب{grid-template-columns:minmax(0,1fr);padding-top:44px}
+  .کناره{
+    position:fixed;z-index:70;top:0;right:0;bottom:0;width:min(88vw,340px);max-height:none;border-radius:0;border:0;
+    translate:100% 0;transition:translate .3s cubic-bezier(.3,.7,.2,1);padding-top:24px;
+    box-shadow:-20px 0 50px -20px rgba(42,24,48,.5);
+  }
+  .کناره.باز{translate:0 0}
+  .پرده{display:block;position:fixed;inset:0;z-index:65;background:rgba(42,24,48,.5);opacity:0;pointer-events:none;transition:opacity .3s}
+  .پرده.باز{opacity:1;pointer-events:auto}
+  .دکمه-فهرست{display:inline-flex}
+  .پیوندهای-سربرگ{display:none}
+  .هیرو-درون{grid-template-columns:1fr;padding:48px 20px 110px}
+  .حلقه‌ها{display:none}
+}
+@media (max-width:760px){
+  body{font-size:16px;line-height:2}
+  .مشخصات-سند dl{grid-template-columns:repeat(2,1fr)}
+  .مشخصات-سند div:nth-child(3){border-inline-start:0}
+  .مشخصات-سند div:nth-child(n+3){border-top:1px solid var(--خط)}
+  .فهرست-کامل,.طرف‌ها,.امضاها{grid-template-columns:1fr}
+  .فصل-دکمه{padding:14px 14px;gap:12px}
+  .فصل-بازه{display:none}
+  .فصل-شماره{width:40px;height:40px;border-radius:12px}
+  .فصل-محتوا{padding:6px 16px 22px}
+  .متن-دکمه{display:none}
+  .سربرگ-درون{padding:0 14px}
+  .نشان{font-size:1.1rem}
+}
+
+/* احترام به کاهش حرکت */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition-duration:.01ms!important}
+}
+
+/* ============================================================
+   چاپ: همه فصل‌ها باز، بدون عناصر ناوبری
+   ============================================================ */
+@media print{
+  body{background:#fff;font-size:12.5pt;line-height:1.9}
+  .سربرگ,.کناره,.پرده,.پیشرفت,.بالا,.هیرو-دکمه‌ها,.حلقه‌ها,.فصل-دکمه .پیکان,.پاورقی{display:none!important}
+  .هیرو{background:#fff;color:#000}
+  .هیرو-درون{padding:10px 0 24px;display:block}
+  .هیرو h1{color:#000;font-size:24pt}
+  .هیرو .زیرعنوان,.هیرو .توضیح{color:#333}
+  .مشخصات-سند{margin-top:0}
+  .قاب{display:block;padding:0}
+  .فصل-بدنه{grid-template-rows:1fr!important}
+  .فصل-درون{visibility:visible!important}
+  .فصل‌ها{border:0}
+  .فصل-محتوا{padding:6px 0 20px}
+  .ماده,.امضا-کارت,.طرف{break-inside:avoid}
+  .فصل{break-before:auto}
+  .یادداشت{background:#fff;color:#000;border:1px solid #999}
+  .یادداشت h2,.یادداشت blockquote{color:#000}
+  .یادداشت p{color:#222}
+  .جای-خالی,.خط-پر{border-bottom:1px solid #000}
+}
+
+/* ===== افزونه: ذخیره خودکار، امضای دستی، ساخت سند ===== */
+body{padding-bottom:84px}
+.بالا{bottom:92px}
+.tb{position:fixed;inset:auto 0 0 0;z-index:55;display:flex;justify-content:center;pointer-events:none;padding:0 10px calc(10px + env(safe-area-inset-bottom,0px))}
+.tb-in{pointer-events:auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;max-width:980px;
+  background:rgba(255,255,255,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid var(--خط-تیره);border-radius:16px;padding:8px 12px;box-shadow:0 14px 34px -14px rgba(42,24,48,.55)}
+.tb-st{font-size:.8rem;color:var(--نفتی);min-width:7.5em;text-align:center}
+.tb-st.err{color:#b3261e}
+.tb .دکمه{padding:6px 12px;font-size:.82rem}
+.tb-sep{width:1px;height:22px;background:var(--خط-تیره)}
+.جعبه-امضا{position:relative;height:auto!important;aspect-ratio:900/330;overflow:hidden;touch-action:none;cursor:crosshair;display:block}
+.جعبه-امضا .sg-hint{position:absolute;inset:auto 0 8px 0;text-align:center;pointer-events:none}
+.جعبه-امضا.has .sg-hint{display:none}
+.جعبه-امضا canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.sg-clear{position:absolute;top:6px;left:6px;z-index:2;font-size:.72rem;padding:2px 10px;border-radius:8px;border:1px solid var(--خط-تیره);background:#fff;color:var(--متن-کمرنگ)}
+.sg-clear:hover{color:var(--شراب);border-color:var(--شراب)}
+.tb-toast{position:fixed;left:50%;bottom:92px;translate:-50% 0;background:var(--جوهر);color:#fff;padding:8px 18px;border-radius:999px;font-size:.85rem;z-index:70;opacity:0;pointer-events:none;transition:opacity .25s}
+.tb-toast.on{opacity:1}
+@media print{.tb,.tb-toast,.sg-clear{display:none!important}body{padding-bottom:0}.جعبه-امضا{border:1px solid #999}}
+</style>
+</head>
+<body>
+
+<div class="پیشرفت" aria-hidden="true"><i id="نوار-پیشرفت"></i></div>
+
+<!-- ======================= سربرگ ======================= -->
+<header class="سربرگ">
+  <div class="سربرگ-درون">
+    <a class="نشان" href="#بالای-صفحه" aria-label="بازگشت به بالای صفحه">
+      <svg viewBox="0 0 64 40" fill="none" aria-hidden="true">
+        <circle cx="22" cy="20" r="15" stroke="#c94a76" stroke-width="3.5"/>
+        <circle cx="42" cy="20" r="15" stroke="#a9803a" stroke-width="3.5"/>
+      </svg>
+      <span>تعهدنامه جامع</span>
+    </a>
+    <nav class="پیوندهای-سربرگ" aria-label="پیوندهای سریع">
+      <a href="#fehrest">فهرست مطالب</a>
+      <a href="#moqaddame">مقدمه</a>
+      <a href="#fasl-1">فصل‌ها</a>
+      <a href="#peyvast-1">پیوست‌ها</a>
+      <a href="#emza">امضا</a>
+    </nav>
+    <span class="فاصله"></span>
+    <button type="button" class="دکمه" id="دکمه-باز-بستن-همه" aria-pressed="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 8l5-5 5 5M7 16l5 5 5-5"/></svg>
+      <span class="متن-دکمه" id="متن-باز-بستن">باز کردن همه فصل‌ها</span>
+    </button>
+    <button type="button" class="دکمه دکمه-فهرست" id="دکمه-فهرست" aria-controls="کناره" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      <span>فهرست</span>
+    </button>
+  </div>
+</header>
+
+<!-- ======================= هیرو ======================= -->
+<section class="هیرو" id="بالای-صفحه">
+  <div class="هیرو-درون">
+    <div>
+      <h1>تعهدنامه جامع رابطه عاشقانه، وفاداری و تعهد متقابل</h1>
+      <p class="زیرعنوان">سند توافق اخلاقی، عاطفی و رفتاری دوطرفه</p>
+      <p class="توضیح">۹۱ ماده در ۱۶ فصل، به‌همراه دو پیوست و صفحه امضا. هر فصل را بازکنید، جای‌های خالی را همین‌جا پر کنید و در پایان، نسخه امضاشده را چاپ کنید.</p>
+      <div class="هیرو-دکمه‌ها">
+        <a class="دکمه اصلی" href="#fehrest">مشاهده فهرست مطالب</a>
+        <button type="button" class="دکمه" id="دکمه-چاپ">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2M6 14h12v7H6z"/></svg>
+          چاپ یا ذخیره PDF
+        </button>
+      </div>
+    </div>
+    <div class="حلقه‌ها" aria-hidden="true">
+      <svg viewBox="0 0 400 300" fill="none">
+        <circle cx="150" cy="150" r="105" stroke="#c94a76" stroke-width="7"/>
+        <circle cx="250" cy="150" r="105" stroke="#d6a95a" stroke-width="7"/>
+        <circle cx="150" cy="150" r="125" stroke="#c94a76" stroke-opacity=".25" stroke-width="1.5"/>
+        <circle cx="250" cy="150" r="125" stroke="#d6a95a" stroke-opacity=".25" stroke-width="1.5"/>
+        <path d="M200 83a105 105 0 0 1 0 134 105 105 0 0 1 0-134z" fill="#f6ecf1" fill-opacity=".1"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<div class="مشخصات-سند">
+  <dl>
+    <div><dt>شماره سند</dt><dd><span class="جای-خالی" style="min-width:8em"></span></dd></div>
+    <div><dt>تاریخ تنظیم</dt><dd><span class="جای-خالی" style="min-width:2.4em"></span>/<span class="جای-خالی" style="min-width:2.4em"></span>/<span class="جای-خالی" style="min-width:3.4em"></span></dd></div>
+    <div><dt>محل تنظیم</dt><dd><span class="جای-خالی" style="min-width:8em"></span></dd></div>
+    <div><dt>نسخه</dt><dd class="ثابت">نهایی ـ قابل تکمیل و امضا</dd></div>
+  </dl>
+</div>
+
+<!-- ======================= قاب اصلی ======================= -->
+<div class="قاب">
+
+  <aside class="کناره" id="کناره" aria-label="فهرست و جستجو">
+    <h2>فهرست سند</h2>
+    <div class="جستجو">
+      <label class="فقط-صفحه‌خوان" for="جعبه-جستجو">جستجو در مواد</label>
+      <input type="search" id="جعبه-جستجو" placeholder="جستجو در مواد، مثلاً: حریم خصوصی" autocomplete="off">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    </div>
+    <div class="نتیجه-جستجو" id="نتیجه-جستجو" aria-live="polite"></div>
+    <nav class="کناره-فهرست" id="کناره-فهرست" aria-label="فهرست مطالب"></nav>
+  </aside>
+  <div class="پرده" id="پرده"></div>
+
+  <main>
+
+    <!-- ===== فهرست مطالب ===== -->
+    <section class="بخش" id="fehrest">
+      <h2 class="بخش-عنوان">فهرست مطالب</h2>
+      <p class="بخش-توضیح">با کلیک روی هر عنوان، فصل مربوط باز می‌شود و به آن می‌روید.</p>
+      <nav aria-label="فهرست مطالب کامل">
+        <div class="فهرست-کامل" id="فهرست-کامل">
+          <a class="ویژه" href="#moqaddame"><span class="ش">م</span><span class="ع">مقدمه و مشخصات طرفین</span></a>
+          <a href="#fasl-1"><span class="ش">۱</span><span class="ع">کلیات، تعاریف و اصول بنیادین</span><span class="م">مواد ۱ تا ۵</span></a>
+          <a href="#fasl-2"><span class="ش">۲</span><span class="ع">صداقت، اعتماد و مسئولیت‌پذیری</span><span class="م">مواد ۶ تا ۱۰</span></a>
+          <a href="#fasl-3"><span class="ش">۳</span><span class="ع">وفاداری و تعریف دقیق خیانت</span><span class="م">مواد ۱۱ تا ۱۸</span></a>
+          <a href="#fasl-4"><span class="ش">۴</span><span class="ع">احترام، امنیت و رفتار متقابل</span><span class="م">مواد ۱۹ تا ۲۵</span></a>
+          <a href="#fasl-5"><span class="ش">۵</span><span class="ع">ارتباط، گفت‌وگو و مدیریت اختلاف</span><span class="م">مواد ۲۶ تا ۳۳</span></a>
+          <a href="#fasl-6"><span class="ش">۶</span><span class="ع">حریم خصوصی و فضای مجازی</span><span class="م">مواد ۳۴ تا ۳۹</span></a>
+          <a href="#fasl-7"><span class="ش">۷</span><span class="ع">خانواده، دوستان و اطرافیان</span><span class="م">مواد ۴۰ تا ۴۴</span></a>
+          <a href="#fasl-8"><span class="ش">۸</span><span class="ع">زمان، دیدارها و برنامه‌های مشترک</span><span class="م">مواد ۴۵ تا ۴۹</span></a>
+          <a href="#fasl-9"><span class="ش">۹</span><span class="ع">مسائل مالی و دارایی‌ها</span><span class="م">مواد ۵۰ تا ۵۴</span></a>
+          <a href="#fasl-10"><span class="ش">۱۰</span><span class="ع">رضایت، صمیمیت و سلامت</span><span class="م">مواد ۵۵ تا ۵۸</span></a>
+          <a href="#fasl-11"><span class="ش">۱۱</span><span class="ع">رشد فردی و سبک زندگی</span><span class="م">مواد ۵۹ تا ۶۳</span></a>
+          <a href="#fasl-12"><span class="ش">۱۲</span><span class="ع">رفتارهای روزمره و توجه عاطفی</span><span class="م">مواد ۶۴ تا ۷۱</span></a>
+          <a href="#fasl-13"><span class="ش">۱۳</span><span class="ع">آینده و اهداف مشترک</span><span class="م">مواد ۷۲ تا ۷۵</span></a>
+          <a href="#fasl-14"><span class="ش">۱۴</span><span class="ع">نقض تعهد و شیوه رسیدگی</span><span class="م">مواد ۷۶ تا ۸۰</span></a>
+          <a href="#fasl-15"><span class="ش">۱۵</span><span class="ع">پایان رابطه و تعهدات پس از جدایی</span><span class="م">مواد ۸۱ تا ۸۵</span></a>
+          <a href="#fasl-16"><span class="ش">۱۶</span><span class="ع">شرایط عمومی و حقوقی</span><span class="م">مواد ۸۶ تا ۹۱</span></a>
+          <a class="پیوست" href="#peyvast-1"><span class="ش">پ۱</span><span class="ع">پیوست شماره یک ـ قول‌های شخصی ما</span></a>
+          <a class="پیوست" href="#peyvast-2"><span class="ش">پ۲</span><span class="ع">پیوست شماره دو ـ توافق‌های ویژه و مرزهای رابطه</span></a>
+          <a class="ویژه" href="#emza"><span class="ش">ام</span><span class="ع">صفحه پایانی ـ تأیید و امضای طرفین</span></a>
+          <a class="ویژه" href="#yaddasht"><span class="ش">ی</span><span class="ع">یادداشت پایانی</span></a>
+        </div>
+      </nav>
+    </section>
+
+    <!-- ===== مقدمه و مشخصات طرفین ===== -->
+    <section class="بخش" id="moqaddame">
+      <h2 class="بخش-عنوان">مقدمه و مشخصات طرفین</h2>
+      <div class="متن-مقدمه">
+        <p>این تعهدنامه در تاریخ فوق، میان اشخاص زیر با اراده آزاد، آگاهی کامل و بدون اجبار یا تحمیل تنظیم می‌شود.</p>
+      </div>
+
+      <div class="طرف‌ها">
+        <div class="طرف">
+          <h3>طرف اول</h3>
+          <div class="فیلد"><span class="برچسب">نام و نام خانوادگی</span><span class="خط-پر"></span></div>
+          <div class="فیلد"><span class="برچسب">نام پدر</span><span class="خط-پر"></span></div>
+          <div class="فیلد"><span class="برچسب">شماره شناسنامه</span><span class="خط-پر"></span></div>
+          <div class="فیلد"><span class="برچسب">شماره ملی (اختیاری)</span><span class="خط-پر"></span></div>
+          <div class="فیلد"><span class="برچسب">نشانی محل سکونت</span><span class="خط-پر"></span></div>
+        </div>
+        <div class="طرف">
+          <h3>طرف دوم</h3>
+          <div class="فیلد"><span class="برچسب">نام و نام خانوادگی</span><span class="خط-پر"></span></div>
+          <div class="فیلد"><span class="برچسب">نام پدر</span><span class="خط-پر"></span></div>
+          <div class="فیلد"><span class="برچسب">شماره شناسنامه</span><span class="خط-پر"></span></div>
+          <div class="فیلد"><span class="برچسب">شماره ملی (اختیاری)</span><span class="خط-پر"></span></div>
+          <div class="فیلد"><span class="برچسب">نشانی محل سکونت</span><span class="خط-پر"></span></div>
+        </div>
+      </div>
+
+      <div class="متن-مقدمه">
+        <p>طرفین با آگاهی از اهمیت اعتماد، وفاداری، احترام، امنیت عاطفی و مسئولیت‌پذیری، تصمیم گرفته‌اند چارچوب رابطه خود را به‌صورت روشن و مکتوب تعیین کنند.</p>
+        <p>هدف از تنظیم این سند، ایجاد رابطه‌ای امن، صادقانه، پایدار و محترمانه است؛ رابطه‌ای که در آن عشق صرفاً یک احساس زودگذر یا مجموعه‌ای از وعده‌ها نباشد، بلکه در رفتار، تصمیم‌ها و مسئولیت‌پذیری روزمره نمود پیدا کند.</p>
+        <p class="برجسته">طرفین می‌پذیرند که این تعهدنامه وسیله‌ای برای مالکیت، کنترل، تهدید یا سلب آزادی دیگری نیست؛ بلکه توافقی برای روشن‌کردن مرزها، انتظارات و مسئولیت‌های متقابل است.</p>
+      </div>
+    </section>
+
+    <!-- ===== فصل‌ها ===== -->
+    <div class="فصل‌ها">
+
+      <!-- ################ فصل اول ################ -->
+      <section class="فصل" id="fasl-1">
+        <h2 class="فصل-عنوان"><button type="button" class="فصل-دکمه" aria-expanded="false" aria-controls="بدنه-1">
+          <span class="فصل-شماره">۱</span>
+          <span class="فصل-متن"><small>فصل اول</small><strong>کلیات، تعاریف و اصول بنیادین</strong></span>
+          <span class="فصل-بازه">مواد ۱ تا ۵</span><span class="پیکان" aria-hidden="true"></span>
+        </button></h2>
+        <div class="فصل-بدنه" id="بدنه-1"><div class="فصل-درون"><div class="فصل-محتوا">
+
+          <article class="ماده" id="madde-1">
+            <h3><span class="ماده-شماره">ماده ۱</span><span class="ماده-عنوان">موضوع تعهدنامه</span></h3>
+            <p class="بند"><b>۱-۱</b>موضوع این سند، تعیین چارچوب اخلاقی، عاطفی و رفتاری رابطه میان طرفین است.</p>
+            <p class="بند"><b>۱-۲</b>تمام تعهدات مندرج در این سند، دوطرفه‌اند؛ مگر آنکه در یک بند به‌صراحت ترتیب دیگری مقرر شده باشد.</p>
+            <p class="بند"><b>۱-۳</b>طرفین متعهد می‌شوند اصول این سند را در ارتباط حضوری، تلفنی، پیام‌رسان‌ها، شبکه‌های اجتماعی، سفرها و سایر موقعیت‌های مرتبط رعایت کنند.</p>
+            <p class="بند"><b>۱-۴</b>هدف اصلی سند، تقویت اعتماد و پیشگیری از سوءتفاهم است، نه ایجاد ترس از اشتباه یا مجازات یکدیگر.</p>
+          </article>
+
+          <article class="ماده" id="madde-2">
+            <h3><span class="ماده-شماره">ماده ۲</span><span class="ماده-عنوان">تعاریف</span></h3>
+            <p class="متن-ماده">در این سند، اصطلاحات زیر دارای معانی مشخص هستند:</p>
+            <p class="بند حرف"><b>الف)</b>رابطه: رابطه عاطفی پذیرفته‌شده و ادامه‌دار میان طرفین.</p>
+            <p class="بند حرف"><b>ب)</b>شخص ثالث: هر شخصی غیر از طرف اول و طرف دوم.</p>
+            <p class="بند حرف"><b>ج)</b>وفاداری: پایبندی به توافق انحصاری عاطفی و جسمی تعریف‌شده در این سند.</p>
+            <p class="بند حرف"><b>د)</b>خیانت: رفتاری آگاهانه که با مرزهای مشخص و توافق‌شده وفاداری تعارض اساسی داشته باشد.</p>
+            <p class="بند حرف"><b>ه)</b>محتوای خصوصی: عکس، فیلم، صدا، پیام، اطلاعات شخصی یا هر محتوایی که با انتظار معقول حفظ حریم خصوصی در اختیار طرف مقابل قرار گرفته است.</p>
+            <p class="بند حرف"><b>و)</b>تخلف: نقض یکی از تعهدات مورد توافق طرفین.</p>
+            <p class="بند حرف"><b>ز)</b>رضایت: موافقت آزادانه، آگاهانه و قابل پس‌گرفتن که بدون اجبار، تهدید یا فشار ناموجه ابراز شده باشد.</p>
+          </article>
+
+          <article class="ماده" id="madde-3">
+            <h3><span class="ماده-شماره">ماده ۳</span><span class="ماده-عنوان">اصول بنیادین</span></h3>
+            <p class="متن-ماده">رابطه طرفین بر هفت اصل استوار است:</p>
+            <p class="بند حرف دور"><b>۱.</b>صداقت و شفافیت؛</p>
+            <p class="بند حرف دور"><b>۲.</b>وفاداری و پایبندی به توافق؛</p>
+            <p class="بند حرف دور"><b>۳.</b>احترام متقابل؛</p>
+            <p class="بند حرف دور"><b>۴.</b>اعتماد و مسئولیت‌پذیری؛</p>
+            <p class="بند حرف دور"><b>۵.</b>گفت‌وگو و حل محترمانه اختلاف؛</p>
+            <p class="بند حرف دور"><b>۶.</b>برابری و آزادی فردی؛</p>
+            <p class="بند حرف دور"><b>۷.</b>حفظ امنیت جسمی، روانی و حریم خصوصی.</p>
+            <p class="یادآور">هیچ‌یک از مواد این سند نباید به‌گونه‌ای تفسیر شود که با این اصول تعارض پیدا کند.</p>
+          </article>
+
+          <article class="ماده" id="madde-4">
+            <h3><span class="ماده-شماره">ماده ۴</span><span class="ماده-عنوان">مدت اعتبار</span></h3>
+            <p class="بند"><b>۴-۱</b>این سند از تاریخ امضای طرفین، به‌عنوان توافق اخلاقی و شخصی آنان، معتبر خواهد بود.</p>
+            <p class="بند"><b>۴-۲</b>طرفین می‌توانند با توافق مشترک و مکتوب، مفاد آن را اصلاح کنند.</p>
+            <p class="بند"><b>۴-۳</b>پایان رابطه، تعهدات مربوط به محرمانگی، محتوای خصوصی، منع آزار و تهدید، بازگرداندن اموال و تسویه بدهی‌های واقعی را از بین نمی‌برد.</p>
+            <p class="بند"><b>۴-۴</b>هیچ‌یک از طرفین صرفاً به دلیل امضای این سند، ملزم به ادامه رابطه برخلاف اراده خود نخواهد بود.</p>
+          </article>
+
+          <article class="ماده" id="madde-5">
+            <h3><span class="ماده-شماره">ماده ۵</span><span class="ماده-عنوان">تفسیر و اجرای مفاد</span></h3>
+            <p class="بند"><b>۵-۱</b>در صورت ابهام، طرفین ابتدا تلاش می‌کنند منظور مشترک خود را از طریق گفت‌وگو روشن کنند.</p>
+            <p class="بند"><b>۵-۲</b>هیچ‌یک از طرفین حق ندارد از ابهام یک بند برای توجیه رفتار آزاردهنده، فریبکارانه یا ناقض حقوق دیگری استفاده کند.</p>
+            <p class="بند"><b>۵-۳</b>در تفسیر هر بند، قصد طرفین، متن توافق‌شده، شرایط واقعی و اصول احترام و آزادی فردی باید در نظر گرفته شود.</p>
+          </article>
+
+        </div></div></div>
+      </section>
+
+      <!-- ################ فصل دوم ################ -->
+      <section class="فصل" id="fasl-2">
+        <h2 class="فصل-عنوان"><button type="button" class="فصل-دکمه" aria-expanded="false" aria-controls="بدنه-2">
+          <span class="فصل-شماره">۲</span>
+          <span class="فصل-متن"><small>فصل دوم</small><strong>صداقت، اعتماد و مسئولیت‌پذیری</strong></span>
+          <span class="فصل-بازه">مواد ۶ تا ۱۰</span><span class="پیکان" aria-hidden="true"></span>
+        </button></h2>
+        <div class="فصل-بدنه" id="بدنه-2"><div class="فصل-درون"><div class="فصل-محتوا">
+
+          <article class="ماده" id="madde-6">
+            <h3><span class="ماده-شماره">ماده ۶</span><span class="ماده-عنوان">اصل راست‌گویی</span></h3>
+            <p class="بند"><b>۶-۱</b>طرفین متعهدند درباره موضوعاتی که به‌طور جدی بر اعتماد، وفاداری و آینده رابطه اثر می‌گذارند، صادق باشند.</p>
+            <p class="بند"><b>۶-۲</b>دروغ عمدی درباره ارتباط عاشقانه، قرارهای پنهانی، تعهدات مشترک یا موضوعات اساسی رابطه، نقض این ماده محسوب می‌شود.</p>
+            <p class="بند"><b>۶-۳</b>دروغ‌گویی درباره جزئیات روزمره نیز در صورت عمدی‌بودن و تأثیر جدی بر اعتماد، باید مورد گفت‌وگو قرار گیرد.</p>
+            <p class="بند"><b>۶-۴</b>هر طرف حق دارد درباره موضوعات نامرتبط با رابطه حریم شخصی داشته باشد؛ اما این حق مجوز ارائه پاسخ دروغین درباره موضوعی اساسی نیست.</p>
+            <p class="بند"><b>۶-۵</b>اگر شخصی مایل به پاسخ‌گویی درباره موضوعی خصوصی نباشد، می‌تواند این موضوع را صادقانه اعلام کند.</p>
+          </article>
+
+          <article class="ماده" id="madde-7">
+            <h3><span class="ماده-شماره">ماده ۷</span><span class="ماده-عنوان">شفافیت درباره گذشته</span></h3>
+            <p class="بند"><b>۷-۱</b>هر طرف متعهد است اطلاعات مهم گذشته خود را که مستقیماً بر رابطه فعلی یا تصمیم‌های مشترک آینده اثر می‌گذارد، در زمان مناسب مطرح کند.</p>
+            <p class="بند"><b>۷-۲</b>رابطه‌های قبلی، در صورت تأثیر مستقیم بر رابطه فعلی، باید با رعایت حریم خصوصی و بدون اجبار به افشای جزئیات غیرضروری مطرح شوند.</p>
+            <p class="بند"><b>۷-۳</b>تعهدات مالی سنگین، بدهی‌های مشترک احتمالی یا مسائل حقوقی مؤثر بر آینده مشترک، در زمان مناسب و متناسب با مرحله رابطه بیان می‌شوند.</p>
+            <p class="بند"><b>۷-۴</b>اطلاعات پزشکی خصوصی تنها در حدی که برای ایمنی، رضایت آگاهانه یا تصمیم‌های مشترک ضروری است، موضوع گفت‌وگوی مسئولانه خواهد بود.</p>
+            <p class="بند"><b>۷-۵</b>هیچ‌یک از طرفین ملزم نیست تمام جزئیات روابط گذشته، خاطرات شخصی یا اسرار نامرتبط خود را افشا کند.</p>
+          </article>
+
+          <article class="ماده" id="madde-8">
+            <h3><span class="ماده-شماره">ماده ۸</span><span class="ماده-عنوان">حسن‌ظن و رسیدگی به نگرانی‌ها</span></h3>
+            <p class="بند"><b>۸-۱</b>طرفین متعهدند از اتهام‌زنی بی‌اساس و نتیجه‌گیری عجولانه خودداری کنند.</p>
+            <p class="بند"><b>۸-۲</b>هرگاه رفتاری موجب نگرانی شود، موضوع باید مستقیم، روشن و محترمانه مطرح شود.</p>
+            <p class="بند"><b>۸-۳</b>تجسس مخفیانه، ساختن موقعیت‌های دروغین برای امتحان‌کردن دیگری، تحریک عمدی حسادت و بازجویی تحقیرآمیز روش پذیرفته‌شده‌ای برای سنجش وفاداری نیست.</p>
+            <p class="بند"><b>۸-۴</b>طرفی که نگرانی مشخصی درباره موضوعی اساسی دریافت می‌کند، متعهد است در حد متعارف و بدون پرخاشگری به آن پاسخ دهد.</p>
+            <p class="بند"><b>۸-۵</b>نگرانی باید شنیده شود؛ اما شنیدن نگرانی به معنای پذیرفتن خودکار اتهام نیست.</p>
+          </article>
+
+          <article class="ماده" id="madde-9">
+            <h3><span class="ماده-شماره">ماده ۹</span><span class="ماده-عنوان">وفای به وعده</span></h3>
+            <p class="بند"><b>۹-۱</b>طرفین متعهدند وعده‌های مهم خود را جدی بگیرند.</p>
+            <p class="بند"><b>۹-۲</b>اگر انجام وعده‌ای ممکن نباشد، فرد مربوط باید در اولین فرصت معقول، موضوع را اطلاع دهد.</p>
+            <p class="بند"><b>۹-۳</b>لغو مکرر قرارها، بی‌اعتنایی مکرر به قول‌ها یا وعده‌دادن بدون قصد واقعی برای عمل‌کردن، برخلاف اصل مسئولیت‌پذیری است.</p>
+            <p class="بند"><b>۹-۴</b>وعده‌های غیرواقع‌بینانه نباید صرفاً برای آرام‌کردن موقت طرف مقابل داده شوند.</p>
+          </article>
+
+          <article class="ماده" id="madde-10">
+            <h3><span class="ماده-شماره">ماده ۱۰</span><span class="ماده-عنوان">پذیرش اشتباه</span></h3>
+            <p class="بند"><b>۱۰-۱</b>هر طرف مسئول رفتار و تصمیم‌های خود است.</p>
+            <p class="بند"><b>۱۰-۲</b>انکار عمدی واقعیت روشن، تحریف ماجرا یا انداختن تمام تقصیر بر گردن دیگری، با اصل مسئولیت‌پذیری ناسازگار است.</p>
+            <p class="بند"><b>۱۰-۳</b>اعتراف داوطلبانه به اشتباه و تلاش برای اصلاح آن، نشانه مسئولیت‌پذیری است؛ اما به‌تنهایی حق طرف آسیب‌دیده برای تصمیم‌گیری درباره ادامه رابطه را از بین نمی‌برد.</p>
+            <p class="بند"><b>۱۰-۴</b>هیچ‌کس نباید برای پذیرفتن اشتباه خود تحقیر شود؛ همان‌طور که هیچ‌کس نباید مجبور به پذیرفتن تقصیری شود که مرتکب نشده است.</p>
+          </article>
+
+        </div></div></div>
+      </section>
+
+      <!-- ################ فصل سوم ################ -->
+      <section class="فصل" id="fasl-3">
+        <h2 class="فصل-عنوان"><button type="button" class="فصل-دکمه" aria-expanded="false" aria-controls="بدنه-3">
+          <span class="فصل-شماره">۳</span>
+          <span class="فصل-متن"><small>فصل سوم</small><strong>وفاداری و تعریف دقیق خیانت</strong></span>
+          <span class="فصل-بازه">مواد ۱۱ تا ۱۸</span><span class="پیکان" aria-hidden="true"></span>
+        </button></h2>
+        <div class="فصل-بدنه" id="بدنه-3"><div class="فصل-درون"><div class="فصل-محتوا">
+
+          <article class="ماده" id="madde-11">
+            <h3><span class="ماده-شماره">ماده ۱۱</span><span class="ماده-عنوان">تعهد به وفاداری عاطفی و جسمی</span></h3>
+            <p class="بند"><b>۱۱-۱</b>طرفین توافق می‌کنند تا زمانی که رابطه بر مبنای انحصار عاطفی ادامه دارد، رابطه عاشقانه یا جنسی موازی با شخص ثالث برقرار نکنند.</p>
+            <p class="بند"><b>۱۱-۲</b>این تعهد در سفر، مهمانی، محیط کار، دانشگاه، فضای مجازی و هر موقعیتی که طرف دیگر حضور ندارد نیز معتبر است.</p>
+            <p class="بند"><b>۱۱-۳</b>نبودن طرف مقابل، نارضایتی موقت، اختلاف یا دوری مکانی، مجوز نقض وفاداری نیست.</p>
+            <p class="بند"><b>۱۱-۴</b>اگر یکی از طرفین دیگر تمایلی به انحصار عاطفی یا ادامه رابطه ندارد، باید پیش از اقدام ناسازگار با توافق، موضوع را صادقانه مطرح کند.</p>
+          </article>
+
+          <article class="ماده" id="madde-12">
+            <h3><span class="ماده-شماره">ماده ۱۲</span><span class="ماده-عنوان">مصادیق خیانت عاطفی</span></h3>
+            <p class="متن-ماده">رفتارهای زیر، در صورت وجود قصد عاشقانه یا جنسی و تعارض با توافق انحصاری طرفین، مصداق نقض جدی وفاداری عاطفی هستند:</p>
+            <p class="بند"><b>۱۲-۱</b>ایجاد رابطه عاشقانه پنهانی با شخص ثالث.</p>
+            <p class="بند"><b>۱۲-۲</b>گفتن مکرر جملات عاشقانه، ابراز دلبستگی یا دادن وعده رابطه به شخص دیگری با قصد ایجاد رابطه موازی.</p>
+            <p class="بند"><b>۱۲-۳</b>ادامه‌دادن آگاهانه گفت‌وگوهای عاشقانه‌ای که از طرف مقابل پنهان می‌شوند، به‌ویژه پس از روشن‌شدن مرزهای رابطه.</p>
+            <p class="بند"><b>۱۲-۴</b>معرفی شخص ثالث به‌عنوان شریک عاطفی یا ایجاد این تصور که رابطه فعلی وجود ندارد.</p>
+            <p class="بند"><b>۱۲-۵</b>حفظ رابطه عاطفی موازی و پنهانی با این استدلال که «هیچ تماس جسمی اتفاق نیفتاده است».</p>
+            <p class="بند"><b>۱۲-۶</b>استفاده از حساب ناشناس، نام مستعار یا شماره دیگر برای ادامه رابطه عاشقانه‌ای که عمداً مخفی نگه داشته می‌شود.</p>
+            <p class="بند"><b>۱۲-۷</b>برنامه‌ریزی برای آغاز رابطه عاشقانه موازی درحالی‌که تعهد انحصاری رابطه فعلی همچنان برقرار است.</p>
+          </article>
+
+          <article class="ماده" id="madde-13">
+            <h3><span class="ماده-شماره">ماده ۱۳</span><span class="ماده-عنوان">مصادیق خیانت جسمی و جنسی</span></h3>
+            <p class="بند"><b>۱۳-۱</b>برقراری رابطه جنسی با شخص ثالث برخلاف توافق انحصاری.</p>
+            <p class="بند"><b>۱۳-۲</b>بوسیدن یا تماس جسمی عاشقانه و صمیمانه با شخص ثالث، در صورت ناسازگاری با مرزهای توافق‌شده.</p>
+            <p class="بند"><b>۱۳-۳</b>درخواست، ارسال یا دریافت محتوای جنسی یا تحریک‌آمیز با شخص ثالث، هنگامی که این رفتار برخلاف توافق روشن طرفین باشد.</p>
+            <p class="بند"><b>۱۳-۴</b>حضور آگاهانه در قرارهای عاشقانه یا جنسی با هدف آغاز یا ادامه رابطه موازی.</p>
+            <p class="بند"><b>۱۳-۵</b>هرگونه رفتار جسمی یا جنسی بدون رضایت طرف مربوط، علاوه بر نقض جدی مرزهای رابطه، موضوعی مستقل و جدی در زمینه ایمنی و حقوق فردی است.</p>
+            <p class="بند"><b>۱۳-۶</b>تعریف خیانت نباید به‌گونه‌ای تفسیر شود که رفتارهای ناخواسته‌ای را که بدون رضایت فرد رخ داده‌اند، به‌عنوان انتخاب یا خیانت او قلمداد کند.</p>
+          </article>
+
+          <article class="ماده" id="madde-14">
+            <h3><span class="ماده-شماره">ماده ۱۴</span><span class="ماده-عنوان">مرز ارتباط با دیگران</span></h3>
+            <p class="بند"><b>۱۴-۱</b>دوستی سالم، ارتباط کاری، تحصیلی و خانوادگی با دیگران مجاز است.</p>
+            <p class="بند"><b>۱۴-۲</b>معاشقه عمدی، ابراز علاقه عاشقانه پنهانی، پیام‌های دوپهلو با قصد ایجاد رابطه و تماس‌های جسمی ناسازگار با توافق، پذیرفته نیست.</p>
+            <p class="بند"><b>۱۴-۳</b>دنبال‌کردن یک حساب، پسندیدن یک تصویر یا داشتن دوست از جنس مخالف، به‌تنهایی اثبات خیانت نیست.</p>
+            <p class="بند"><b>۱۴-۴</b>اگر رفتار مشخصی موجب ناراحتی جدی یکی از طرفین شود، طرفین باید درباره مرز قابل‌قبول گفت‌وگو کنند و به توافقی روشن و دوطرفه برسند.</p>
+            <p class="بند"><b>۱۴-۵</b>هیچ‌یک از طرفین حق ندارد صرفاً به دلیل حسادت یا نگرانی نامشخص، تمام دوستی‌های سالم دیگری را ممنوع کند.</p>
+          </article>
+
+          <article class="ماده" id="madde-15">
+            <h3><span class="ماده-شماره">ماده ۱۵</span><span class="ماده-عنوان">روابط عاطفی سابق</span></h3>
+            <p class="بند"><b>۱۵-۱</b>ازسرگیری رابطه عاشقانه یا ادامه رابطه عاطفی پنهانی با شریک سابق، در دوران تعهد انحصاری، ممنوع است.</p>
+            <p class="بند"><b>۱۵-۲</b>تماس ضروری به دلایل شغلی، خانوادگی، مالی یا مسئولیت‌های مشترک، در صورت رعایت مرزهای توافق‌شده، مجاز است.</p>
+            <p class="بند"><b>۱۵-۳</b>اگر ارتباط ضروری با شریک سابق وجود داشته باشد و بر اعتماد یا امنیت رابطه اثر بگذارد، موضوع باید در زمان مناسب و صادقانه مطرح شود.</p>
+            <p class="بند"><b>۱۵-۴</b>مقایسه تحقیرآمیز شریک فعلی با شریک سابق، تهدید به بازگشت به رابطه قبلی یا استفاده از گذشته برای ایجاد حسادت، پذیرفته نیست.</p>
+            <p class="بند"><b>۱۵-۵</b>نگهداری هر یادگاری شخصی از گذشته به‌خودی‌خود خیانت محسوب نمی‌شود؛ اما استفاده از آن برای حفظ رابطه عاشقانه موازی یا آزار عمدی طرف مقابل، برخلاف این توافق است.</p>
+          </article>
+
+          <article class="ماده" id="madde-16">
+            <h3><span class="ماده-شماره">ماده ۱۶</span><span class="ماده-عنوان">چت‌ها، تماس‌ها و قرارهای پنهانی</span></h3>
+            <p class="بند"><b>۱۶-۱</b>مکاتبه با شخص ثالث هنگامی نقض وفاداری محسوب می‌شود که محتوای آن، قصد آن یا پنهان‌کاری همراه آن با توافق انحصاری ناسازگار باشد.</p>
+            <p class="بند"><b>۱۶-۲</b>حذف پیام‌ها به‌تنهایی اثبات خیانت نیست؛ اما حذف عمدی برای پنهان‌کردن ارتباط عاشقانه ناقض توافق، موضوعی جدی است.</p>
+            <p class="بند"><b>۱۶-۳</b>ملاقات مخفیانه با قصد آغاز یا ادامه رابطه عاشقانه یا جنسی، برخلاف این تعهدنامه است.</p>
+            <p class="بند"><b>۱۶-۴</b>هیچ‌یک از طرفین حق ندارد برای اثبات وفاداری، دیگری را مجبور به تحویل تلفن، رمز حساب‌ها یا نمایش تمام مکالماتش کند.</p>
+          </article>
+
+          <article class="ماده" id="madde-17">
+            <h3><span class="ماده-شماره">ماده ۱۷</span><span class="ماده-عنوان">پیدایش علاقه به شخص دیگر</span></h3>
+            <p class="بند"><b>۱۷-۱</b>احساس ناخواسته یا گذرای جذب‌شدن به فردی دیگر، به‌تنهایی معادل خیانت نیست؛ مسئولیت هر طرف به رفتار آگاهانه و تصمیم‌های او مربوط می‌شود.</p>
+            <p class="بند"><b>۱۷-۲</b>اگر علاقه به شخص دیگری جدی شود و بر تصمیم به ادامه رابطه اثر بگذارد، طرف مربوط باید پیش از ورود به رابطه موازی، درباره وضعیت رابطه فعلی صادقانه تصمیم‌گیری کند.</p>
+            <p class="بند"><b>۱۷-۳</b>تا زمانی که تعهد انحصاری برقرار است، استفاده از علاقه جدید برای ایجاد رابطه پنهانی یا نگه‌داشتن هم‌زمان دو رابطه عاشقانه پذیرفته نیست.</p>
+            <p class="بند"><b>۱۷-۴</b>اگر طرف مربوط به این نتیجه برسد که نمی‌تواند به رابطه فعلی متعهد بماند، باید محترمانه درباره ادامه یا پایان رابطه گفت‌وگو کند.</p>
+          </article>
+
+          <article class="ماده" id="madde-18">
+            <h3><span class="ماده-شماره">ماده ۱۸</span><span class="ماده-عنوان">واکنش به نقض وفاداری</span></h3>
+            <p class="بند"><b>۱۸-۱</b>در صورت وجود دلایل جدی درباره نقض وفاداری، طرفین می‌توانند برای روشن‌شدن واقعیت گفت‌وگوی مشخص و محترمانه داشته باشند.</p>
+            <p class="بند"><b>۱۸-۲</b>سوءظن به‌تنهایی اثبات قطعی خیانت نیست و نباید مبنای تهدید، آزار یا افشای اطلاعات خصوصی قرار گیرد.</p>
+            <p class="بند"><b>۱۸-۳</b>در صورت تأیید نقض جدی توافق، طرف آسیب‌دیده حق دارد زمان بخواهد، فاصله بگیرد، برای بازسازی اعتماد شرط‌های معقول پیشنهاد کند یا رابطه را پایان دهد.</p>
+            <p class="بند"><b>۱۸-۴</b>ادامه رابطه پس از خیانت، تنها با تمایل آزادانه طرف آسیب‌دیده امکان‌پذیر است؛ بخشش اجباری نیست.</p>
+            <p class="بند"><b>۱۸-۵</b>فردی که وفاداری را نقض کرده، نباید مسئولیت رفتار خود را صرفاً به کمبود توجه، اختلاف یا رفتار شریک خود نسبت دهد.</p>
+            <p class="بند"><b>۱۸-۶</b>هیچ‌یک از طرفین حق ندارد در واکنش به خیانت، دست به انتقام‌جویی، انتشار محتوای خصوصی، تهدید، تعقیب یا آسیب‌رساندن بزند.</p>
+          </article>
+
+        </div></div></div>
+      </section>
+
+      <!-- ################ فصل چهارم ################ -->
+      <section class="فصل" id="fasl-4">
+        <h2 class="فصل-عنوان"><button type="button" class="فصل-دکمه" aria-expanded="false" aria-controls="بدنه-4">
+          <span class="فصل-شماره">۴</span>
+          <span class="فصل-متن"><small>فصل چهارم</small><strong>احترام، امنیت و رفتار متقابل</strong></span>
+          <span class="فصل-بازه">مواد ۱۹ تا ۲۵</span><span class="پیکان" aria-hidden="true"></span>
+        </button></h2>
+        <div class="فصل-بدنه" id="بدنه-4"><div class="فصل-درون"><div class="فصل-محتوا">
+
+          <article class="ماده" id="madde-19">
+            <h3><span class="ماده-شماره">ماده ۱۹</span><span class="ماده-عنوان">احترام به شخصیت و انتخاب‌ها</span></h3>
+            <p class="بند"><b>۱۹-۱</b>طرفین به شخصیت، عقاید، سلیقه، باورها، پیشینه خانوادگی، شغل، تحصیل و اهداف یکدیگر احترام می‌گذارند.</p>
+            <p class="بند"><b>۱۹-۲</b>اختلاف‌نظر درباره مسائل شخصی، فرهنگی، دینی یا اجتماعی، مجوز تحقیر یا اجبار نیست.</p>
+            <p class="بند"><b>۱۹-۳</b>هیچ‌یک از طرفین حق ندارد نقاط ضعف، ترس‌ها یا اسرار دیگری را برای شکست‌دادن او در بحث به کار ببرد.</p>
+          </article>
+
+          <article class="ماده" id="madde-20">
+            <h3><span class="ماده-شماره">ماده ۲۰</span><span class="ماده-عنوان">منع خشونت و تهدید</span></h3>
+            <p class="بند"><b>۲۰-۱</b>خشونت جسمی، از جمله زدن، هل‌دادن، گرفتن بازو با فشار یا پرتاب اشیا به قصد ترساندن، پذیرفته نیست.</p>
+            <p class="بند"><b>۲۰-۲</b>توهین، فحاشی، تحقیر مستمر، تهدید و ارعاب با اصول این سند ناسازگار است.</p>
+            <p class="بند"><b>۲۰-۳</b>تهدید به افشای اسرار، انتشار تصاویر خصوصی یا آسیب‌رساندن برای وادارکردن طرف مقابل به انجام خواسته‌ای، رفتار غیرقابل‌قبول است.</p>
+            <p class="بند"><b>۲۰-۴</b>استفاده از پول، محبت، تهدید به جدایی یا احساس گناه برای اجبار دیگری به تصمیمی برخلاف میل او، پذیرفته نیست.</p>
+            <p class="بند"><b>۲۰-۵</b>در صورت احساس خطر، حفظ امنیت شخصی بر ادامه گفت‌وگو یا حفظ رابطه اولویت دارد.</p>
+          </article>
+
+          <article class="ماده" id="madde-21">
+            <h3><span class="ماده-شماره">ماده ۲۱</span><span class="ماده-عنوان">منع کنترل‌گری</span></h3>
+            <p class="بند"><b>۲۱-۱</b>هیچ‌یک از طرفین حق ندارد دیگری را به‌طور کلی از دیدار با خانواده یا دوستان سالم منع کند.</p>
+            <p class="بند"><b>۲۱-۲</b>تحمیل نوع پوشش، آرایش، ظاهر، شغل، تحصیل یا انتخاب‌های شخصی پذیرفته نیست.</p>
+            <p class="بند"><b>۲۱-۳</b>درخواست گزارش لحظه‌به‌لحظه از مکان و فعالیت‌های دیگری، بدون توافق آزادانه، روش سالمی برای حفظ اعتماد نیست.</p>
+            <p class="بند"><b>۲۱-۴</b>هر طرف حق دارد نگرانی خود را بیان کند؛ اما تصمیم نهایی درباره امور شخصی با صاحب آن است، مگر در مواردی که تعهد مشترک یا قانون به‌طور مستقل اثر دیگری داشته باشند.</p>
+          </article>
+
+          <article class="ماده" id="madde-22">
+            <h3><span class="ماده-شماره">ماده ۲۲</span><span class="ماده-عنوان">منع دستکاری عاطفی</span></h3>
+            <p class="بند"><b>۲۲-۱</b>تهدید مکرر به جدایی برای پیروزی در بحث یا کنترل رفتار دیگری، پذیرفته نیست.</p>
+            <p class="بند"><b>۲۲-۲</b>قهر طولانی با هدف تنبیه، ایجاد حس گناه برای گرفتن امتیاز، مقایسه تحقیرآمیز با دیگران و انکار عمدی واقعیت‌های روشن، با این سند ناسازگار است.</p>
+            <p class="بند"><b>۲۲-۳</b>هر طرف حق دارد ناراحت باشد، سکوت کند یا برای آرام‌شدن فاصله بگیرد؛ اما بهتر است این نیاز را روشن بیان کند و از بلاتکلیف نگه‌داشتن عمدی دیگری خودداری کند.</p>
+            <p class="بند"><b>۲۲-۴</b>هیچ‌یک از طرفین نباید دیگری را مجبور کند برای اثبات عشق، از مرزهای جسمی، روانی یا اخلاقی خود عبور کند.</p>
+          </article>
+
+          <article class="ماده" id="madde-23">
+            <h3><span class="ماده-شماره">ماده ۲۳</span><span class="ماده-عنوان">عذرخواهی و جبران</span></h3>
+            <p class="بند"><b>۲۳-۱</b>عذرخواهی باید روشن، صادقانه و بدون سرزنش طرف آسیب‌دیده باشد.</p>
+            <p class="بند"><b>۲۳-۲</b>فرد عذرخواه باید در حد امکان برای اصلاح رفتار و جلوگیری از تکرار آن اقدام کند.</p>
+            <p class="بند"><b>۲۳-۳</b>طرف آسیب‌دیده می‌تواند برای پذیرش عذرخواهی زمان بخواهد.</p>
+            <p class="بند"><b>۲۳-۴</b>پس از حل یک اشتباه معمولی و جبران آن، استفاده مکرر از آن موضوع برای تحقیر یا کنترل دیگری پسندیده نیست.</p>
+            <p class="بند"><b>۲۳-۵</b>این اصل مانع مطرح‌کردن دوباره مسئله‌ای که تکرار شده یا هنوز حل نشده است، نخواهد بود.</p>
+          </article>
+
+          <article class="ماده" id="madde-24">
+            <h3><span class="ماده-شماره">ماده ۲۴</span><span class="ماده-عنوان">قدردانی و محبت</span></h3>
+            <p class="بند"><b>۲۴-۱</b>طرفین تلاش می‌کنند محبت، زحمت، حمایت و تلاش یکدیگر را ببینند و قدردانی کنند.</p>
+            <p class="بند"><b>۲۴-۲</b>تشویق، تشکر و ابراز علاقه باید صادقانه باشد، نه ابزاری برای گرفتن امتیاز.</p>
+            <p class="بند"><b>۲۴-۳</b>محبت می‌تواند با کلام، همراهی، توجه، هدیه یا کمک عملی ابراز شود.</p>
+            <p class="بند"><b>۲۴-۴</b>هیچ‌کس موظف نیست دائماً به یک شیوه خاص محبت کند؛ طرفین باید درباره نیازها و شیوه‌های مطلوب خود گفت‌وگو کنند.</p>
+          </article>
+
+          <article class="ماده" id="madde-25">
+            <h3><span class="ماده-شماره">ماده ۲۵</span><span class="ماده-عنوان">شوخی و طنز عاشقانه</span></h3>
+            <p class="بند"><b>۲۵-۱</b>شوخی و شیطنت عاشقانه، تا زمانی که موجب تحقیر یا آسیب نشود، بخشی از رابطه است.</p>
+            <p class="بند"><b>۲۵-۲</b>شوخی درباره ظاهر، بدن، خانواده، گذشته یا نقاط حساس شخصی باید با توجه به رضایت و احساس طرف مقابل انجام شود.</p>
+            <p class="بند"><b>۲۵-۳</b>اگر یکی از طرفین اعلام کند شوخی خاصی آزاردهنده است، طرف دیگر باید آن را متوقف کند.</p>
+            <p class="بند"><b>۲۵-۴</b>جمله «شوخی کردم» مجوز ادامه رفتاری که طرف مقابل صریحاً آزاردهنده دانسته است، نخواهد بود.</p>
+          </article>
+
+        </div></div></div>
+      </section>
+
+      <!-- ################ فصل پنجم ################ -->
+      <section class="فصل" id="fasl-5">
+        <h2 class="فصل-عنوان"><button type="button" class="فصل-دکمه" aria-expanded="false" aria-controls="بدنه-5">
+          <span class="فصل-شماره">۵</span>
+          <span class="فصل-متن"><small>فصل پنجم</small><strong>ارتباط، گفت‌وگو و مدیریت اختلاف</strong></span>
+          <span class="فصل-بازه">مواد ۲۶ تا ۳۳</span><span class="پیکان" aria-hidden="true"></span>
+        </button></h2>
+        <div class="فصل-بدنه" id="بدنه-5"><div class="فصل-درون"><div class="فصل-محتوا">
+
+          <article class="ماده" id="madde-26">
+            <h3><span class="ماده-شماره">ماده ۲۶</span><span class="ماده-عنوان">ارتباط منظم</span></h3>
+            <p class="بند"><b>۲۶-۱</b>طرفین برای حفظ ارتباط مؤثر، درباره میزان تماس و پیام روزانه به توافق می‌رسند.</p>
+            <p class="بند"><b>۲۶-۲</b>میزان و شیوه ارتباط مورد توافق:</p>
+            <div class="فیلد-ماده"><span class="خط-پر"></span></div>
+            <p class="بند"><b>۲۶-۳</b>پاسخ‌ندادن فوری در همه شرایط الزامی نیست؛ شرایط کاری، تحصیلی، خانوادگی، خواب و استراحت باید در نظر گرفته شود.</p>
+            <p class="بند"><b>۲۶-۴</b>در صورت امکان، تأخیر طولانی یا مشغله‌ای که ارتباط را به‌طور محسوس محدود می‌کند، با یک پیام کوتاه اطلاع داده می‌شود.</p>
+          </article>
+
+          <article class="ماده" id="madde-27">
+            <h3><span class="ماده-شماره">ماده ۲۷</span><span class="ماده-عنوان">اطلاع‌رسانی و وفای به قرار</span></h3>
+            <p class="بند"><b>۲۷-۱</b>در صورت لغو یا تغییر قرار، طرف مربوط باید در اولین فرصت معقول اطلاع دهد.</p>
+            <p class="بند"><b>۲۷-۲</b><span>تأخیر بیش از <span class="جای-خالی"></span> دقیقه، در صورت امکان، باید اطلاع داده شود.</span></p>
+            <p class="بند"><b>۲۷-۳</b>اطلاع‌رسانی به معنای گزارش تمام حرکات و جزئیات زندگی نیست؛ هدف آن احترام به زمان و پیش‌بینی‌پذیری است.</p>
+            <p class="بند"><b>۲۷-۴</b>سفر، بیماری یا مشغله مهمی که به‌طور جدی بر رابطه اثر می‌گذارد، در زمان مناسب مطرح می‌شود.</p>
+          </article>
+
+          <article class="ماده" id="madde-28">
+            <h3><span class="ماده-شماره">ماده ۲۸</span><span class="ماده-عنوان">گوش‌دادن فعال</span></h3>
+            <p class="بند"><b>۲۸-۱</b>هنگام گفت‌وگوی مهم، طرفین تلاش می‌کنند بدون قطع مکرر حرف یکدیگر گوش دهند.</p>
+            <p class="بند"><b>۲۸-۲</b>حواس‌پرتی عمدی و بی‌اعتنایی آشکار به صحبت طرف مقابل، در گفت‌وگوهای مهم پسندیده نیست.</p>
+            <p class="بند"><b>۲۸-۳</b>پیش از ارائه راه‌حل، باید روشن شود که طرف مقابل به دنبال همدلی، مشورت یا حل عملی مسئله است.</p>
+            <p class="بند"><b>۲۸-۴</b>جمله «الان فقط می‌خواهم حرفم را بشنوی» باید جدی گرفته شود.</p>
+          </article>
+
+          <article class="ماده" id="madde-29">
+            <h3><span class="ماده-شماره">ماده ۲۹</span><span class="ماده-عنوان">بیان نیازها و نگرانی‌ها</span></h3>
+            <p class="بند"><b>۲۹-۱</b>طرفین متعهدند نیازها، احساسات و نارضایتی‌های خود را تا حد امکان مستقیم و محترمانه بیان کنند.</p>
+            <p class="بند"><b>۲۹-۲</b>انتظار ذهن‌خوانی، انباشتن ناراحتی‌ها و طرح ناگهانی تمام اختلافات در اوج عصبانیت، روش مطلوبی نیست.</p>
+            <p class="بند"><b>۲۹-۳</b>بیان احساس با جمله‌هایی مانند «من احساس می‌کنم...» به‌جای اتهام‌هایی مانند «تو همیشه...» تشویق می‌شود.</p>
+          </article>
+
+          <article class="ماده" id="madde-30">
+            <h3><span class="ماده-شماره">ماده ۳۰</span><span class="ماده-عنوان">زمان خلوت و آرام‌شدن</span></h3>
+            <p class="بند"><b>۳۰-۱</b>هر طرف می‌تواند برای آرام‌شدن، استراحت یا تمرکز بر امور شخصی درخواست فاصله موقت کند.</p>
+            <p class="بند"><b>۳۰-۲</b><span>در حالت عادی، طرفین می‌کوشند مدت فاصله را مشخص کنند؛ مدت پیشنهادی <span class="جای-خالی"></span> ساعت و در صورت نیاز حداکثر ۲۴ ساعت است، مگر آنکه با توافق تمدید شود.</span></p>
+            <p class="بند"><b>۳۰-۳</b>در صورت نیاز به فاصله طولانی‌تر، فرد مربوط بهتر است زمان تقریبی تماس دوباره را اطلاع دهد.</p>
+            <p class="بند"><b>۳۰-۴</b>این ماده نباید مانع فاصله‌گرفتن فوری برای حفظ امنیت یا دورشدن از موقعیت تهدیدآمیز شود.</p>
+          </article>
+
+          <article class="ماده" id="madde-31">
+            <h3><span class="ماده-شماره">ماده ۳۱</span><span class="ماده-عنوان">توقف بحث داغ</span></h3>
+            <p class="بند"><b>۳۱-۱</b>اگر گفت‌وگو به فریاد، توهین یا تنش شدید برسد، هر طرف می‌تواند درخواست توقف کوتاه کند.</p>
+            <p class="بند"><b>۳۱-۲</b>مدت پیشنهادی توقف اولیه، حداکثر ۳۰ دقیقه است؛ مگر آنکه شرایط به زمان بیشتری نیاز داشته باشد.</p>
+            <p class="بند"><b>۳۱-۳</b>در زمان توقف، طرفین از ارسال پیام‌های توهین‌آمیز، تهدید یا تحریک عمدی خودداری می‌کنند.</p>
+            <p class="بند"><b>۳۱-۴</b>پس از آرام‌شدن، در صورت امن و مناسب‌بودن شرایط، گفت‌وگو در زمان توافق‌شده ادامه می‌یابد.</p>
+          </article>
+
+          <article class="ماده" id="madde-32">
+            <h3><span class="ماده-شماره">ماده ۳۲</span><span class="ماده-عنوان">حفظ حریم اختلاف</span></h3>
+            <p class="بند"><b>۳۲-۱</b>اختلافات شخصی تا حد امکان میان خود طرفین حل می‌شود.</p>
+            <p class="بند"><b>۳۲-۲</b>انتشار اختلافات در شبکه‌های اجتماعی با هدف تحقیر، تحریک دیگران یا فشار بر شریک عاطفی پذیرفته نیست.</p>
+            <p class="بند"><b>۳۲-۳</b>مشورت با فرد قابل اعتماد یا متخصص، در حد لازم و با حفظ حریم خصوصی، مجاز است.</p>
+            <p class="بند"><b>۳۲-۴</b>اگر خشونت، تهدید یا خطر جدی وجود داشته باشد، درخواست کمک از خانواده، متخصص یا مراجع مسئول نباید به‌عنوان نقض محرمانگی تلقی شود.</p>
+          </article>
+
+          <article class="ماده" id="madde-33">
+            <h3><span class="ماده-شماره">ماده ۳۳</span><span class="ماده-عنوان">میانجی‌گری و مشاوره</span></h3>
+            <p class="بند"><b>۳۳-۱</b>در اختلافات مهم یا تکرارشونده، طرفین می‌توانند با توافق از مشاور رابطه یا فرد بی‌طرف و مورد اعتماد کمک بگیرند.</p>
+            <p class="بند"><b>۳۳-۲</b>نظر میانجی، جز در صورت وجود توافق معتبر و مستقل، صرفاً جنبه مشورتی دارد.</p>
+            <p class="بند"><b>۳۳-۳</b>مراجعه به مشاور نشانه شکست رابطه نیست و نباید برای تحقیر طرف مقابل استفاده شود.</p>
+          </article>
+
+        </div></div></div>
+      </section>
+
+      <!-- ################ فصل ششم ################ -->
+      <section class="فصل" id="fasl-6">
+        <h2 class="فصل-عنوان"><button type="button" class="فصل-دکمه" aria-expanded="false" aria-controls="بدنه-6">
+          <span class="فصل-شماره">۶</span>
+          <span class="فصل-متن"><small>فصل ششم</small><strong>حریم خصوصی و فضای مجازی</strong></span>
+          <span class="فصل-بازه">مواد ۳۴ تا ۳۹</span><span class="پیکان" aria-hidden="true"></span>
+        </button></h2>
+        <div class="فصل-بدنه" id="بدنه-6"><div class="فصل-درون"><div class="فصل-محتوا">
+
+          <article class="ماده" id="madde-34">
+            <h3><span class="ماده-شماره">ماده ۳۴</span><span class="ماده-عنوان">محرمانگی اسرار</span></h3>
+            <p class="بند"><b>۳۴-۱</b>اطلاعات شخصی، گفت‌وگوهای خصوصی و اسراری که با انتظار معقول محرمانگی در اختیار طرف مقابل قرار می‌گیرند، باید محترم شمرده شوند.</p>
+            <p class="بند"><b>۳۴-۲</b>افشای اسرار برای تمسخر، انتقام، تهدید یا ایجاد فشار ممنوع است.</p>
+            <p class="بند"><b>۳۴-۳</b>مشورت محدود برای حل مشکل، دریافت حمایت یا حفظ امنیت، با رعایت حداقل افشای ضروری، مجاز است.</p>
+            <p class="بند"><b>۳۴-۴</b>محرمانگی نباید مانع گزارش خطر جدی، درخواست کمک یا انجام تکالیف قانونی مستقل شود.</p>
+          </article>
+
+          <article class="ماده" id="madde-35">
+            <h3><span class="ماده-شماره">ماده ۳۵</span><span class="ماده-عنوان">حریم تلفن و حساب‌ها</span></h3>
+            <p class="بند"><b>۳۵-۱</b>تلفن همراه، رایانه، پیام‌ها، گالری، حساب‌های کاربری و رمزهای شخصی هر طرف، حریم خصوصی او هستند.</p>
+            <p class="بند"><b>۳۵-۲</b>بازرسی دستگاه یا حساب دیگری بدون رضایت صریح او پذیرفته نیست.</p>
+            <p class="بند"><b>۳۵-۳</b>نصب نرم‌افزار جاسوسی، شنود، ردیابی مخفیانه یا دسترسی غیرمجاز به حساب‌های دیگری ممنوع است.</p>
+            <p class="بند"><b>۳۵-۴</b>اشتراک‌گذاری داوطلبانه موقعیت مکانی برای ایمنی سفر یا شرایط خاص، باید روشن، محدود و قابل لغو باشد.</p>
+            <p class="بند"><b>۳۵-۵</b>تحویل رمز حساب‌ها، حتی برای اثبات عشق یا وفاداری، الزامی نیست.</p>
+          </article>
+
+          <article class="ماده" id="madde-36">
+            <h3><span class="ماده-شماره">ماده ۳۶</span><span class="ماده-عنوان">تصاویر و محتوای خصوصی</span></h3>
+            <p class="بند"><b>۳۶-۱</b>هیچ‌یک از طرفین حق ندارد عکس، فیلم، صدا، پیام یا محتوای خصوصی دیگری را بدون رضایت مناسب منتشر کند یا در اختیار شخص ثالث قرار دهد.</p>
+            <p class="بند"><b>۳۶-۲</b>ضبط، ذخیره یا تهیه محتوای خصوصی‌ای که به رضایت طرف مقابل نیاز دارد، بدون آن رضایت پذیرفته نیست.</p>
+            <p class="بند"><b>۳۶-۳</b>استفاده از محتوای خصوصی برای تهدید، باج‌خواهی، تحقیر یا اجبار ممنوع است.</p>
+            <p class="بند"><b>۳۶-۴</b>این تعهد پس از پایان رابطه نیز ادامه دارد.</p>
+            <p class="بند"><b>۳۶-۵</b>در صورت درخواست حذف محتوای خصوصی، طرفین باید درباره حذف آن از دستگاه‌ها و نسخه‌های تحت کنترل خود اقدام معقول انجام دهند؛ با رعایت الزامات قانونی احتمالی برای حفظ شواهد یا مدارک.</p>
+            <p class="بند"><b>۳۶-۶</b>هرگونه انتشار یا سوءاستفاده از محتوای خصوصی می‌تواند، حسب شرایط و قوانین مربوط، پیامدهای حقوقی مستقلی داشته باشد.</p>
+          </article>
+
+          <article class="ماده" id="madde-37">
+            <h3><span class="ماده-شماره">ماده ۳۷</span><span class="ماده-عنوان">شبکه‌های اجتماعی</span></h3>
+            <p class="بند"><b>۳۷-۱</b>انتشار عکس مشترک، اعلام عمومی رابطه یا انتشار اطلاعات قابل‌شناسایی درباره طرف مقابل، با رعایت توافق و رضایت مربوط انجام می‌شود.</p>
+            <p class="بند"><b>۳۷-۲</b>انتشار مطالب تحقیرآمیز یا افشای اطلاعات خصوصی دیگری، برخلاف این سند است.</p>
+            <p class="بند"><b>۳۷-۳</b>لایک، دنبال‌کردن یا نظرگذاشتن در فضای مجازی به‌تنهایی خیانت محسوب نمی‌شود؛ قصد، محتوا و مرزهای روشن رابطه اهمیت دارند.</p>
+            <p class="بند"><b>۳۷-۴</b>اگر محتوای مشترکی موجب آسیب یا نگرانی جدی شود، طرفین درباره حذف یا اصلاح آن گفت‌وگو می‌کنند.</p>
+          </article>
+
+          <article class="ماده" id="madde-38">
+            <h3><span class="ماده-شماره">ماده ۳۸</span><span class="ماده-عنوان">پیام‌رسانی و حساب‌های ناشناس</span></h3>
+            <p class="بند"><b>۳۸-۱</b>استفاده از حساب ناشناس یا شماره دیگر به‌خودی‌خود اثبات تخلف نیست؛ اما استفاده از آن برای پنهان‌کردن رابطه عاشقانه ناقض توافق، پذیرفته نیست.</p>
+            <p class="بند"><b>۳۸-۲</b>پاک‌کردن پیام‌ها نیز به‌تنهایی اثبات خیانت نیست؛ هدف و زمینه رفتار باید بررسی شود.</p>
+            <p class="بند"><b>۳۸-۳</b>هیچ‌یک از طرفین نباید با جعل هویت، ورود غیرمجاز به حساب‌ها یا فریب عمدی، اطلاعات خصوصی دیگری را به دست آورد.</p>
+          </article>
+
+          <article class="ماده" id="madde-39">
+            <h3><span class="ماده-شماره">ماده ۳۹</span><span class="ماده-عنوان">اطلاعات و دسترسی‌های مشترک</span></h3>
+            <p class="بند"><b>۳۹-۱</b>اطلاعات حساب‌های شخصی نزد صاحب آن باقی می‌ماند.</p>
+            <p class="بند"><b>۳۹-۲</b>در صورت ایجاد حساب، فایل یا فضای دیجیتال مشترک، دسترسی و نحوه مدیریت آن باید مشخص باشد.</p>
+            <p class="بند"><b>۳۹-۳</b>استفاده از کارت بانکی، رمز، حساب یا اطلاعات مالی دیگری بدون اجازه، ممنوع است.</p>
+            <p class="بند"><b>۳۹-۴</b>با پایان رابطه، دسترسی‌های مشترک باید به‌صورت امن و منصفانه مدیریت و دسترسی غیرضروری قطع شود.</p>
+          </article>
+
+        </div></div></div>
+      </section>
+
+      <!-- ################ فصل هفتم ################ -->
+      <section class="فصل" id="fasl-7">
+        <h2 class="فصل-عنوان"><button type="button" class="فصل-دکمه" aria-expanded="false" aria-controls="بدنه-7">
+          <span class="فصل-شماره">۷</span>
+          <span class="فصل-متن"><small>فصل هفتم</small><strong>خانواده، دوستان و اطرافیان</strong></span>
+          <span class="فصل-بازه">مواد ۴۰ تا ۴۴</span><span class="پیکان" aria-hidden="true"></span>
+        </button></h2>
+        <div class="فصل-بدنه" id="بدنه-7"><div class="فصل-درون"><div class="فصل-محتوا">
+
+          <article class="ماده" id="madde-40">
+            <h3><span class="ماده-شماره">ماده ۴۰</span><span class="ماده-عنوان">احترام به خانواده و نزدیکان</span></h3>
+            <p class="بند"><b>۴۰-۱</b>طرفین در حد متعارف به خانواده، دوستان و نزدیکان یکدیگر احترام می‌گذارند.</p>
+            <p class="بند"><b>۴۰-۲</b>توهین، تمسخر یا تحقیر پیشینه خانوادگی دیگری پذیرفته نیست.</p>
+            <p class="بند"><b>۴۰-۳</b>اختلاف با یکی از اعضای خانواده باید بدون تعمیم‌دادن آن به تمام خانواده مدیریت شود.</p>
+          </article>
+
+          <article class="ماده" id="madde-41">
+            <h3><span class="ماده-شماره">ماده ۴۱</span><span class="ماده-عنوان">معرفی رابطه</span></h3>
+            <p class="بند"><b>۴۱-۱</b>معرفی طرف مقابل به خانواده و دوستان، در زمان مناسب و با توافق طرفین انجام می‌شود.</p>
+            <p class="بند"><b>۴۱-۲</b>هیچ‌یک از طرفین مجبور به ملاقات یا معرفی رسمی پیش از آمادگی خود نیست.</p>
+            <p class="بند"><b>۴۱-۳</b>اگر پنهان‌ماندن رابطه برای مدت طولانی بر اعتماد یا آینده آن اثر می‌گذارد، طرفین باید درباره علت، محدودیت‌ها و زمان احتمالی تغییر شرایط گفت‌وگو کنند.</p>
+          </article>
+
+          <article class="ماده" id="madde-42">
+            <h3><span class="ماده-شماره">ماده ۴۲</span><span class="ماده-عنوان">دخالت اطرافیان</span></h3>
+            <p class="بند"><b>۴۲-۱</b>تصمیم‌های اصلی رابطه با خود طرفین است، نه دوستان یا خانواده آنان.</p>
+            <p class="بند"><b>۴۲-۲</b>نظر اطرافیان می‌تواند مشورتی باشد، اما نباید به اجبار یا تهدید تبدیل شود.</p>
+            <p class="بند"><b>۴۲-۳</b>هیچ‌یک از طرفین نباید دیگری را به قطع تمام ارتباطات سالم خود مجبور کند.</p>
+          </article>
+
+          <article class="ماده" id="madde-43">
+            <h3><span class="ماده-شماره">ماده ۴۳</span><span class="ماده-عنوان">استقلال روابط اجتماعی</span></h3>
+            <p class="بند"><b>۴۳-۱</b>هر طرف حق دارد برای خانواده، دوستان، تحصیل، کار و فعالیت‌های شخصی وقت بگذارد.</p>
+            <p class="بند"><b>۴۳-۲</b>داشتن وقت شخصی، به‌تنهایی نشانه کم‌شدن علاقه نیست.</p>
+            <p class="بند"><b>۴۳-۳</b>برنامه‌ریزی دیدارهای مشترک باید با توجه به مسئولیت‌ها و نیازهای هر دو طرف انجام شود.</p>
+          </article>
+
+          <article class="ماده" id="madde-44">
+            <h3><span class="ماده-شماره">ماده ۴۴</span><span class="ماده-عنوان">دوستان مشترک</span></h3>
+            <p class="بند"><b>۴۴-۱</b>طرفین از درگیرکردن دوستان مشترک در اختلافات شخصی تا حد امکان خودداری می‌کنند.</p>
+            <p class="بند"><b>۴۴-۲</b>هیچ‌یک نباید دوستان را مجبور به انتخاب یک طرف یا انتشار اطلاعات خصوصی دیگری کند.</p>
+            <p class="بند"><b>۴۴-۳</b>در صورت جدایی، ارتباط با دوستان مشترک باید با احترام به استقلال و انتخاب هر فرد مدیریت شود.</p>
+          </article>
+
+        </div></div></div>
+      </section>
+
+      <!-- ################ فصل هشتم ################ -->
+      <section class="فصل" id="fasl-8">
+        <h2 class="فصل-عنوان"><button type="button" class="فصل-دکمه" aria-expanded="false" aria-controls="بدنه-8">
+          <span class="فصل-شماره">۸</span>
+          <span class="فصل-متن"><small>فصل هشتم</small><strong>زمان، دیدارها و برنامه‌های مشترک</strong></span>
+          <span class="فصل-بازه">مواد ۴۵ تا ۴۹</span><span class="پیکان" aria-hidden="true"></span>
+        </button></h2>
+        <div class="فصل-بدنه" id="بدنه-8"><div class="فصل-درون"><div class="فصل-محتوا">
+
+          <article class="ماده" id="madde-45">
+            <h3><span class="ماده-شماره">ماده ۴۵</span><span class="ماده-عنوان">وقت‌شناسی</span></h3>
+            <p class="بند"><b>۴۵-۱</b>طرفین تلاش می‌کنند به زمان و برنامه‌های یکدیگر احترام بگذارند.</p>
+            <p class="بند"><b>۴۵-۲</b>در صورت تأخیر قابل‌توجه یا لغو قرار، اطلاع‌رسانی و عذرخواهی مناسب انجام می‌شود.</p>
+            <p class="بند"><b>۴۵-۳</b>تأخیرهای مکرر و بی‌توضیح باید به‌عنوان مسئله‌ای برای گفت‌وگو بررسی شوند، نه به‌عنوان اثبات خودکار بی‌علاقگی.</p>
+          </article>
+
+          <article class="ماده" id="madde-46">
+            <h3><span class="ماده-شماره">ماده ۴۶</span><span class="ماده-عنوان">زمان باکیفیت</span></h3>
+            <p class="بند"><b>۴۶-۱</b>طرفین برای گذراندن زمان اختصاصی با یکدیگر تلاش می‌کنند.</p>
+            <p class="بند"><b>۴۶-۲</b><span>تعداد دفعات پیشنهادی دیدار در هفته: <span class="جای-خالی"></span> بار.</span></p>
+            <p class="بند"><b>۴۶-۳</b>نوع فعالیت‌های مشترک با توجه به علاقه، زمان، امکانات و نظر هر دو انتخاب می‌شود.</p>
+            <p class="بند"><b>۴۶-۴</b>در زمان‌های مشترک مهم، طرفین تا حد امکان از حواس‌پرتی و استفاده بی‌رویه از تلفن همراه خودداری می‌کنند.</p>
+          </article>
+
+          <article class="ماده" id="madde-47">
+            <h3><span class="ماده-شماره">ماده ۴۷</span><span class="ماده-عنوان">مناسبت‌ها و یادآوری‌ها</span></h3>
+            <p class="بند"><b>۴۷-۱</b>طرفین درباره اهمیت تولد، سالگرد آشنایی و مناسبت‌های مهم یکدیگر گفت‌وگو می‌کنند.</p>
+            <p class="بند"><b>۴۷-۲</b>برنامه‌ریزی برای این مناسبت‌ها متناسب با امکانات و علاقه هر دو خواهد بود.</p>
+            <p class="بند"><b>۴۷-۳</b>ارزش محبت به قیمت هدیه وابسته نیست؛ توجه، صداقت و شناخت سلیقه دیگری اهمیت بیشتری دارد.</p>
+          </article>
+
+          <article class="ماده" id="madde-48">
+            <h3><span class="ماده-شماره">ماده ۴۸</span><span class="ماده-عنوان">تصمیم‌گیری مشترک</span></h3>
+            <p class="بند"><b>۴۸-۱</b>تصمیم‌هایی که مستقیماً بر هر دو طرف اثر می‌گذارند، مانند سفر مشترک یا هزینه مشترک، با مشورت انجام می‌شوند.</p>
+            <p class="بند"><b>۴۸-۲</b>هیچ‌یک حق ندارد تصمیم شخصی طرف مقابل را صرفاً به دلیل رابطه به‌طور یک‌جانبه کنترل کند.</p>
+            <p class="بند"><b>۴۸-۳</b>در صورت اختلاف، طرفین راه‌حل‌های جایگزین را بررسی می‌کنند و در صورت نرسیدن به توافق، از اجبار خودداری می‌کنند.</p>
+          </article>
+
+          <article class="ماده" id="madde-49">
+            <h3><span class="ماده-شماره">ماده ۴۹</span><span class="ماده-عنوان">مدیریت مشغله‌ها</span></h3>
+            <p class="بند"><b>۴۹-۱</b>کار، تحصیل، امتحان، مسئولیت خانوادگی و استراحت هر طرف محترم است.</p>
+            <p class="بند"><b>۴۹-۲</b>در دوره‌های پرمشغله، طرفین درباره حداقل ارتباط واقع‌بینانه توافق می‌کنند.</p>
+            <p class="بند"><b>۴۹-۳</b>مشغله نباید بهانه‌ای برای فریب یا بی‌اعتنایی مکرر باشد؛ در عین حال، کاهش موقت ارتباط نیز به‌تنهایی نشانه کم‌شدن عشق نیست.</p>
+          </article>
+
+        </div></div></div>
+      </section>
+
+      <!-- ################ فصل نهم ################ -->
+      <section class="فصل" id="fasl-9">
+        <h2 class="فصل-عنوان"><button type="button" class="فصل-دکمه" aria-expanded="false" aria-controls="بدنه-9">
+          <span class="فصل-شماره">۹</span>
+          <span class="فصل-متن"><small>فصل نهم</small><strong>مسائل مالی و دارایی‌ها</strong></span>
+          <span class="فصل-بازه">مواد ۵۰ تا ۵۴</span><span class="پیکان" aria-hidden="true"></span>
+        </button></h2>
+        <div class="فصل-بدنه" id="بدنه-9"><div class="فصل-درون"><div class="فصل-محتوا">
+
+          <article class="ماده" id="madde-50">
+            <h3><span class="ماده-شماره">ماده ۵۰</span><span class="ماده-عنوان">شفافیت مالی متناسب</span></h3>
+            <p class="بند"><b>۵۰-۱</b>طرفین در مورد تعهدات مالی مشترک و بدهی‌هایی که مستقیماً بر آینده مشترک اثر می‌گذارند، شفاف عمل می‌کنند.</p>
+            <p class="بند"><b>۵۰-۲</b>هیچ‌یک ملزم به افشای تمام درآمد، دارایی یا مخارج شخصی خود نیست؛ مگر در حدود توافق مستقل و آگاهانه برای تعهد مالی مشترک.</p>
+            <p class="بند"><b>۵۰-۳</b>ارائه اطلاعات نادرست درباره تعهد مالی مشترک یا پنهان‌کردن عمدی بدهی‌ای که مستقیماً به دیگری منتقل می‌شود، پذیرفته نیست.</p>
+          </article>
+
+          <article class="ماده" id="madde-51">
+            <h3><span class="ماده-شماره">ماده ۵۱</span><span class="ماده-عنوان">تقسیم هزینه‌ها</span></h3>
+            <p class="بند"><b>۵۱-۱</b>هزینه‌های قرار، سفر، غذا و فعالیت‌های مشترک بر اساس توافق طرفین تقسیم می‌شود.</p>
+            <p class="بند"><b>۵۱-۲</b>روش مورد توافق:</p>
+            <div class="فیلد-ماده"><span class="خط-پر"></span></div>
+            <p class="بند"><b>۵۱-۳</b>هیچ‌یک مجبور نیست بیش از توان مالی خود هزینه کند.</p>
+            <p class="بند"><b>۵۱-۴</b>پرداخت هزینه‌ها نباید مبنای برتری، تحقیر یا مطالبه اطاعت عاطفی قرار گیرد.</p>
+          </article>
+
+          <article class="ماده" id="madde-52">
+            <h3><span class="ماده-شماره">ماده ۵۲</span><span class="ماده-عنوان">قرض و وام</span></h3>
+            <p class="بند"><b>۵۲-۱</b>قرض‌دادن یا قرض‌گرفتن مبالغ قابل‌توجه باید با رضایت روشن طرفین انجام شود.</p>
+            <p class="بند"><b>۵۲-۲</b>مبلغ، تاریخ، موعد بازپرداخت و شرایط احتمالی باید ترجیحاً به‌صورت مکتوب ثبت شود.</p>
+            <p class="بند"><b>۵۲-۳</b>تأخیر در بازپرداخت باید در اولین فرصت اطلاع داده شود و درباره راه‌حل آن توافق شود.</p>
+            <p class="بند"><b>۵۲-۴</b>تعهد مالی واقعی، صرفاً به دلیل پایان رابطه از بین نمی‌رود.</p>
+          </article>
+
+          <article class="ماده" id="madde-53">
+            <h3><span class="ماده-شماره">ماده ۵۳</span><span class="ماده-عنوان">منع سوءاستفاده مالی</span></h3>
+            <p class="بند"><b>۵۳-۱</b>استفاده از احساسات برای گرفتن پول، هدیه یا امکانات مالی از طریق تهدید و اجبار ممنوع است.</p>
+            <p class="بند"><b>۵۳-۲</b>برداشت از حساب، استفاده از کارت یا انجام خرید به نام دیگری بدون اجازه ممنوع است.</p>
+            <p class="بند"><b>۵۳-۳</b>هدیه واقعی با قرض یا امانت متفاوت است و ماهیت هر پرداخت باید تا حد امکان روشن باشد.</p>
+          </article>
+
+          <article class="ماده" id="madde-54">
+            <h3><span class="ماده-شماره">ماده ۵۴</span><span class="ماده-عنوان">استقلال مالی و اموال مشترک</span></h3>
+            <p class="بند"><b>۵۴-۱</b>هر طرف نسبت به درآمد و دارایی شخصی خود استقلال دارد.</p>
+            <p class="بند"><b>۵۴-۲</b>در صورت خرید دارایی مشترک، سهم هر طرف و شیوه استفاده یا تقسیم آن باید مشخص شود.</p>
+            <p class="بند"><b>۵۴-۳</b>هیچ‌یک حق ندارد بدون توافق، اموال شخصی دیگری را نگه دارد یا از دسترسی او به دارایی خودش جلوگیری کند.</p>
+          </article>
+
+        </div></div></div>
+      </section>
+
+      <!-- ################ فصل دهم ################ -->
+      <section class="فصل" id="fasl-10">
+        <h2 class="فصل-عنوان"><button type="button" class="فصل-دکمه" aria-expanded="false" aria-controls="بدنه-10">
+          <span class="فصل-شماره">۱۰</span>
+          <span class="فصل-متن"><small>فصل دهم</small><strong>رضایت، صمیمیت و سلامت</strong></span>
+          <span class="فصل-بازه">مواد ۵۵ تا ۵۸</span><span class="پیکان" aria-hidden="true"></span>
+        </button></h2>
+        <div class="فصل-بدنه" id="بدنه-10"><div class="فصل-درون"><div class="فصل-محتوا">
+
+          <article class="ماده" id="madde-55">
+            <h3><span class="ماده-شماره">ماده ۵۵</span><span class="ماده-عنوان">رضایت آزادانه</span></h3>
+            <p class="بند"><b>۵۵-۱</b>هر نوع تماس جسمی یا صمیمیت باید مبتنی بر رضایت آزادانه، آگاهانه و قابل پس‌گرفتن طرفین باشد.</p>
+            <p class="بند"><b>۵۵-۲</b>گفتن «نه»، درخواست توقف یا تغییر نظر در هر مرحله باید محترم شمرده شود.</p>
+            <p class="بند"><b>۵۵-۳</b>اصرار، تهدید، اجبار یا استفاده از احساس گناه برای گرفتن رضایت پذیرفته نیست.</p>
+            <p class="بند"><b>۵۵-۴</b>رضایت قبلی به معنای رضایت همیشگی نیست و امضای این سند نیز رضایت دائمی به هیچ نوع تماس یا رابطه‌ای ایجاد نمی‌کند.</p>
+            <p class="بند"><b>۵۵-۵</b>در شرایطی که فرد قادر به ارائه رضایت آگاهانه نیست، نباید رضایت او را مفروض دانست.</p>
+          </article>
+
+          <article class="ماده" id="madde-56">
+            <h3><span class="ماده-شماره">ماده ۵۶</span><span class="ماده-عنوان">ابراز محبت</span></h3>
+            <p class="بند"><b>۵۶-۱</b>طرفین درباره شیوه‌های مطلوب ابراز محبت گفت‌وگو می‌کنند.</p>
+            <p class="بند"><b>۵۶-۲</b>هیچ‌کس موظف نیست برای اثبات عشق، از مرزهای جسمی یا عاطفی خود عبور کند.</p>
+            <p class="بند"><b>۵۶-۳</b>سردی یا فاصله عاطفی موقت باید با گفت‌وگو بررسی شود و نباید خودکار به‌عنوان خیانت تلقی شود.</p>
+          </article>
+
+          <article class="ماده" id="madde-57">
+            <h3><span class="ماده-شماره">ماده ۵۷</span><span class="ماده-عنوان">سلامت و ایمنی</span></h3>
+            <p class="بند"><b>۵۷-۱</b>طرفین سلامت جسمی و روانی خود و دیگری را جدی می‌گیرند.</p>
+            <p class="بند"><b>۵۷-۲</b>در موارد مرتبط با سلامت رابطه، پیشگیری و آزمایش پزشکی در صورت لزوم، گفت‌وگوی مسئولانه و متناسب با شرایط اهمیت دارد.</p>
+            <p class="بند"><b>۵۷-۳</b>اطلاعات پزشکی خصوصی باید محترم شمرده شود؛ در عین حال، خطر جدی و مرتبط برای سلامت طرف دیگر نباید عمداً پنهان شود.</p>
+            <p class="بند"><b>۵۷-۴</b>هیچ‌یک نباید دیگری را به دلیل بیماری یا نیاز به کمک تخصصی تحقیر کند.</p>
+          </article>
+
+          <article class="ماده" id="madde-58">
+            <h3><span class="ماده-شماره">ماده ۵۸</span><span class="ماده-عنوان">مرزهای شخصی</span></h3>
+            <p class="بند"><b>۵۸-۱</b>هر طرف حق دارد مرزهای عاطفی، جسمی و شخصی خود را تعیین کند.</p>
+            <p class="بند"><b>۵۸-۲</b>مرزهای اعلام‌شده باید محترم شمرده شوند، حتی اگر طرف دیگر با آن‌ها موافق نباشد.</p>
+            <p class="بند"><b>۵۸-۳</b>مرزها ممکن است در طول زمان تغییر کنند و تغییر آن‌ها باید با گفت‌وگوی روشن مدیریت شود.</p>
+          </article>
+
+        </div></div></div>
+      </section>
+
+      <!-- ################ فصل یازدهم ################ -->
+      <section class="فصل" id="fasl-11">
+        <h2 class="فصل-عنوان"><button type="button" class="فصل-دکمه" aria-expanded="false" aria-controls="بدنه-11">
+          <span class="فصل-شماره">۱۱</span>
+          <span class="فصل-متن"><small>فصل یازدهم</small><strong>رشد فردی و سبک زندگی</strong></span>
+          <span class="فصل-بازه">مواد ۵۹ تا ۶۳</span><span class="پیکان" aria-hidden="true"></span>
+        </button></h2>
+        <div class="فصل-بدنه" id="بدنه-11"><div class="فصل-درون"><div class="فصل-محتوا">
+
+          <article class="ماده" id="madde-59">
+            <h3><span class="ماده-شماره">ماده ۵۹</span><span class="ماده-عنوان">حمایت از اهداف</span></h3>
+            <p class="بند"><b>۵۹-۱</b>طرفین از اهداف تحصیلی، شغلی و شخصی یکدیگر حمایت می‌کنند.</p>
+            <p class="بند"><b>۵۹-۲</b>هیچ‌یک نباید عمداً مانع پیشرفت دیگری شود یا موفقیت او را وسیله رقابت و تحقیر قرار دهد.</p>
+            <p class="بند"><b>۵۹-۳</b>موفقیت‌های یکدیگر تا حد امکان با شادی و قدردانی همراه خواهد بود.</p>
+          </article>
+
+          <article class="ماده" id="madde-60">
+            <h3><span class="ماده-شماره">ماده ۶۰</span><span class="ماده-عنوان">وقت شخصی</span></h3>
+            <p class="بند"><b>۶۰-۱</b>هر طرف حق دارد برای استراحت، سرگرمی، ورزش و علایق شخصی وقت داشته باشد.</p>
+            <p class="بند"><b>۶۰-۲</b>درخواست خلوت یا وقت شخصی، به‌تنهایی نشانه کم‌شدن علاقه نیست.</p>
+            <p class="بند"><b>۶۰-۳</b>طرفین تلاش می‌کنند میان استقلال فردی و زمان مشترک تعادل برقرار کنند.</p>
+          </article>
+
+          <article class="ماده" id="madde-61">
+            <h3><span class="ماده-شماره">ماده ۶۱</span><span class="ماده-عنوان">پذیرش تفاوت‌ها</span></h3>
+            <p class="بند"><b>۶۱-۱</b>تفاوت در عقیده، سلیقه، عادت، شخصیت و شیوه ابراز احساسات پذیرفته می‌شود.</p>
+            <p class="بند"><b>۶۱-۲</b>تغییر اجباری شخصیت دیگری هدف این سند نیست.</p>
+            <p class="بند"><b>۶۱-۳</b>در اختلافات مهم، هدف یافتن راه‌حل قابل‌قبول یا تشخیص ناسازگاری است، نه اجبار دیگری به تغییر هویت خود.</p>
+          </article>
+
+          <article class="ماده" id="madde-62">
+            <h3><span class="ماده-شماره">ماده ۶۲</span><span class="ماده-عنوان">سلامت روان و جسم</span></h3>
+            <p class="بند"><b>۶۲-۱</b>طرفین در صورت نیاز، یکدیگر را به دریافت کمک تخصصی تشویق می‌کنند.</p>
+            <p class="بند"><b>۶۲-۲</b>مراجعه به پزشک یا مشاور نباید مایه شرمندگی یا تحقیر باشد.</p>
+            <p class="بند"><b>۶۲-۳</b>حمایت عاطفی مهم است، اما هیچ‌یک از طرفین به‌تنهایی مسئول درمان تمام مشکلات دیگری نیست.</p>
+          </article>
+
+          <article class="ماده" id="madde-63">
+            <h3><span class="ماده-شماره">ماده ۶۳</span><span class="ماده-عنوان">رفتارهای پرخطر و وابستگی‌ها</span></h3>
+            <p class="بند"><b>۶۳-۱</b>طرفین درباره رفتارهایی که به سلامت، امنیت یا آینده مشترک آسیب جدی می‌زنند، صادقانه گفت‌وگو می‌کنند.</p>
+            <p class="بند"><b>۶۳-۲</b>مصرف مواد یا رفتارهای پرخطر، در صورتی که امنیت یا مسئولیت‌های مشترک را تحت تأثیر قرار دهد، نیازمند رسیدگی مسئولانه است.</p>
+            <p class="بند"><b>۶۳-۳</b>قمار یا شرط‌بندی پرخطر با استفاده از پول مشترک یا ایجاد بدهی برای دیگری، بدون توافق، پذیرفته نیست.</p>
+            <p class="بند"><b>۶۳-۴</b>استفاده افراطی از گوشی، بازی یا فضای مجازی، اگر به‌طور مستمر کیفیت رابطه را مختل کند، موضوع گفت‌وگو و اصلاح خواهد بود.</p>
+          </article>
+
+        </div></div></div>
+      </section>
+
+      <!-- ################ فصل دوازدهم ################ -->
+      <section class="فصل" id="fasl-12">
+        <h2 class="فصل-عنوان"><button type="button" class="فصل-دکمه" aria-expanded="false" aria-controls="بدنه-12">
+          <span class="فصل-شماره">۱۲</span>
+          <span class="فصل-متن"><small>فصل دوازدهم</small><strong>رفتارهای روزمره و توجه عاطفی</strong></span>
+          <span class="فصل-بازه">مواد ۶۴ تا ۷۱</span><span class="پیکان" aria-hidden="true"></span>
+        </button></h2>
+        <div class="فصل-بدنه" id="بدنه-12"><div class="فصل-درون"><div class="فصل-محتوا">
+
+          <article class="ماده" id="madde-64">
+            <h3><span class="ماده-شماره">ماده ۶۴</span><span class="ماده-عنوان">پاسخ‌گویی متناسب</span></h3>
+            <p class="بند"><b>۶۴-۱</b>طرفین در شرایط عادی تلاش می‌کنند در زمان معقول پاسخ‌گو باشند.</p>
+            <p class="بند"><b>۶۴-۲</b>هیچ‌کس موظف به پاسخ فوری در تمام ساعات شبانه‌روز نیست.</p>
+            <p class="بند"><b>۶۴-۳</b>بی‌پاسخ‌گذاشتن عمدی و مکرر پیام‌ها با هدف تنبیه یا ایجاد اضطراب، با اصول این سند سازگار نیست.</p>
+          </article>
+
+          <article class="ماده" id="madde-65">
+            <h3><span class="ماده-شماره">ماده ۶۵</span><span class="ماده-عنوان">حضور واقعی در زمان مشترک</span></h3>
+            <p class="بند"><b>۶۵-۱</b>در زمان مشترک، طرفین تلاش می‌کنند توجه کافی به یکدیگر داشته باشند.</p>
+            <p class="بند"><b>۶۵-۲</b>در گفت‌وگوهای مهم، کنارگذاشتن موقت گوشی تا حد امکان توصیه می‌شود.</p>
+            <p class="بند"><b>۶۵-۳</b>کیفیت توجه و همراهی مهم‌تر از صرفاً زیادبودن مدت تماس یا تعداد پیام‌هاست.</p>
+          </article>
+
+          <article class="ماده" id="madde-66">
+            <h3><span class="ماده-شماره">ماده ۶۶</span><span class="ماده-عنوان">ادب در گفتار</span></h3>
+            <p class="بند"><b>۶۶-۱</b>رعایت ادب و احترام در گفتار و پیام‌های نوشتاری الزامی است.</p>
+            <p class="بند"><b>۶۶-۲</b>استفاده از نام‌های تحقیرآمیز، فحاشی و کنایه‌های آزاردهنده پذیرفته نیست.</p>
+            <p class="بند"><b>۶۶-۳</b>عصبانیت می‌تواند احساس واقعی باشد، اما مجوز توهین یا تهدید نیست.</p>
+          </article>
+
+          <article class="ماده" id="madde-67">
+            <h3><span class="ماده-شماره">ماده ۶۷</span><span class="ماده-عنوان">مراقبت در بیماری و سختی</span></h3>
+            <p class="بند"><b>۶۷-۱</b>طرفین در حد توان خود هنگام بیماری، فشار کاری یا مشکلات شخصی از یکدیگر حمایت می‌کنند.</p>
+            <p class="بند"><b>۶۷-۲</b>نوع حمایت باید متناسب با توان و نیاز واقعی باشد.</p>
+            <p class="بند"><b>۶۷-۳</b>هیچ‌یک نباید از ناتوانی موقت دیگری برای تحقیر یا ایجاد بدهکاری عاطفی استفاده کند.</p>
+          </article>
+
+          <article class="ماده" id="madde-68">
+            <h3><span class="ماده-شماره">ماده ۶۸</span><span class="ماده-عنوان">هدیه و سورپرایز</span></h3>
+            <p class="بند"><b>۶۸-۱</b>هدیه و سورپرایز باید با علاقه، امکانات و رضایت طرفین متناسب باشد.</p>
+            <p class="بند"><b>۶۸-۲</b>هیچ هدیه‌ای نباید وسیله اجبار، خرید محبت یا مطالبه اطاعت باشد.</p>
+            <p class="بند"><b>۶۸-۳</b>توجه به سلیقه دیگری ارزشمند است؛ اما قیمت هدیه معیار ارزش عشق نیست.</p>
+          </article>
+
+          <article class="ماده" id="madde-69">
+            <h3><span class="ماده-شماره">ماده ۶۹</span><span class="ماده-عنوان">امور روزمره و مسئولیت‌های مشترک</span></h3>
+            <p class="بند"><b>۶۹-۱</b>در برنامه‌ریزی امور مشترک، طرفین انعطاف‌پذیر و منصف خواهند بود.</p>
+            <p class="بند"><b>۶۹-۲</b>مسئولیت‌های مشترک بر اساس توافق و توان طرفین تقسیم می‌شود.</p>
+            <p class="بند"><b>۶۹-۳</b>عادت‌های شخصی مانند خواب، غذا، نظم و سرگرمی‌ها تا جایی که به دیگری آسیب نمی‌زنند، محترم شمرده می‌شوند.</p>
+          </article>
+
+          <article class="ماده" id="madde-70">
+            <h3><span class="ماده-شماره">ماده ۷۰</span><span class="ماده-عنوان">احترام به ظاهر و بدن</span></h3>
+            <p class="بند"><b>۷۰-۱</b>تمسخر یا تحقیر ظاهر و بدن دیگری ممنوع است.</p>
+            <p class="بند"><b>۷۰-۲</b>نظر درباره ظاهر، در صورت درخواست طرف مقابل یا ضرورت واقعی، باید با احترام بیان شود.</p>
+            <p class="بند"><b>۷۰-۳</b>هیچ‌یک حق ندارد پوشش، آرایش یا ظاهر دیگری را به‌صورت اجباری کنترل کند.</p>
+          </article>
+
+          <article class="ماده" id="madde-71">
+            <h3><span class="ماده-شماره">ماده ۷۱</span><span class="ماده-عنوان">بخشش و عبور از اشتباهات</span></h3>
+            <p class="بند"><b>۷۱-۱</b>اشتباهات کوچک باید با گفت‌وگو و جبران متناسب حل شوند.</p>
+            <p class="بند"><b>۷۱-۲</b>پس از حل واقعی مسئله، استفاده از آن برای تحقیر مکرر دیگری پسندیده نیست.</p>
+            <p class="بند"><b>۷۱-۳</b>بخشش به معنای نادیده‌گرفتن تخلف مکرر یا چشم‌پوشی اجباری از خیانت، خشونت یا تهدید نیست.</p>
+          </article>
+
+        </div></div></div>
+      </section>
+
+      <!-- ################ فصل سیزدهم ################ -->
+      <section class="فصل" id="fasl-13">
+        <h2 class="فصل-عنوان"><button type="button" class="فصل-دکمه" aria-expanded="false" aria-controls="بدنه-13">
+          <span class="فصل-شماره">۱۳</span>
+          <span class="فصل-متن"><small>فصل سیزدهم</small><strong>آینده و اهداف مشترک</strong></span>
+          <span class="فصل-بازه">مواد ۷۲ تا ۷۵</span><span class="پیکان" aria-hidden="true"></span>
+        </button></h2>
+        <div class="فصل-بدنه" id="بدنه-13"><div class="فصل-درون"><div class="فصل-محتوا">
+
+          <article class="ماده" id="madde-72">
+            <h3><span class="ماده-شماره">ماده ۷۲</span><span class="ماده-عنوان">شفافیت درباره هدف رابطه</span></h3>
+            <p class="بند"><b>۷۲-۱</b>طرفین درباره انتظارات خود از آینده رابطه، میزان تعهد و احتمال ازدواج در صورت مرتبط‌بودن، صادقانه گفت‌وگو می‌کنند.</p>
+            <p class="بند"><b>۷۲-۲</b>هیچ‌یک نباید درباره ازدواج یا آینده مشترک، وعده‌ای بدهد که از ابتدا قصد جدی برای تحقق آن ندارد.</p>
+            <p class="بند"><b>۷۲-۳</b>اگر هدف یا تصمیم اساسی یکی از طرفین تغییر کند، موضوع باید در زمان مناسب مطرح شود.</p>
+          </article>
+
+          <article class="ماده" id="madde-73">
+            <h3><span class="ماده-شماره">ماده ۷۳</span><span class="ماده-عنوان">برنامه‌ریزی مشترک</span></h3>
+            <p class="بند"><b>۷۳-۱</b>طرفین می‌توانند برای اهداف مشترک، گام‌های عملی و واقع‌بینانه تعیین کنند.</p>
+            <p class="بند"><b>۷۳-۲</b>برنامه‌ها باید متناسب با توان، شرایط و رضایت هر دو باشند.</p>
+            <p class="بند"><b>۷۳-۳</b>برنامه‌ریزی مشترک نباید حق تصمیم‌گیری فردی هر طرف درباره زندگی شخصی خود را از بین ببرد.</p>
+          </article>
+
+          <article class="ماده" id="madde-74">
+            <h3><span class="ماده-شماره">ماده ۷۴</span><span class="ماده-عنوان">بازنگری دوره‌ای</span></h3>
+            <p class="بند"><b>۷۴-۱</b><span>طرفین توافق می‌کنند هر <span class="جای-خالی"></span> ماه یک‌بار درباره کیفیت رابطه، نیازها و مفاد این سند گفت‌وگو کنند.</span></p>
+            <p class="بند"><b>۷۴-۲</b>نقاط قوت، مشکلات تکرارشونده و پیشنهادهای اصلاحی با احترام مطرح می‌شوند.</p>
+            <p class="بند"><b>۷۴-۳</b>بازنگری برای بهترشدن رابطه است، نه برای ایجاد پرونده‌ای از اشتباهات گذشته.</p>
+          </article>
+
+          <article class="ماده" id="madde-75">
+            <h3><span class="ماده-شماره">ماده ۷۵</span><span class="ماده-عنوان">تغییرات مهم زندگی</span></h3>
+            <p class="بند"><b>۷۵-۱</b>تصمیم‌هایی مانند مهاجرت، تغییر شهر، تغییر شغل یا تعهدات مالی بزرگ، در صورت اثر مستقیم بر رابطه، با اطلاع‌رسانی و مشورت مناسب همراه خواهند بود.</p>
+            <p class="بند"><b>۷۵-۲</b>تصمیم نهایی درباره امور شخصی با خود فرد است.</p>
+            <p class="بند"><b>۷۵-۳</b>طرفین می‌کوشند تأثیر تصمیم بر رابطه را صادقانه بررسی و راه‌حل‌های ممکن را ارزیابی کنند.</p>
+          </article>
+
+        </div></div></div>
+      </section>
+
+      <!-- ################ فصل چهاردهم ################ -->
+      <section class="فصل" id="fasl-14">
+        <h2 class="فصل-عنوان"><button type="button" class="فصل-دکمه" aria-expanded="false" aria-controls="بدنه-14">
+          <span class="فصل-شماره">۱۴</span>
+          <span class="فصل-متن"><small>فصل چهاردهم</small><strong>نقض تعهد و شیوه رسیدگی</strong></span>
+          <span class="فصل-بازه">مواد ۷۶ تا ۸۰</span><span class="پیکان" aria-hidden="true"></span>
+        </button></h2>
+        <div class="فصل-بدنه" id="بدنه-14"><div class="فصل-درون"><div class="فصل-محتوا">
+
+          <article class="ماده" id="madde-76">
+            <h3><span class="ماده-شماره">ماده ۷۶</span><span class="ماده-عنوان">تخلفات سبک</span></h3>
+            <p class="بند"><b>۷۶-۱</b>مواردی مانند فراموشی یک قرار، تأخیر محدود یا بی‌توجهی اتفاقی، ابتدا با تذکر محترمانه مطرح می‌شوند.</p>
+            <p class="بند"><b>۷۶-۲</b>فرد مربوط در صورت لزوم عذرخواهی و برای جبران اقدام می‌کند.</p>
+            <p class="بند"><b>۷۶-۳</b>در صورت حل‌شدن واقعی مسئله، طرفین از تبدیل آن به ابزار تحقیر یا تهدید خودداری می‌کنند.</p>
+          </article>
+
+          <article class="ماده" id="madde-77">
+            <h3><span class="ماده-شماره">ماده ۷۷</span><span class="ماده-عنوان">تخلفات متوسط</span></h3>
+            <p class="بند"><b>۷۷-۱</b>تکرار بی‌توجهی به وعده‌ها، دروغ‌گویی مهم، بی‌احترامی جدی یا نقض حریم شخصی، بسته به شرایط می‌تواند تخلف متوسط محسوب شود.</p>
+            <p class="بند"><b>۷۷-۲</b>طرفین درباره رفتار مشخص، اثر آن و راه جلوگیری از تکرار گفت‌وگو می‌کنند.</p>
+            <p class="بند"><b>۷۷-۳</b>در صورت نیاز، برنامه عملی برای اصلاح رفتار یا کمک‌گرفتن از مشاور تعیین می‌شود.</p>
+            <p class="بند"><b>۷۷-۴</b>تکرار مداوم تخلف پس از گفت‌وگو و فرصت معقول اصلاح، می‌تواند اهمیت آن را افزایش دهد.</p>
+          </article>
+
+          <article class="ماده" id="madde-78">
+            <h3><span class="ماده-شماره">ماده ۷۸</span><span class="ماده-عنوان">تخلفات سنگین</span></h3>
+            <p class="متن-ماده">موارد زیر، در صورت تحقق و با توجه به شرایط، از تخلفات جدی رابطه محسوب می‌شوند:</p>
+            <p class="بند حرف"><b>الف)</b>خیانت عاطفی یا جسمی برخلاف توافق انحصاری؛</p>
+            <p class="بند حرف"><b>ب)</b>خشونت جسمی یا تهدید جدی؛</p>
+            <p class="بند حرف"><b>ج)</b>انتشار یا سوءاستفاده از محتوای خصوصی؛</p>
+            <p class="بند حرف"><b>د)</b>اجبار یا نقض رضایت جسمی؛</p>
+            <p class="بند حرف"><b>ه)</b>باج‌گیری، تهدید یا آزار مستمر؛</p>
+            <p class="بند حرف"><b>و)</b>سوءاستفاده مالی عمدی؛</p>
+            <p class="بند حرف"><b>ز)</b>تکرار رفتار آسیب‌زا پس از طرح روشن مسئله و فرصت مناسب اصلاح.</p>
+          </article>
+
+          <article class="ماده" id="madde-79">
+            <h3><span class="ماده-شماره">ماده ۷۹</span><span class="ماده-عنوان">فرصت اصلاح و جبران</span></h3>
+            <p class="بند"><b>۷۹-۱</b>در تخلفات سبک و متوسط، طرفین می‌توانند فرصت معقولی برای اصلاح تعیین کنند.</p>
+            <p class="بند"><b>۷۹-۲</b>فرصت اصلاح باید روشن، واقع‌بینانه و متناسب با رفتار باشد.</p>
+            <p class="بند"><b>۷۹-۳</b>در تخلفات سنگین، طرف آسیب‌دیده ملزم به دادن فرصت مجدد نیست.</p>
+            <p class="بند"><b>۷۹-۴</b>هیچ‌یک از طرفین حق ندارد با تهدید، احساس گناه یا فشار عاطفی، دیگری را به بخشش یا ادامه رابطه مجبور کند.</p>
+          </article>
+
+          <article class="ماده" id="madde-80">
+            <h3><span class="ماده-شماره">ماده ۸۰</span><span class="ماده-عنوان">ترمیم اعتماد</span></h3>
+            <p class="بند"><b>۸۰-۱</b>اگر طرفین پس از آسیب جدی تصمیم به ادامه رابطه بگیرند، باید درباره شرایط بازسازی اعتماد توافق کنند.</p>
+            <p class="بند"><b>۸۰-۲</b>این شرایط می‌تواند شامل صداقت بیشتر درباره موضوع مرتبط، قطع ارتباط عاشقانه ناقض توافق، گفت‌وگوهای دوره‌ای و مراجعه داوطلبانه به مشاور باشد.</p>
+            <p class="بند"><b>۸۰-۳</b>ترمیم اعتماد به زمان نیاز دارد و طرف آسیب‌دیده مجبور نیست بلافاصله مانند گذشته احساس امنیت کند.</p>
+            <p class="بند"><b>۸۰-۴</b>بازسازی اعتماد به معنای واگذاری دائمی رمزها، دسترسی به دستگاه‌ها یا پذیرش نظارت مخفیانه نیست.</p>
+          </article>
+
+        </div></div></div>
+      </section>
+
+      <!-- ################ فصل پانزدهم ################ -->
+      <section class="فصل" id="fasl-15">
+        <h2 class="فصل-عنوان"><button type="button" class="فصل-دکمه" aria-expanded="false" aria-controls="بدنه-15">
+          <span class="فصل-شماره">۱۵</span>
+          <span class="فصل-متن"><small>فصل پانزدهم</small><strong>پایان رابطه و تعهدات پس از جدایی</strong></span>
+          <span class="فصل-بازه">مواد ۸۱ تا ۸۵</span><span class="پیکان" aria-hidden="true"></span>
+        </button></h2>
+        <div class="فصل-بدنه" id="بدنه-15"><div class="فصل-درون"><div class="فصل-محتوا">
+
+          <article class="ماده" id="madde-81">
+            <h3><span class="ماده-شماره">ماده ۸۱</span><span class="ماده-عنوان">حق پایان‌دادن به رابطه</span></h3>
+            <p class="بند"><b>۸۱-۱</b>هر یک از طرفین حق دارد در هر زمان، بدون اجبار به ادامه رابطه، تصمیم خود را اعلام کند.</p>
+            <p class="بند"><b>۸۱-۲</b>در شرایط امن، اعلام تصمیم بهتر است مستقیم، روشن و محترمانه انجام شود.</p>
+            <p class="بند"><b>۸۱-۳</b>هیچ‌یک حق ندارد دیگری را با تهدید، تعقیب، باج‌گیری یا فشار خانوادگی مجبور به ماندن کند.</p>
+            <p class="بند"><b>۸۱-۴</b>در شرایطی که تماس مستقیم خطرناک یا ناامن باشد، پایان‌دادن به رابطه از راه دور یا با کمک فرد مورد اعتماد نیز قابل‌قبول است.</p>
+            <p class="بند"><b>۸۱-۵</b>درخواست توضیح می‌تواند محترمانه مطرح شود؛ اما هیچ‌کس حق ندارد دیگری را مجبور به ادامه بحث یا افشای جزئیات نامحدود کند.</p>
+          </article>
+
+          <article class="ماده" id="madde-82">
+            <h3><span class="ماده-شماره">ماده ۸۲</span><span class="ماده-عنوان">رفتار پس از جدایی</span></h3>
+            <p class="بند"><b>۸۲-۱</b>طرفین متعهدند از تهدید، تعقیب، مزاحمت مستمر و انتقام‌جویی خودداری کنند.</p>
+            <p class="بند"><b>۸۲-۲</b>هیچ‌یک نباید برای آسیب‌رساندن به دیگری، اسرار یا محتوای خصوصی او را افشا کند.</p>
+            <p class="بند"><b>۸۲-۳</b>پس از درخواست روشن برای توقف تماس، هر طرف باید مرز ارتباطی دیگری را محترم بشمارد؛ مگر در موارد ضروری و قانونی مرتبط با امور مالی یا اموال.</p>
+            <p class="بند"><b>۸۲-۴</b>هیچ‌یک نباید دوستان یا خانواده را برای آزار یا فشار بر طرف سابق به کار بگیرد.</p>
+          </article>
+
+          <article class="ماده" id="madde-83">
+            <h3><span class="ماده-شماره">ماده ۸۳</span><span class="ماده-عنوان">بازگرداندن اموال و تسویه بدهی‌ها</span></h3>
+            <p class="بند"><b>۸۳-۱</b>وسایل امانی، اموال متعلق به دیگری و مبالغ قرض‌گرفته‌شده باید در مدت توافق‌شده بازگردانده یا تسویه شوند.</p>
+            <p class="بند"><b>۸۳-۲</b><span>مهلت پیشنهادی بازگرداندن اموال: <span class="جای-خالی"></span> روز از تاریخ توافق یا درخواست.</span></p>
+            <p class="بند"><b>۸۳-۳</b>هدیه واقعی از امانت یا قرض متفاوت است؛ ماهیت هر مورد باید بر اساس واقعیت و توافق مربوط مشخص شود.</p>
+            <p class="بند"><b>۸۳-۴</b>اموال مشترک بر اساس سهم و توافق روشن طرفین تعیین تکلیف می‌شوند.</p>
+          </article>
+
+          <article class="ماده" id="madde-84">
+            <h3><span class="ماده-شماره">ماده ۸۴</span><span class="ماده-عنوان">حذف و حفاظت از محتوای خصوصی</span></h3>
+            <p class="بند"><b>۸۴-۱</b>پس از پایان رابطه، هر طرف متعهد است محتوای خصوصی طرف دیگر را در حدی که تحت کنترل اوست و نگهداری آن ضرورت قانونی ندارد، حذف کند.</p>
+            <p class="بند"><b>۸۴-۲</b><span>مهلت پیشنهادی انجام این کار: <span class="جای-خالی"></span> روز از تاریخ درخواست.</span></p>
+            <p class="بند"><b>۸۴-۳</b>هیچ‌یک حق ندارد محتوا را برای تهدید، انتشار، انتقام یا فشار نگه دارد.</p>
+            <p class="بند"><b>۸۴-۴</b>اگر نگهداری محدود یک مدرک برای پیگیری قانونی یا حفظ حقوق ضروری باشد، باید از انتشار و استفاده غیرضروری آن خودداری شود.</p>
+          </article>
+
+          <article class="ماده" id="madde-85">
+            <h3><span class="ماده-شماره">ماده ۸۵</span><span class="ماده-عنوان">تعهدات باقی‌مانده پس از جدایی</span></h3>
+            <p class="متن-ماده">تعهدات زیر با پایان رابطه نیز از نظر اخلاقی و در حدود قوانین قابل‌اعمال باقی می‌مانند:</p>
+            <p class="بند حرف"><b>الف)</b>احترام به حریم خصوصی و اسرار؛</p>
+            <p class="بند حرف"><b>ب)</b>منع انتشار یا سوءاستفاده از محتوای خصوصی؛</p>
+            <p class="بند حرف"><b>ج)</b>منع تهدید، آزار و تعقیب؛</p>
+            <p class="بند حرف"><b>د)</b>بازگرداندن اموال متعلق به دیگری؛</p>
+            <p class="بند حرف"><b>ه)</b>تسویه بدهی‌های واقعی و تعهدات مالی مستقل؛</p>
+            <p class="بند حرف"><b>و)</b>رعایت حقوق و مسئولیت‌های قانونی مستقل از این سند.</p>
+          </article>
+
+        </div></div></div>
+      </section>
+
+      <!-- ################ فصل شانزدهم ################ -->
+      <section class="فصل" id="fasl-16">
+        <h2 class="فصل-عنوان"><button type="button" class="فصل-دکمه" aria-expanded="false" aria-controls="بدنه-16">
+          <span class="فصل-شماره">۱۶</span>
+          <span class="فصل-متن"><small>فصل شانزدهم</small><strong>شرایط عمومی و حقوقی</strong></span>
+          <span class="فصل-بازه">مواد ۸۶ تا ۹۱</span><span class="پیکان" aria-hidden="true"></span>
+        </button></h2>
+        <div class="فصل-بدنه" id="بدنه-16"><div class="فصل-درون"><div class="فصل-محتوا">
+
+          <article class="ماده" id="madde-86">
+            <h3><span class="ماده-شماره">ماده ۸۶</span><span class="ماده-عنوان">محرمانگی پس از پایان رابطه</span></h3>
+            <p class="بند"><b>۸۶-۱</b>پایان رابطه مجوز افشای اسرار، انتشار پیام‌ها یا استفاده از اطلاعات خصوصی طرف سابق نیست.</p>
+            <p class="بند"><b>۸۶-۲</b>این تعهد مانع دریافت کمک، مشورت حرفه‌ای، گزارش خطر یا پیگیری قانونی از راه‌های مناسب نخواهد بود.</p>
+            <p class="بند"><b>۸۶-۳</b>طرفین متعهدند در صورت نیاز به ارائه اطلاعات برای حفظ حقوق خود، تا حد امکان از افشای جزئیات غیرضروری خودداری کنند.</p>
+          </article>
+
+          <article class="ماده" id="madde-87">
+            <h3><span class="ماده-شماره">ماده ۸۷</span><span class="ماده-عنوان">ماهیت و حدود حقوقی سند</span></h3>
+            <p class="بند"><b>۸۷-۱</b>طرفین آگاه‌اند که این سند در درجه نخست بیانگر توافق اخلاقی و شخصی آنان درباره رابطه است.</p>
+            <p class="بند"><b>۸۷-۲</b>امضای این سند به‌تنهایی تضمین نمی‌کند که تمام مفاد آن در محاکم ایران الزام‌آور یا قابل اجرا باشند.</p>
+            <p class="بند"><b>۸۷-۳</b>موضوعاتی مانند تهدید، توهین، افترا، مزاحمت، انتشار غیرمجاز محتوای خصوصی، خشونت و تعهدات مالی، حسب شرایط و قوانین مربوط، ممکن است آثار حقوقی مستقل داشته باشند.</p>
+            <p class="بند"><b>۸۷-۴</b>هیچ بندی از این سند مجوز نقض قانون، اجبار، خشونت، سلب آزادی یا چشم‌پوشی اجباری از حقوق قانونی هیچ‌یک از طرفین نیست.</p>
+            <p class="بند"><b>۸۷-۵</b>در صورت نیاز به استفاده حقوقی از سند، طرفین می‌توانند پیش از امضا از وکیل آشنا به قوانین ایران مشورت بگیرند.</p>
+          </article>
+
+          <article class="ماده" id="madde-88">
+            <h3><span class="ماده-شماره">ماده ۸۸</span><span class="ماده-عنوان">اصلاح، حذف یا افزودن بندها</span></h3>
+            <p class="بند"><b>۸۸-۱</b>هرگونه اصلاح، حذف یا افزودن بند باید با توافق آزادانه و روشن هر دو طرف انجام شود.</p>
+            <p class="بند"><b>۸۸-۲</b>اصلاحات مهم باید تاریخ‌دار و به امضای هر دو طرف برسند و به سند ضمیمه شوند.</p>
+            <p class="بند"><b>۸۸-۳</b>تغییر یک‌جانبه، صرفاً به دلیل اعلام یکی از طرفین، به‌عنوان توافق مشترک محسوب نمی‌شود.</p>
+            <p class="بند"><b>۸۸-۴</b>هیچ اصلاحی نباید با تهدید به جدایی، فشار عاطفی یا اجبار تحمیل شود.</p>
+          </article>
+
+          <article class="ماده" id="madde-89">
+            <h3><span class="ماده-شماره">ماده ۸۹</span><span class="ماده-عنوان">توافق‌های اختصاصی طرفین</span></h3>
+            <p class="متن-ماده">طرفین علاوه بر مفاد عمومی این سند، درباره موضوعات زیر توافق می‌کنند:</p>
+            <p class="بند حرف"><b>الف)</b>مرزهای اختصاصی ارتباط با دیگران:</p>
+            <div class="فیلد-ماده"><span class="خط-پر"></span><span class="خط-پر"></span></div>
+            <p class="بند حرف"><b>ب)</b>توافق درباره ارتباط با شریک عاطفی سابق:</p>
+            <div class="فیلد-ماده"><span class="خط-پر"></span><span class="خط-پر"></span></div>
+            <p class="بند حرف"><b>ج)</b>میزان و شیوه ارتباط روزانه:</p>
+            <div class="فیلد-ماده"><span class="خط-پر"></span></div>
+            <p class="بند حرف"><b>د)</b>زمان مشترک و تعداد دیدارها:</p>
+            <div class="فیلد-ماده"><span class="خط-پر"></span></div>
+            <p class="بند حرف"><b>ه)</b>شیوه تقسیم هزینه‌های مشترک:</p>
+            <div class="فیلد-ماده"><span class="خط-پر"></span></div>
+            <p class="بند حرف"><b>و)</b>شیوه حل اختلاف و زمان خلوت:</p>
+            <div class="فیلد-ماده"><span class="خط-پر"></span></div>
+            <p class="بند حرف"><b>ز)</b>سایر توافق‌های مورد قبول هر دو طرف:</p>
+            <div class="فیلد-ماده"><span class="خط-پر"></span><span class="خط-پر"></span><span class="خط-پر"></span></div>
+            <p class="یادآور">تمام موارد این ماده باید با توافق روشن هر دو طرف تکمیل شوند. بخش خالی یا مورد اختلاف، تعهد پذیرفته‌شده محسوب نمی‌شود.</p>
+          </article>
+
+          <article class="ماده" id="madde-90">
+            <h3><span class="ماده-شماره">ماده ۹۰</span><span class="ماده-عنوان">نسخه‌ها و نگهداری سند</span></h3>
+            <p class="بند"><b>۹۰-۱</b>این سند در دو نسخه تنظیم می‌شود و هر طرف یک نسخه در اختیار خواهد داشت.</p>
+            <p class="بند"><b>۹۰-۲</b>طرفین می‌توانند برای سهولت نگهداری، نسخه دیجیتال سند را نیز حفظ کنند.</p>
+            <p class="بند"><b>۹۰-۳</b>نگهداری نسخه امضاشده باید به‌گونه‌ای باشد که اطلاعات شخصی و امضاهای طرفین در معرض انتشار غیرضروری قرار نگیرد.</p>
+            <p class="بند"><b>۹۰-۴</b>هیچ‌یک نباید نسخه سند را برای تهدید، تحقیر یا فشار بر طرف دیگر منتشر کند.</p>
+          </article>
+
+          <article class="ماده" id="madde-91">
+            <h3><span class="ماده-شماره">ماده ۹۱</span><span class="ماده-عنوان">اقرار و تأیید نهایی</span></h3>
+            <p class="متن-ماده">طرفین با امضای این سند اعلام می‌کنند که:</p>
+            <p class="بند حرف"><b>الف)</b>متن را مطالعه کرده و فرصت کافی برای بررسی آن داشته‌اند.</p>
+            <p class="بند حرف"><b>ب)</b>مفاد سند را تا حد متعارف درک کرده‌اند و امکان پرسیدن سؤال و پیشنهاد اصلاح داشته‌اند.</p>
+            <p class="بند حرف"><b>ج)</b>امضا با اراده آزادانه و بدون اجبار، تهدید یا فشار ناموجه انجام می‌شود.</p>
+            <p class="بند حرف"><b>د)</b>هدف این سند، ایجاد رابطه‌ای سالم، امن، صادقانه و محترمانه است.</p>
+            <p class="بند حرف"><b>ه)</b>هیچ‌یک از طرفین به‌موجب این سند مالک دیگری نیست و هر دو از حق تصمیم‌گیری درباره ادامه یا پایان رابطه برخوردارند.</p>
+            <p class="بند حرف"><b>و)</b>وفاداری، صداقت و احترام را تعهداتی جدی می‌دانند که باید در رفتار روزمره نیز رعایت شوند.</p>
+            <p class="بند حرف"><b>ز)</b>می‌پذیرند که عشق بدون احترام و اعتماد پایدار نمی‌ماند و هیچ تعهدی نباید بهانه‌ای برای آزار یا اجبار شود.</p>
+          </article>
+
+        </div></div></div>
+      </section>
+
+      <!-- ################ پیوست ۱ ################ -->
+      <section class="فصل پیوست" id="peyvast-1">
+        <h2 class="فصل-عنوان"><button type="button" class="فصل-دکمه" aria-expanded="false" aria-controls="بدنه-پ۱">
+          <span class="فصل-شماره">پ۱</span>
+          <span class="فصل-متن"><small>پیوست شماره یک</small><strong>قول‌های شخصی ما</strong></span>
+          <span class="پیکان" aria-hidden="true"></span>
+        </button></h2>
+        <div class="فصل-بدنه" id="بدنه-پ۱"><div class="فصل-درون"><div class="فصل-محتوا">
+          <p class="متن-ماده" style="margin-top:14px">این قول‌ها مکمل مواد اصلی سند هستند و باید با رضایت هر دو طرف پذیرفته شوند.</p>
+          <div class="قول-ها">
+            <label class="قول"><input type="checkbox"><span class="تیک"></span><span>قول می‌دهم برای راحتی موقت، حقیقت را درباره موضوعات اساسی رابطه پنهان نکنم.</span></label>
+            <label class="قول"><input type="checkbox"><span class="تیک"></span><span>قول می‌دهم اگر دیگر قادر یا مایل به ادامه تعهد انحصاری نبودم، پیش از ورود به رابطه موازی صادقانه صحبت کنم.</span></label>
+            <label class="قول"><input type="checkbox"><span class="تیک"></span><span>قول می‌دهم وفاداری را در رفتار نشان دهم، نه فقط در کلمات.</span></label>
+            <label class="قول"><input type="checkbox"><span class="تیک"></span><span>قول می‌دهم هنگام اختلاف، شخصیت و ارزشمندی طرف مقابل را هدف قرار ندهم.</span></label>
+            <label class="قول"><input type="checkbox"><span class="تیک"></span><span>قول می‌دهم حریم خصوصی او را حتی در زمان عصبانیت محترم بشمارم.</span></label>
+            <label class="قول"><input type="checkbox"><span class="تیک"></span><span>قول می‌دهم اشتباه خود را بپذیرم و برای جبران آن اقدام کنم.</span></label>
+            <label class="قول"><input type="checkbox"><span class="تیک"></span><span>قول می‌دهم عشق را بهانه‌ای برای کنترل، تهدید یا اجبار نکنم.</span></label>
+            <label class="قول"><input type="checkbox"><span class="تیک"></span><span>قول می‌دهم به مرزهای جسمی و عاطفی او احترام بگذارم.</span></label>
+            <label class="قول"><input type="checkbox"><span class="تیک"></span><span>قول می‌دهم در صورت پایان رابطه، از انتقام‌جویی و افشای اسرار خودداری کنم.</span></label>
+            <label class="قول"><input type="checkbox"><span class="تیک"></span><span>قول می‌دهم به‌جای انتظار ذهن‌خوانی، نیازها و ناراحتی‌هایم را روشن بیان کنم.</span></label>
+            <label class="قول"><input type="checkbox"><span class="تیک"></span><span>قول می‌دهم موفقیت‌ها و پیشرفت‌های او را تهدیدی برای خودم نبینم.</span></label>
+            <label class="قول"><input type="checkbox"><span class="تیک"></span><span>قول می‌دهم برای حفظ رابطه تلاش کنم، اما احترام به آزادی و امنیت هر دو را فراموش نکنم.</span></label>
+          </div>
+          <div class="طرف‌ها" style="margin-bottom:0">
+            <div class="طرف"><h3>قول اختصاصی طرف اول</h3><span class="خط-پر"></span><span class="خط-پر"></span></div>
+            <div class="طرف"><h3>قول اختصاصی طرف دوم</h3><span class="خط-پر"></span><span class="خط-پر"></span></div>
+          </div>
+        </div></div></div>
+      </section>
+
+      <!-- ################ پیوست ۲ ################ -->
+      <section class="فصل پیوست" id="peyvast-2">
+        <h2 class="فصل-عنوان"><button type="button" class="فصل-دکمه" aria-expanded="false" aria-controls="بدنه-پ۲">
+          <span class="فصل-شماره">پ۲</span>
+          <span class="فصل-متن"><small>پیوست شماره دو</small><strong>توافق‌های ویژه و مرزهای رابطه</strong></span>
+          <span class="پیکان" aria-hidden="true"></span>
+        </button></h2>
+        <div class="فصل-بدنه" id="بدنه-پ۲"><div class="فصل-درون"><div class="فصل-محتوا">
+          <p class="متن-ماده" style="margin-top:14px">این بخش برای موضوعاتی است که فقط به رابطه شما مربوط‌اند و باید پیش از امضا درباره آن‌ها گفت‌وگو شود.</p>
+
+          <article class="ماده">
+            <p class="بند حرف"><b>۱.</b>تعریف ما از خیانت:</p>
+            <div class="فیلد-ماده"><span class="خط-پر"></span><span class="خط-پر"></span></div>
+          </article>
+          <article class="ماده">
+            <p class="بند حرف"><b>۲.</b>مرزهای ما در چت و ارتباط با دیگران:</p>
+            <div class="فیلد-ماده"><span class="خط-پر"></span><span class="خط-پر"></span></div>
+          </article>
+          <article class="ماده">
+            <p class="بند حرف"><b>۳.</b>توافق ما درباره روابط عاطفی گذشته:</p>
+            <div class="فیلد-ماده"><span class="خط-پر"></span><span class="خط-پر"></span></div>
+          </article>
+          <article class="ماده">
+            <p class="بند حرف"><b>۴.</b>توافق ما درباره انتشار عکس‌های مشترک:</p>
+            <div class="فیلد-ماده"><span class="خط-پر"></span><span class="خط-پر"></span></div>
+          </article>
+          <article class="ماده">
+            <p class="بند حرف"><b>۵.</b>توافق ما درباره حریم خصوصی و محتوای شخصی:</p>
+            <div class="فیلد-ماده"><span class="خط-پر"></span><span class="خط-پر"></span></div>
+          </article>
+          <article class="ماده">
+            <p class="بند حرف"><b>۶.</b>شیوه مورد توافق برای آشتی و حل اختلاف:</p>
+            <div class="فیلد-ماده"><span class="خط-پر"></span><span class="خط-پر"></span></div>
+          </article>
+          <article class="ماده">
+            <p class="بند حرف"><b>۷.</b>مواردی که برای هر یک از ما خط قرمز محسوب می‌شوند:</p>
+            <p class="زیربرچسب">طرف اول</p>
+            <div class="فیلد-ماده"><span class="خط-پر"></span></div>
+            <p class="زیربرچسب">طرف دوم</p>
+            <div class="فیلد-ماده"><span class="خط-پر"></span></div>
+          </article>
+          <article class="ماده">
+            <p class="بند حرف"><b>۸.</b>سایر توافق‌های مورد قبول هر دو طرف:</p>
+            <div class="فیلد-ماده"><span class="خط-پر"></span><span class="خط-پر"></span></div>
+          </article>
+        </div></div></div>
+      </section>
+
+    </div><!-- پایان فصل‌ها -->
+
+    <!-- ===== صفحه پایانی: امضا ===== -->
+    <section class="بخش" id="emza" style="margin-top:56px">
+      <h2 class="بخش-عنوان">صفحه پایانی ـ تأیید و امضای طرفین</h2>
+      <p class="بخش-توضیح">با امضای این صفحه، طرفین تأیید می‌کنند که متن و پیوست‌های تکمیل‌شده را خوانده‌اند و آن‌ها را به‌عنوان توافق اخلاقی و شخصی خود پذیرفته‌اند.</p>
+      <div class="امضاها">
+        <div class="امضا-کارت">
+          <h3>طرف اول</h3>
+          <div class="فیلد"><span class="برچسب">نام و نام خانوادگی</span><span class="خط-پر"></span></div>
+          <div class="فیلد"><span class="برچسب">تاریخ امضا</span><span class="خط-پر"></span></div>
+          <span class="برچسب" style="font-size:.84rem;color:var(--متن-کمرنگ)">امضا</span>
+          <div class="جعبه-امضا" aria-hidden="true">محل امضا</div>
+        </div>
+        <div class="امضا-کارت">
+          <h3>طرف دوم</h3>
+          <div class="فیلد"><span class="برچسب">نام و نام خانوادگی</span><span class="خط-پر"></span></div>
+          <div class="فیلد"><span class="برچسب">تاریخ امضا</span><span class="خط-پر"></span></div>
+          <span class="برچسب" style="font-size:.84rem;color:var(--متن-کمرنگ)">امضا</span>
+          <div class="جعبه-امضا" aria-hidden="true">محل امضا</div>
+        </div>
+        <div class="امضا-کارت شاهد">
+          <h3>شاهد اول ـ اختیاری</h3>
+          <div class="فیلد"><span class="برچسب">نام و نام خانوادگی</span><span class="خط-پر"></span></div>
+          <div class="فیلد"><span class="برچسب">امضا</span><span class="خط-پر" style="min-height:3.6em"></span></div>
+        </div>
+        <div class="امضا-کارت شاهد">
+          <h3>شاهد دوم ـ اختیاری</h3>
+          <div class="فیلد"><span class="برچسب">نام و نام خانوادگی</span><span class="خط-پر"></span></div>
+          <div class="فیلد"><span class="برچسب">امضا</span><span class="خط-پر" style="min-height:3.6em"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== یادداشت پایانی ===== -->
+    <section class="یادداشت" id="yaddasht">
+      <h2>یادداشت پایانی</h2>
+      <p>این سند برای ساختن رابطه‌ای مبتنی بر وفاداری، امنیت و احترام تنظیم شده است. هیچ امضایی جای صداقت، رفتار مسئولانه و رضایت واقعی را نمی‌گیرد. ارزش واقعی این تعهدنامه زمانی آشکار می‌شود که طرفین، حتی در نبود یکدیگر و در دشوارترین شرایط، به اصولی که آزادانه پذیرفته‌اند پایبند بمانند.</p>
+      <blockquote>«قرار نیست این پیمان ما را به هم زنجیر کند؛ قرار است هر روز، با اختیار خودمان، دوباره یکدیگر را انتخاب کنیم.» ❤️</blockquote>
+    </section>
+
+  </main>
+</div>
+
+<footer class="پاورقی">
+  <strong>تعهدنامه جامع رابطه عاشقانه، وفاداری و تعهد متقابل</strong>
+  <div>سند توافق اخلاقی، عاطفی و رفتاری دوطرفه · نسخه نهایی، قابل تکمیل و امضا</div>
+</footer>
+
+<button type="button" class="بالا" id="دکمه-بالا" aria-label="بازگشت به بالای صفحه">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 14l6-6 6 6"/></svg>
+</button>
+
+<script>
+/* ============================================================
+   رفتار صفحه: فصل‌های کشویی، فهرست کناری، جستجو، چاپ
+   ============================================================ */
+(function () {
+  'use strict';
+
+  /* ---------- عنصرهای اصلی ---------- */
+  const فصلها = Array.from(document.querySelectorAll('.فصل'));
+  const دکمهبازبستنهمه = document.getElementById('دکمه-باز-بستن-همه');
+  const متنبازبستن = document.getElementById('متن-باز-بستن');
+  const کناره = document.getElementById('کناره');
+  const پرده = document.getElementById('پرده');
+  const دکمهفهرست = document.getElementById('دکمه-فهرست');
+  const کنارهفهرست = document.getElementById('کناره-فهرست');
+  const جعبهجستجو = document.getElementById('جعبه-جستجو');
+  const نتیجهجستجو = document.getElementById('نتیجه-جستجو');
+  const نوارپیشرفت = document.getElementById('نوار-پیشرفت');
+  const دکمهبالا = document.getElementById('دکمه-بالا');
+
+  /* ---------- جای‌های خالی قابل تکمیل ---------- */
+  document.querySelectorAll('.جای-خالی, .خط-پر').forEach(function (عنصر) {
+    عنصر.setAttribute('contenteditable', 'true');
+    عنصر.setAttribute('role', 'textbox');
+    عنصر.setAttribute('spellcheck', 'false');
+    if (!عنصر.hasAttribute('aria-label')) عنصر.setAttribute('aria-label', 'جای تکمیل');
+    /* جلوگیری از چسباندن متن قالب‌بندی‌شده */
+    عنصر.addEventListener('paste', function (رویداد) {
+      رویداد.preventDefault();
+      const متن = (رویداد.clipboardData || window.clipboardData).getData('text');
+      document.execCommand('insertText', false, متن.replace(/\s*\n\s*/g, ' '));
+    });
+    /* فشردن Enter نباید خط جدید بسازد */
+    عنصر.addEventListener('keydown', function (رویداد) {
+      if (رویداد.key === 'Enter') رویداد.preventDefault();
+    });
+  });
+
+  /* ---------- باز و بسته کردن فصل ---------- */
+  function تنظیمباز(فصل, باز) {
+    فصل.classList.toggle('باز', باز);
+    const دکمه = فصل.querySelector('.فصل-دکمه');
+    if (دکمه) دکمه.setAttribute('aria-expanded', String(باز));
+  }
+
+  function بروزرسانیدکمهکلی() {
+    const همهباز = فصلها.every(function (ف) { return ف.classList.contains('باز'); });
+    دکمهبازبستنهمه.setAttribute('aria-pressed', String(همهباز));
+    متنبازبستن.textContent = همهباز ? 'بستن همه فصل‌ها' : 'باز کردن همه فصل‌ها';
+  }
+
+  فصلها.forEach(function (فصل) {
+    const دکمه = فصل.querySelector('.فصل-دکمه');
+    دکمه.addEventListener('click', function () {
+      تنظیمباز(فصل, !فصل.classList.contains('باز'));
+      بروزرسانیدکمهکلی();
+    });
+  });
+
+  دکمهبازبستنهمه.addEventListener('click', function () {
+    const همهباز = فصلها.every(function (ف) { return ف.classList.contains('باز'); });
+    فصلها.forEach(function (ف) { تنظیمباز(ف, !همهباز); });
+    بروزرسانیدکمهکلی();
+  });
+
+  /* ---------- رفتن به یک بخش (باز کردن فصل مربوط) ---------- */
+  function رفتنبهبخش(شناسه, بهنرمی) {
+    const هدف = document.getElementById(شناسه);
+    if (!هدف) return;
+    const فصل = هدف.closest('.فصل');
+    if (فصل) { تنظیمباز(فصل, true); بروزرسانیدکمهکلی(); }
+    /* کمی صبر تا چیدمان پس از باز شدن فصل نهایی شود */
+    window.setTimeout(function () {
+      هدف.scrollIntoView({ behavior: بهنرمی ? 'smooth' : 'auto', block: 'start' });
+    }, فصل ? 60 : 0);
+  }
+
+  document.addEventListener('click', function (رویداد) {
+    const پیوند = رویداد.target.closest('a[href^="#"]');
+    if (!پیوند) return;
+    const شناسه = decodeURIComponent(پیوند.getAttribute('href').slice(1));
+    if (!document.getElementById(شناسه)) return;
+    رویداد.preventDefault();
+    رفتنبهبخش(شناسه, true);
+    history.replaceState(null, '', '#' + encodeURIComponent(شناسه));
+    بستنکناره();
+  });
+
+  /* ---------- ساخت فهرست کناری از فهرست کامل ---------- */
+  const فهرستکامل = document.getElementById('فهرست-کامل');
+  فهرستکامل.querySelectorAll('a').forEach(function (پیوند) {
+    const نسخه = پیوند.cloneNode(true);
+    نسخه.classList.remove('ویژه', 'پیوست');
+    کنارهفهرست.appendChild(نسخه);
+  });
+  const پیوندهایکناره = Array.from(کنارهفهرست.querySelectorAll('a'));
+
+  /* ---------- کشوی فهرست در موبایل ---------- */
+  function بازکردنکناره() {
+    کناره.classList.add('باز'); پرده.classList.add('باز');
+    دکمهفهرست.setAttribute('aria-expanded', 'true');
+  }
+  function بستنکناره() {
+    کناره.classList.remove('باز'); پرده.classList.remove('باز');
+    دکمهفهرست.setAttribute('aria-expanded', 'false');
+  }
+  دکمهفهرست.addEventListener('click', function () {
+    کناره.classList.contains('باز') ? بستنکناره() : بازکردنکناره();
+  });
+  پرده.addEventListener('click', بستنکناره);
+  document.addEventListener('keydown', function (رویداد) {
+    if (رویداد.key === 'Escape') بستنکناره();
+  });
+
+  /* ---------- مشخص‌کردن بخش فعال هنگام اسکرول ---------- */
+  const بخشها = پیوندهایکناره.map(function (پ) {
+    return document.getElementById(decodeURIComponent(پ.getAttribute('href').slice(1)));
+  }).filter(Boolean);
+
+  function بروزرسانیبخشفعال() {
+    const خطمرجع = window.innerHeight * 0.3;
+    let فعال = null;
+    بخشها.forEach(function (بخش) {
+      if (بخش.getBoundingClientRect().top <= خطمرجع) فعال = بخش;
+    });
+    پیوندهایکناره.forEach(function (پ) {
+      const فعالاست = فعال && پ.getAttribute('href') === '#' + فعال.id;
+      پ.classList.toggle('فعال', !!فعالاست);
+      if (فعالاست) پ.setAttribute('aria-current', 'true'); else پ.removeAttribute('aria-current');
+    });
+    if (فعال && window.innerWidth > 1060) {
+      const پیوندفعال = کنارهفهرست.querySelector('a.فعال');
+      if (پیوندفعال) {
+        const بالا = پیوندفعال.offsetTop - کناره.clientHeight / 2 + 120;
+        کناره.scrollTo({ top: Math.max(0, بالا), behavior: 'auto' });
+      }
+    }
+  }
+
+  /* ---------- نوار پیشرفت و دکمه بازگشت ---------- */
+  let درانتظارفریم = false;
+  function هنگاماسکرول() {
+    if (درانتظارفریم) return;
+    درانتظارفریم = true;
+    window.requestAnimationFrame(function () {
+      const کل = document.documentElement.scrollHeight - window.innerHeight;
+      const درصد = کل > 0 ? (window.scrollY / کل) * 100 : 0;
+      نوارپیشرفت.style.width = Math.min(100, Math.max(0, درصد)) + '%';
+      دکمهبالا.classList.toggle('دیده‌شود', window.scrollY > 700);
+      بروزرسانیبخشفعال();
+      درانتظارفریم = false;
+    });
+  }
+  window.addEventListener('scroll', هنگاماسکرول, { passive: true });
+  window.addEventListener('resize', هنگاماسکرول);
+  دکمهبالا.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  /* ---------- جستجو در مواد ---------- */
+  const ارقامفارسی = '۰۱۲۳۴۵۶۷۸۹';
+  const ارقامعربی = '٠١٢٣٤٥٦٧٨٩';
+  function نرمال(متن) {
+    return (متن || '')
+      .replace(/[۰-۹]/g, function (ر) { return String(ارقامفارسی.indexOf(ر)); })
+      .replace(/[٠-٩]/g, function (ر) { return String(ارقامعربی.indexOf(ر)); })
+      .replace(/ي/g, 'ی').replace(/ك/g, 'ک').replace(/ة/g, 'ه')
+      .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+      .replace(/\u200c/g, ' ')
+      .replace(/\s+/g, ' ')
+      .toLowerCase().trim();
+  }
+
+  const مادهها = Array.from(document.querySelectorAll('.فصل article.ماده'));
+  const متنمادهها = new Map();
+  مادهها.forEach(function (ماده) { متنمادهها.set(ماده, نرمال(ماده.textContent)); });
+
+  let وضعیتقبلازجستجو = null;
+
+  function اجرایجستجو() {
+    const عبارت = نرمال(جعبهجستجو.value);
+
+    if (!عبارت) {
+      مادهها.forEach(function (م) { م.hidden = false; });
+      فصلها.forEach(function (ف) { ف.hidden = false; });
+      if (وضعیتقبلازجستجو) {
+        فصلها.forEach(function (ف, ا) { تنظیمباز(ف, وضعیتقبلازجستجو[ا]); });
+        وضعیتقبلازجستجو = null;
+        بروزرسانیدکمهکلی();
+      }
+      نتیجهجستجو.textContent = '';
+      return;
+    }
+
+    if (!وضعیتقبلازجستجو) {
+      وضعیتقبلازجستجو = فصلها.map(function (ف) { return ف.classList.contains('باز'); });
+    }
+
+    let تعداد = 0;
+    مادهها.forEach(function (ماده) {
+      const یافت = متنمادهها.get(ماده).indexOf(عبارت) !== -1;
+      ماده.hidden = !یافت;
+      if (یافت) تعداد++;
+    });
+
+    فصلها.forEach(function (فصل) {
+      const دارد = Array.from(فصل.querySelectorAll('article.ماده')).some(function (م) { return !م.hidden; });
+      فصل.hidden = !دارد;
+      تنظیمباز(فصل, دارد);
+    });
+    بروزرسانیدکمهکلی();
+
+    const تعدادفارسی = String(تعداد).replace(/\d/g, function (ر) { return ارقامفارسی[ر]; });
+    نتیجهجستجو.textContent = تعداد
+      ? (تعدادفارسی + ' ماده یافت شد.')
+      : 'ماده‌ای با این عبارت پیدا نشد. کلمه‌ی دیگری را امتحان کنید.';
+  }
+  جعبهجستجو.addEventListener('input', اجرایجستجو);
+
+  /* ---------- چاپ: همه فصل‌ها باز شوند ---------- */
+  document.getElementById('دکمه-چاپ').addEventListener('click', function () { window.print(); });
+
+  let وضعیتقبلازچاپ = null;
+  window.addEventListener('beforeprint', function () {
+    وضعیتقبلازچاپ = فصلها.map(function (ف) { return ف.classList.contains('باز'); });
+    فصلها.forEach(function (ف) { ف.hidden = false; تنظیمباز(ف, true); });
+    مادهها.forEach(function (م) { م.hidden = false; });
+  });
+  window.addEventListener('afterprint', function () {
+    if (!وضعیتقبلازچاپ) return;
+    فصلها.forEach(function (ف, ا) { تنظیمباز(ف, وضعیتقبلازچاپ[ا]); });
+    وضعیتقبلازچاپ = null;
+    اجرایجستجو();
+    بروزرسانیدکمهکلی();
+  });
+
+  /* ---------- اگر آدرس شامل بخشی بود، همان را باز کن ---------- */
+  if (location.hash.length > 1) {
+    window.addEventListener('load', function () {
+      رفتنبهبخش(decodeURIComponent(location.hash.slice(1)), false);
+    });
+  }
+
+  بروزرسانیدکمهکلی();
+  هنگاماسکرول();
+})();
+</script>
+
+<div class="tb" id="tb"><div class="tb-in" role="toolbar" aria-label="ابزار سند">
+  <span class="tb-st" id="tb-st">ذخیره خودکار فعال است</span>
+  <button type="button" class="دکمه اصلی" id="tb-final">ساخت سند نهایی (PDF)</button>
+  <button type="button" class="دکمه" id="tb-dl">دانلود نسخه تکمیل‌شده</button>
+  <span class="tb-sep"></span>
+  <button type="button" class="دکمه" id="tb-exp">پشتیبان (JSON)</button>
+  <button type="button" class="دکمه" id="tb-imp">بازیابی</button>
+  <button type="button" class="دکمه" id="tb-clr">پاک‌کردن همه</button>
+  <input type="file" id="tb-file" accept="application/json,.json" hidden>
+</div></div>
+<div class="tb-toast" id="tb-toast" role="status"></div>
+
+<script>
+(function(){
+'use strict';
+var KEY='tahdname-v1:'+location.pathname;
+var blanks=[].slice.call(document.querySelectorAll('.جای-خالی, .خط-پر'));
+var checks=[].slice.call(document.querySelectorAll('input[type=checkbox]'));
+var boxes=[].slice.call(document.querySelectorAll('.جعبه-امضا'));
+var st=document.getElementById('tb-st'), toastEl=document.getElementById('tb-toast');
+var sigs={}, timer=null, W=900, H=330;
+
+function toast(t){toastEl.textContent=t;toastEl.classList.add('on');setTimeout(function(){toastEl.classList.remove('on')},2200)}
+function status(t,err){st.textContent=t;st.classList.toggle('err',!!err)}
+function collect(){return{v:1,fields:blanks.map(function(b){return b.textContent.replace(/\u200B/g,'')}),checks:checks.map(function(c){return c.checked}),sigs:sigs,saved:new Date().toISOString()}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(collect()));status('ذخیره شد ✓ '+new Date().toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}))}catch(e){status('ذخیره نشد؛ پشتیبان JSON بگیرید',true)}}
+function later(){status('در حال ذخیره…');clearTimeout(timer);timer=setTimeout(save,400)}
+
+/* ---- امضا ---- */
+var canv=[];
+boxes.forEach(function(box,i){
+  box.removeAttribute('aria-hidden');
+  var hint=box.textContent.trim();box.textContent='';
+  var h=document.createElement('span');h.className='sg-hint';h.textContent=hint+' (با انگشت یا ماوس)';box.appendChild(h);
+  var c=document.createElement('canvas');c.width=W;c.height=H;c.setAttribute('aria-label','کادر امضا');box.appendChild(c);
+  var x=c.getContext('2d');x.lineWidth=4;x.lineCap='round';x.lineJoin='round';x.strokeStyle='#1b1230';
+  var b=document.createElement('button');b.type='button';b.className='sg-clear';b.textContent='پاک کردن';box.appendChild(b);
+  var draw=false,last=null;
+  function pos(e){var r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
+  c.addEventListener('pointerdown',function(e){draw=true;c.setPointerCapture(e.pointerId);last=pos(e);x.beginPath();x.arc(last.x,last.y,2,0,6.3);x.fillStyle='#1b1230';x.fill();e.preventDefault()});
+  c.addEventListener('pointermove',function(e){if(!draw)return;var p=pos(e);x.beginPath();x.moveTo(last.x,last.y);x.lineTo(p.x,p.y);x.stroke();last=p;box.classList.add('has')});
+  function end(){if(!draw)return;draw=false;box.classList.add('has');sigs[i]=c.toDataURL('image/png');later()}
+  c.addEventListener('pointerup',end);c.addEventListener('pointercancel',end);
+  b.addEventListener('click',function(){x.clearRect(0,0,W,H);box.classList.remove('has');delete sigs[i];later()});
+  canv.push({c:c,x:x,box:box});
+});
+function paintSig(i,url){var o=canv[i];if(!o||!url)return;var im=new Image();im.onload=function(){o.x.clearRect(0,0,W,H);o.x.drawImage(im,0,0,W,H);o.box.classList.add('has')};im.src=url}
+
+/* ---- بازگردانی ---- */
+function apply(d){
+  if(!d)return;
+  blanks.forEach(function(b,i){b.textContent=(d.fields&&d.fields[i])||''});
+  checks.forEach(function(c,i){c.checked=!!(d.checks&&d.checks[i])});
+  sigs={};canv.forEach(function(o,i){o.x.clearRect(0,0,W,H);o.box.classList.remove('has')});
+  if(d.sigs)Object.keys(d.sigs).forEach(function(k){sigs[k]=d.sigs[k];paintSig(+k,d.sigs[k])});
+}
+try{var raw=localStorage.getItem(KEY);if(raw){apply(JSON.parse(raw));status('اطلاعات قبلی بازیابی شد ✓')}}catch(e){}
+
+blanks.forEach(function(b){b.addEventListener('input',later)});
+checks.forEach(function(c){c.addEventListener('change',later)});
+window.addEventListener('pagehide',save);
+
+/* ---- پشتیبان و بازیابی ---- */
+function dlBlob(name,type,data){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:type}));a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)}
+document.getElementById('tb-exp').onclick=function(){dlBlob('تعهدنامه-پشتیبان.json','application/json',JSON.stringify(collect()));toast('فایل پشتیبان دانلود شد')};
+var fi=document.getElementById('tb-file');
+document.getElementById('tb-imp').onclick=function(){fi.click()};
+fi.onchange=function(){var f=fi.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var d=JSON.parse(r.result);if(!d||!d.fields)throw 0;apply(d);save();toast('بازیابی انجام شد')}catch(e){toast('فایل معتبر نیست')}fi.value=''};r.readAsText(f)};
+document.getElementById('tb-clr').onclick=function(){if(!confirm('همه نوشته‌ها، تیک‌ها و امضاها پاک شود؟ این کار برگشت‌پذیر نیست (اگر پشتیبان ندارید ابتدا JSON بگیرید).'))return;try{localStorage.removeItem(KEY)}catch(e){}apply({fields:[],checks:[],sigs:{}});status('پاک شد');toast('همه چیز پاک شد')};
+
+/* ---- ساخت سند نهایی ---- */
+function names(){var f=blanks.filter(function(b){var l=b.closest('.فیلد');return l&&l.querySelector('.برچسب')&&/نام و نام/.test(l.querySelector('.برچسب').textContent)&&b.textContent.trim()});return f.slice(0,2).map(function(b){return b.textContent.trim()})}
+document.getElementById('tb-final').onclick=function(){
+  save();
+  var empty=blanks.filter(function(b){return !b.textContent.replace(/\u200B/g,'').trim()}).length;
+  var nosig=[0,1].filter(function(i){return !sigs[i]}).length;
+  var msg='سند نهایی ساخته می‌شود. در پنجره باز‌شده «ذخیره به‌صورت PDF» را انتخاب کنید.';
+  if(empty||nosig)msg='هنوز '+empty+' جای خالی پر نشده'+(nosig?' و '+nosig+' امضای طرفین خالی است':'')+'.\n(جای‌های خالی در سند نهایی به‌صورت خط خالی برای تکمیل دستی چاپ می‌شوند.)\n\nادامه می‌دهید؟';
+  if(!confirm(msg))return;
+  var old=document.title,n=names();if(n.length)document.title='تعهدنامه - '+n.join(' و ');
+  var back=function(){document.title=old;window.removeEventListener('afterprint',back)};
+  window.addEventListener('afterprint',back);
+  setTimeout(function(){window.print()},60);
+};
+
+/* ---- دانلود نسخه تکمیل‌شده (HTML مستقل، فقط‌خواندنی) ---- */
+document.getElementById('tb-dl').onclick=function(){
+  save();
+  var cl=document.documentElement.cloneNode(true);
+  var live=document.querySelectorAll('.جای-خالی, .خط-پر'), cb=cl.querySelectorAll('.جای-خالی, .خط-پر');
+  cb.forEach(function(e,i){e.removeAttribute('contenteditable');e.removeAttribute('role');e.textContent=live[i].textContent.replace(/\u200B/g,'')});
+  var lc=document.querySelectorAll('input[type=checkbox]'), cc=cl.querySelectorAll('input[type=checkbox]');
+  cc.forEach(function(e,i){if(lc[i].checked)e.setAttribute('checked','');else e.removeAttribute('checked');e.setAttribute('disabled','')});
+  cl.querySelectorAll('.جعبه-امضا').forEach(function(bx,i){var u=sigs[i];bx.innerHTML=u?'<img src="'+u+'" alt="امضا" style="position:absolute;inset:0;width:100%;height:100%">':'';bx.classList.add('has')});
+  ['script','#tb','#tb-toast','.کناره','.پرده','.بالا','.فصل-دکمه .پیکان'].forEach(function(q){cl.querySelectorAll(q).forEach(function(e){e.remove()})});
+  cl.querySelectorAll('.فصل').forEach(function(f){f.classList.add('باز')});
+  var sty=document.createElement('style');sty.textContent='.فصل-بدنه{grid-template-rows:1fr!important}.فصل-درون{visibility:visible!important}.قاب{display:block}body{padding-bottom:0}';cl.querySelector('head').appendChild(sty);
+  var n=names();
+  dlBlob('تعهدنامه-تکمیل‌شده'+(n.length?' - '+n.join(' و '):'')+'.html','text/html','<!DOCTYPE html>\n'+cl.outerHTML);
+  toast('نسخه تکمیل‌شده دانلود شد');
+};
+})();
+</script>
+</body>
+</html>
