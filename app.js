@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-var API=(window.OURHOME_API||'').replace(/\/+$/,''),K='hd2',S=new Date(2026,8,30),MS=[30,50,100,200,365,500,1000],P=document.body.getAttribute('data-page'),ISO=/^\d{4}-\d{2}-\d{2}$/,tt;
+var API=(window.OURHOME_API||'').replace(/\/+$/,''),K='hd2',S=new Date(2026,8,29),MS=[30,50,100,200,365,500,1000],P=document.body.getAttribute('data-page'),ISO=/^\d{4}-\d{2}-\d{2}$/,tt;
 var I={},dirty={},cfg={},D,otherSeen=0,busy=false,dead=false,timer=null;
 
 /* ---------- اعتبارسنجی ---------- */
@@ -35,7 +35,8 @@ function build(){
   ['story','letters','wishes','events'].forEach(function(c){d[c].sort(function(a,b){return a.id<b.id?-1:1})});
   D=d;
 }
-function set(k,v){var prev=I[k]&&typeof I[k].t==='number'?I[k].t:0;I[k]={v:v,t:Math.max(Date.now(),prev+1)};dirty[k]=1;build();save();sched()}
+function applyStartSetting(){var v=I['settings:start']&&I['settings:start'].v;if(!ISO.test(v||''))v=cfg.start;if(!ISO.test(v||''))v='2026-09-29';if(v==='2026-09-30')v='2026-09-29';cfg.start=v;S=new Date(v+'T12:00:00')}
+function set(k,v){var prev=I[k]&&typeof I[k].t==='number'?I[k].t:0;I[k]={v:v,t:Math.max(Date.now(),prev+1)};dirty[k]=1;if(k==='settings:start')applyStartSetting();build();save();sched()}
 function imp(d){
   var n=Date.now();Object.keys(I).forEach(function(k){I[k]={v:null,t:n}});
   function put(k,v){I[k]={v:v,t:n+1}}
@@ -45,9 +46,12 @@ function imp(d){
   Object.keys(I).forEach(function(k){dirty[k]=1});build();save();sched();
 }
 if(!loadLS()){var old=null;try{old=norm(JSON.parse(localStorage.getItem('hd1')))}catch(e){}if(old){I['story:start']={v:null,t:1};imp(old)}}
-if(cfg.start&&ISO.test(cfg.start))S=new Date(cfg.start+'T12:00:00');
+if(cfg.start==='2026-09-30')cfg.start='2026-09-29';
+if(I['settings:start']&&I['settings:start'].v==='2026-09-30'){I['settings:start']={v:'2026-09-29',t:Date.now()};dirty['settings:start']=1;}
+applyStartSetting();
 if(cfg.theme==='dark'||cfg.theme==='light')document.documentElement.setAttribute('data-theme',cfg.theme);
-if(!I['story:start'])I['story:start']={v:{d:'2026-09-30',t:'شروع داستان ما',x:'روز اول؛ جایی که همه‌چیز شروع شد.'},t:0};
+if(!I['story:start'])I['story:start']={v:{d:'2026-09-29',t:'شروع داستان ما',x:'روز اول؛ جایی که همه‌چیز شروع شد.'},t:0};
+else if(I['story:start'].v&&I['story:start'].v.d==='2026-09-30'){I['story:start']={v:Object.assign({},I['story:start'].v,{d:'2026-09-29'}),t:Math.max(Date.now(),(I['story:start'].t||0)+1)};dirty['story:start']=1;}
 (function(){ /* پیوستن با لینک پارتنر */
   var h=new URLSearchParams(location.hash.slice(1)),d=h.get('d'),t=h.get('t');
   if(API&&d&&t&&/^[a-f0-9]{16}$/.test(d)&&/^[a-f0-9]{48}$/.test(t)){
@@ -84,8 +88,9 @@ function api(m,b){return fetch(API+'/api/doc/'+cfg.id,{method:m,headers:{'conten
 function merge(r){
   var ch=false;Object.keys(r.items||{}).forEach(function(k){var x=r.items[k],l=I[k];if(x&&typeof x.t==='number'&&(!l||x.t>l.t||(x.t===l.t&&JSON.stringify(x.v)>JSON.stringify(l.v)))){I[k]={v:x.v,t:x.t};ch=true}});
   var o=cfg.me==='a'?'b':'a';if(r.seen&&r.seen[o])otherSeen=r.seen[o];
-  if(ch){build();save()}return ch;
+  if(ch){applyStartSetting();build();save()}return ch;
 }
+function ensureSharedStart(){if(cfg.id&&API&&!I['settings:start'])set('settings:start',cfg.start||'2026-09-29')}
 function sched(){clearTimeout(timer);timer=setTimeout(function(){timer=null;flush()},800)}
 function flush(){
   if(!cfg.id||!API||busy||dead)return status();
@@ -94,7 +99,7 @@ function flush(){
   busy=true;status('در حال همگام‌سازی…');
   api('PUT',body).then(function(r){
     ks.forEach(function(k){var s=r.items&&r.items[k];if(s&&s.t>=body.items[k].t&&I[k]===body.items[k])delete dirty[k]});
-    if(merge(r)&&!editing())(R[P]||home)();save();status();
+    if(merge(r)&&!editing())(R[P]||home)();ensureSharedStart();save();status();
   }).catch(function(e){
     if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1);return}
     status((e&&e.error)||'ارتباط با سرور برقرار نیست؛ دوباره تلاش می‌شود',1);
@@ -102,7 +107,7 @@ function flush(){
 }
 function poll(){
   if(document.hidden||!cfg.id||!API||busy||dead||Object.keys(dirty).length)return;
-  api('GET').then(function(r){if(merge(r)&&!editing())(R[P]||home)();status()}).catch(function(e){if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1)}else status('ارتباط با سرور برقرار نیست',1)});
+  api('GET').then(function(r){if(merge(r)&&!editing())(R[P]||home)();ensureSharedStart();status()}).catch(function(e){if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1)}else status('ارتباط با سرور برقرار نیست',1)});
 }
 function link(){
   var u=new URL('index.html',location.href).href+'#d='+cfg.id+'&t='+cfg.other+'&p=b';
@@ -133,11 +138,11 @@ function home(){
   }
   var sy=!API?'':(!cfg.id?'<button id="sc">ساخت فضای مشترک دو نفره</button> ':(cfg.other?'<button id="sl">ارسال لینک پارتنر</button> ':''));
   V.innerHTML=b+'<div class="go"><a href="story.html">📖 ثبت لحظه‌ی تازه</a><a href="letters.html">💌 نوشتن نامه</a><a href="wishes.html">✨ آرزوها</a><a href="calendar.html">📅 رویداد تازه</a><a href="qa.html">💬 سؤال امروز</a><a href="pledge.html">📜 تعهدنامه</a><a href="chat.html">💌 چت دونفره</a><a href="games.html">🎮 بازی‌های دونفره</a><a href="map.html">📍 نقشه و GPS</a><a href="settings.html">⚙️ تنظیمات</a></div>'
-   +'<p><small>'+(cfg.id?'نوشته‌ها بین شما و پارتنرتان همگام می‌شود.':'نوشته‌ها فقط روی همین دستگاه ذخیره می‌شوند.')+' گاهی پشتیبان بگیرید.</small></p>'+sy+'<button id="ex">دانلود پشتیبان</button> <button id="im">بازیابی</button><input type="file" id="fi" accept=".json,application/json" hidden>';
+   +'<p><small>'+(cfg.id?'خاطرات، نامه‌ها، آرزوها، رویدادها و تغییرات بین هر دو نفر تقریباً زنده همگام می‌شوند.':'برای همگام‌سازی خاطرات و دسترسی پارتنر، فضای مشترک بسازید و لینک دعوت را بفرستید؛ تا قبل از آن اطلاعات فقط روی همین دستگاه است.')+' گاهی پشتیبان بگیرید.</small></p>'+sy+'<button id="ex">دانلود پشتیبان</button> <button id="im">بازیابی</button><input type="file" id="fi" accept=".json,application/json" hidden>';
   if($('#sc'))$('#sc').onclick=function(){
     if(!confirm('یک فضای مشترک ساخته می‌شود و نوشته‌های فعلی داخلش می‌رود. سپس «ارسال لینک پارتنر» را بزنید و لینک را فقط برای پارتنرتان بفرستید (هر کس با آن لینک می‌تواند ویرایش کند). ادامه؟'))return;
     fetch(API+'/api/create',{method:'POST'}).then(function(r){return r.json()}).then(function(j){
-      if(!j.id)throw j;cfg={id:j.id,tok:j.a,me:'a',other:j.b};Object.keys(I).forEach(function(k){dirty[k]=1});save();flush();home();link();
+      if(!j.id)throw j;cfg={id:j.id,tok:j.a,me:'a',other:j.b,start:cfg.start||'2026-09-29'};applyStartSetting();if(!I['settings:start']||!ISO.test(I['settings:start'].v))I['settings:start']={v:cfg.start,t:Date.now()};else if(I['settings:start'].v==='2026-09-30')I['settings:start']={v:'2026-09-29',t:Date.now()};Object.keys(I).forEach(function(k){dirty[k]=1});save();flush();home();link();
     }).catch(function(e){toast((e&&e.error)||'ساخت فضای مشترک ناموفق بود')});
   };
   if($('#sl'))$('#sl').onclick=link;
@@ -335,7 +340,7 @@ function settings(){
   var start=S.getFullYear()+'-'+pad(S.getMonth()+1)+'-'+pad(S.getDate());
   V.innerHTML='<h2>تنظیمات خانه‌ی ما ⚙️</h2><div class="card"><h3>ظاهر سایت</h3><label for="theme">پوسته</label><select id="theme"><option value="light" '+(cfg.theme==='light'?'selected':'')+'>روشن</option><option value="dark" '+(cfg.theme==='dark'?'selected':'')+'>تیره</option><option value="auto" '+(!cfg.theme?'selected':'')+'>مطابق دستگاه</option></select><button id="savetheme">ذخیره پوسته</button></div><div class="card"><h3>تنظیمات رابطه</h3><label for="startdate">تاریخ شروع رابطه</label><input type="date" id="startdate" value="'+start+'"><p><small>تغییر این تاریخ فقط روزشمار را تنظیم می‌کند و خاطرات ثبت‌شده حذف نمی‌شوند.</small></p><button id="savestart">ذخیره تاریخ</button></div><div class="card"><h3>نام‌ها</h3><label for="name0">نام نفر اول</label><input id="name0" maxlength="24" value="'+E(D.names[0])+'"><label for="name1">نام نفر دوم</label><input id="name1" maxlength="24" value="'+E(D.names[1])+'"><button id="savenames">ذخیره نام‌ها</button></div><div class="card"><h3>پشتیبان‌گیری</h3><p>قبل از تغییرات بزرگ، از اطلاعات خود خروجی بگیر.</p><button id="backup">دانلود پشتیبان JSON</button><button id="clearlocal" class="secondary">پاک‌کردن داده‌های محلی</button><p><small>پاک‌کردن داده‌های محلی قابل بازگشت نیست مگر پشتیبان داشته باشی. این کار داده ابری را حذف نمی‌کند.</small></p></div><div class="card"><h3>وضعیت اتصال</h3><p>'+(API?'آدرس API تنظیم شده است.':'آدرس API هنوز در config.js تنظیم نشده است.')+'</p><p>'+(cfg.id?'فضای مشترک: فعال':'فضای مشترک: تنظیم نشده')+'</p><p><small>برای استفاده دونفره، API باید روی سرور واقعی نصب و متغیر ORIGIN آن محدود به دامنه سایت شود.</small></p></div>';
   $('#savetheme').onclick=function(){var t=$('#theme').value;cfg.theme=t==='auto'?'':t;if(cfg.theme)document.documentElement.setAttribute('data-theme',cfg.theme);else document.documentElement.removeAttribute('data-theme');save();toast('پوسته ذخیره شد.');};
-  $('#savestart').onclick=function(){var v=$('#startdate').value;if(!ISO.test(v))return toast('تاریخ معتبر انتخاب کنید.');cfg.start=v;S=new Date(v+'T12:00:00');save();toast('تاریخ شروع ذخیره شد.');home();};
+  $('#savestart').onclick=function(){var v=$('#startdate').value;if(!ISO.test(v))return toast('تاریخ معتبر انتخاب کنید.');cfg.start=v;set('settings:start',v);toast('تاریخ شروع برای هر دو نفر ذخیره شد.');home();};
   $('#savenames').onclick=function(){var a=$('#name0').value.trim(),b=$('#name1').value.trim();if(!a||!b)return toast('هر دو نام را وارد کنید.');set('names:0',a);set('names:1',b);settings();toast('نام‌ها ذخیره شدند.');};
   $('#backup').onclick=function(){downloadBackup();toast('پشتیبان کامل دانلود شد')};
   $('#clearlocal').onclick=function(){if(!confirm('همه داده‌های محلی این مرورگر پاک شود؟ قبل از ادامه پشتیبان بگیرید.'))return;localStorage.removeItem(K);location.reload();};
@@ -364,7 +369,7 @@ V.addEventListener('focusout',function(e){
 });
 var ld=day();
 function tick(){var d=day();if(d!==ld&&!editing()){ld=d;R[P]()}}
-setInterval(tick,60000);setInterval(poll,8000);
+setInterval(tick,30000);setInterval(poll,3000);
 document.addEventListener('visibilitychange',function(){if(!document.hidden){tick();poll()}});
 window.addEventListener('storage',function(e){if(e.key===K&&!editing()){loadLS();build();R[P]()}});
 (R[P]||home)();status();
