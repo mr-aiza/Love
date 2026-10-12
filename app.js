@@ -126,7 +126,7 @@ function link(){
   shareUrl(u,'دعوت به خانه‌ی ما','لینک ویرایش پارتنر آماده‌ی ارسال است.');
 }
 /* ---------- منو ---------- */
-var N=[['index','🏠','خانه'],['story','📖','داستان ما'],['letters','💌','نامه‌ها'],['wishes','✨','آرزوها'],['calendar','📅','تقویم'],['qa','💬','سؤال'],['pledge','📜','تعهدنامه'],['chat','💌','چت'],['games','🎮','بازی'],['map','📍','نقشه'],['settings','⚙️','تنظیمات']];
+var N=[['index','🏠','خانه'],['story','📖','داستان ما'],['letters','💌','نامه‌ها'],['wishes','✨','آرزوها'],['calendar','📅','تقویم'],['qa','💬','سؤال'],['pledge','📜','تعهدنامه'],['chat','💌','چت'],['games','🎮','بازی‌ها'],['draw','🎨','نقاشی زنده'],['challenges','🌟','چالش‌ها'],['achievements','🏆','دستاوردها'],['map','📍','نقشه'],['settings','⚙️','تنظیمات']];
 var nv=document.createElement('nav');nv.setAttribute('aria-label','منوی اصلی');
 nv.innerHTML=N.map(function(n){return '<a href="'+n[0]+'.html"'+(n[0]===P?' class="on" aria-current="page"':'')+'><b aria-hidden="true">'+n[1]+'</b>'+n[2]+'</a>'}).join('');
 document.body.appendChild(nv);
@@ -254,7 +254,31 @@ function games(){
   var board='<div class="ttt" role="group" aria-label="صفحه بازی دوز">';
   g.board.forEach(function(x,i){board+='<button type="button" class="cell" data-cell="'+i+'" aria-label="خانه '+(i+1)+' '+(x||'خالی')+'" '+(x||g.status!=='playing'||(online&&g.turn!==role)?'disabled':'')+'>'+E(x||'·')+'</button>';});
   board+='</div>';
-  V.innerHTML='<h2>بازی‌های دونفره 🎮</h2><div class="card"><h3>دوز عاشقانه</h3><p>'+(online?'اتاق مشترک فعال است؛ نوبت شما: '+(role==='a'?'X':'O'):'حالت محلی؛ دو نفر می‌توانند روی همین دستگاه بازی کنند.')+'</p><small>برای بازی از دو گوشی، ابتدا فضای مشترک را از صفحه خانه بسازید و لینک دعوت را برای نفر دوم بفرستید.</small></div><div class="card">'+board+'<p class="game-status">'+(w?(w==='draw'?'بازی مساوی شد.':('برنده: '+(w==='a'?'X':'O'))):(g.status==='playing'?'نوبت: '+(g.turn==='a'?'X':'O'):'بازی تمام شده'))+'</p><button id="newgame">شروع دوباره</button></div><div class="card"><h3>حقیقت یا جرئت</h3><p id="tod">یک سؤال انتخاب کن و با هم جواب بدهید.</p><button id="truth">حقیقت</button> <button id="dare">جرئت</button><button id="nexttod" class="secondary">سؤال بعدی</button></div><div class="card"><h3>چقدر من را می‌شناسی؟</h3><p>هر نفر جداگانه پاسخ بدهد و سپس جواب‌ها را با هم مقایسه کنید.</p><p id="knowq"></p><button id="nextknow">سؤال بعدی</button></div>';
+  var mem=I['game:memory']&&I['game:memory'].v;
+  if(!mem||!Array.isArray(mem.cards)||mem.cards.length!==12)mem={cards:['💌','🌹','🐻','💖','🌙','🧸','💌','🌹','🐻','💖','🌙','🧸'].sort(function(){return Math.random()-.5}),open:[],matched:[],moves:0};
+  var memory='<div class="memory-grid">';
+  mem.cards.forEach(function(c,i){var shown=mem.open.indexOf(i)>-1||mem.matched.indexOf(i)>-1;memory+='<button class="memory-card" data-memory="'+i+'" aria-label="کارت '+(i+1)+'" '+(shown?'disabled':'')+'>'+E(shown?c:'♥')+'</button>';});
+  memory+='</div>';
+  var cq=I['game:choice']&&I['game:choice'].v;
+  if(!cq||!cq.q)cq={q:0,answers:{}};
+  var choices=[
+    ['قرار در خانه 🏡','قرار بیرون 🌃'],['سفر دونفره 🚗','شب فیلم 🎬'],['نامه عاشقانه 💌','هدیه غافلگیرکننده 🎁'],
+    ['صبحانه باهم ☕','شام دونفره 🍝'],['تماشای ستاره‌ها ✨','قدم‌زدن زیر باران 🌧️'],['عکس یادگاری 📸','خاطره‌نویسی 📖']
+  ];
+  var pair=choices[cq.q%choices.length],ans=cq.answers||{};
+  var truthList=['کدام خاطره‌مان را همیشه به یاد می‌آوری؟','چه کاری باعث می‌شود بیشتر احساس دوست‌داشته‌شدن کنی؟','قرار رؤیایی تو چه شکلی است؟','چه چیزی را دوست داری با هم تجربه کنیم؟','اولین چیزی که در من توجهت را جلب کرد چه بود؟','چه چیزی همیشه لبخند روی لبت می‌آورد؟','اگر همین حالا سفر برویم، کجا را انتخاب می‌کنی؟'];
+  var dareList=['یک پیام عاشقانه در سه جمله بگو.','یک آهنگ برای رابطه‌مان انتخاب کن.','سه ویژگی دوست‌داشتنی طرف مقابل را بگو.','یک قرار ساده برای این هفته پیشنهاد بده.','یک خاطره خنده‌دارمان را تعریف کن.','۳۰ ثانیه بدون خندیدن به چشم‌های هم نگاه کنید.','یک تعریف تازه و واقعی از پارتنرت بکن.','یک عکس دونفره با ژست بامزه بگیرید.'];
+  var know=['غذای موردعلاقه من چیست؟','کدام مقصد را بیشتر دوست دارم؟','چه چیزی سریع حالم را بهتر می‌کند؟','کدام خاطره‌مان برایم خاص‌تر است؟','چه مهارتی را دوست دارم یاد بگیرم؟','وقتی ناراحتم بیشتر به چه چیزی نیاز دارم؟'];
+  var today=new Date().toISOString().slice(0,10),daily=I['challenge:'+today]&&I['challenge:'+today].v;
+  V.innerHTML='<h2>مرکز بازی‌های دونفره 🎮</h2><p class="muted">بازی کنید، همدیگر را بهتر بشناسید و خاطره بسازید.</p>'+
+  '<div class="card"><div class="game-heading"><h3>⭕ دوز عاشقانه</h3><span class="game-tag">دو نفره</span></div><p>'+(online?'اتاق مشترک فعال است؛ نوبت شما: '+(role==='a'?'X':'O'):'حالت محلی؛ دو نفر روی همین دستگاه بازی کنند.')+'</p>'+board+'<p class="game-status">'+(w?(w==='draw'?'بازی مساوی شد.':('برنده: '+(w==='a'?'X':'O'))):(g.status==='playing'?'نوبت: '+(g.turn==='a'?'X':'O'):'بازی تمام شده'))+'</p><button id="newgame">شروع دوباره</button></div>'+
+  '<div class="card"><div class="game-heading"><h3>🧠 حافظه‌ی عاشقانه</h3><span class="game-tag">۶ جفت کارت</span></div><p>کارت‌های مشابه را پیدا کنید. تعداد حرکت‌ها: <b>'+fa(mem.moves)+'</b> · جفت‌های پیدا شده: <b>'+fa(mem.matched.length/2)+'/۶</b></p>'+memory+'<button id="memory-reset" class="secondary">شروع دوباره</button></div>'+
+  '<div class="card"><div class="game-heading"><h3>💞 این یا اون؟</h3><span class="game-tag">سلیقه‌شناسی</span></div><p>هر نفر انتخاب خودش را ثبت کند؛ بعد انتخاب‌ها را با هم مقایسه کنید.</p><p><b>'+pair[0]+'</b> <span class="muted">یا</span> <b>'+pair[1]+'</b></p><div class="choice-row"><button data-choice="0">'+pair[0]+'</button><button data-choice="1" class="secondary">'+pair[1]+'</button></div><p>انتخاب شما: '+E(ans[role]===0?pair[0]:ans[role]===1?pair[1]:'ثبت نشده')+'</p><p>انتخاب پارتنر: '+E(ans[role==='a'?'b':'a']===0?pair[0]:ans[role==='a'?'b':'a']===1?pair[1]:'تا الان ثبت نشده')+'</p><button id="choice-next" class="secondary">سؤال بعدی</button></div>'+
+  '<div class="card"><div class="game-heading"><h3>💬 حقیقت یا جرئت</h3><span class="game-tag">بدون امتیاز</span></div><p id="tod">یک مورد انتخاب کنید و با هم انجام دهید.</p><button id="truth">حقیقت</button> <button id="dare">جرئت</button><button id="nexttod" class="secondary">تصادفی</button></div>'+
+  '<div class="card"><div class="game-heading"><h3>💘 چقدر من را می‌شناسی؟</h3><span class="game-tag">سؤال دونفره</span></div><p>هر نفر اول جوابش را بگوید؛ بعد جواب‌ها را مقایسه کنید.</p><p id="knowq"></p><button id="nextknow">سؤال بعدی</button></div>'+
+  '<div class="card"><div class="game-heading"><h3>🌟 چالش امروز</h3><span class="game-tag">'+(daily&&daily.done?'انجام شد':'روزانه')+'</span></div><p>'+E(daily&&daily.text||'امروز هر کدام سه ویژگی بگویید که در دیگری تحسین می‌کنید.')+'</p><button id="daily-done" '+(daily&&daily.done?'disabled':'')+'>'+(daily&&daily.done?'ثبت شده 💗':'انجام دادیم 💗')+'</button></div>'+
+  '<div class="card"><div class="game-heading"><h3>🔤 اسم‌وفامیل دونفره</h3><span class="game-tag">هم‌زمان</span></div><p>حرف این دور: <b id="nf-letter"></b> · هر دو نفر جواب‌های خودشان را ثبت کنند.</p><div class="form-grid"><label>اسم <input id="nf-name" maxlength="30"></label><label>فامیل <input id="nf-family" maxlength="30"></label><label>شهر <input id="nf-city" maxlength="30"></label><label>غذا <input id="nf-food" maxlength="30"></label><label>حیوان <input id="nf-animal" maxlength="30"></label></div><button id="nf-save">ثبت جواب‌های من</button><button id="nf-next" class="secondary">حرف جدید</button><p id="nf-status"></p></div>'+
+  '<div class="card"><div class="game-heading"><h3>🕵️ حدس کلمه</h3><span class="game-tag">نوبتی</span></div><p>یک نفر کلمه را انتخاب کند و فقط سرنخ را نشان بدهد؛ نفر دیگر حدس بزند. این نسخه سرنخ و جواب آماده دارد.</p><p><b id="word-hint"></b></p><input id="word-guess" maxlength="50" placeholder="حدس شما"><button id="word-check">بررسی حدس</button><button id="word-next" class="secondary">کلمه‌ی تازه</button><p id="word-result" aria-live="polite"></p></div>';
   V.querySelectorAll('[data-cell]').forEach(function(b){b.onclick=function(){
     var idx=+b.getAttribute('data-cell'),cur=I['game:state']&&I['game:state'].v;
     if(!cur||!Array.isArray(cur.board))cur={board:['','','','','','','','',''],turn:'a',status:'playing'};
@@ -263,12 +287,61 @@ function games(){
     var win=winner(cur.board);cur.winner=win;cur.status=win?'finished':'playing';cur.turn=cur.turn==='a'?'b':'a';cur.updated=Date.now();
     set('game:state',cur);games();
   }});
-  $('#newgame').onclick=function(){if(!confirm('بازی فعلی از نو شروع شود؟'))return;set('game:state',{board:['','','','','','','','',''],turn:'a',status:'playing',winner:'',updated:Date.now()});games();};
-  var truths=['کدام خاطره‌مان را همیشه به یاد می‌آوری؟','چه کاری باعث می‌شود بیشتر احساس دوست‌داشته‌شدن کنی؟','قرار رؤیایی تو چه شکلی است؟','چه چیزی را دوست داری با هم تجربه کنیم؟','اولین چیزی که در من توجهت را جلب کرد چه بود؟'];
-  var dares=['یک پیام عاشقانه در سه جمله بگو.','یک آهنگ برای رابطه‌مان انتخاب کن.','سه ویژگی دوست‌داشتنی طرف مقابل را بگو.','یک قرار ساده برای این هفته پیشنهاد بده.','یک خاطره خنده‌دارمان را تعریف کن.'];
-  var know=['غذای موردعلاقه من چیست؟','کدام مقصد را بیشتر دوست دارم؟','چه چیزی سریع حالم را بهتر می‌کند؟','کدام خاطره‌مان برایم خاص‌تر است؟','چه مهارتی را دوست دارم یاد بگیرم؟'];
+  V.querySelectorAll('[data-memory]').forEach(function(b){b.onclick=function(){
+    var idx=+b.getAttribute('data-memory'),cur=JSON.parse(JSON.stringify((I['game:memory']&&I['game:memory'].v)||mem));
+    if(cur.matched.indexOf(idx)>-1||cur.open.indexOf(idx)>-1)return;
+    if(cur.open.length>=2){cur.open=[];}
+    cur.open.push(idx);
+    if(cur.open.length===2){cur.moves++;var a=cur.open[0],z=cur.open[1];if(cur.cards[a]===cur.cards[z]){cur.matched.push(a,z);cur.open=[];}}
+    set('game:memory',cur);games();
+  }});
+  $('#newgame').onclick=function(){set('game:state',{board:['','','','','','','','',''],turn:'a',status:'playing',winner:'',updated:Date.now()});games();};
+  $('#memory-reset').onclick=function(){set('game:memory',{cards:['💌','🌹','🐻','💖','🌙','🧸','💌','🌹','🐻','💖','🌙','🧸'].sort(function(){return Math.random()-.5}),open:[],matched:[],moves:0});games();};
+  V.querySelectorAll('[data-choice]').forEach(function(b){b.onclick=function(){var cur=JSON.parse(JSON.stringify((I['game:choice']&&I['game:choice'].v)||{q:0,answers:{}}));cur.answers=cur.answers||{};cur.answers[role]=+b.getAttribute('data-choice');set('game:choice',cur);games();};});
+  $('#choice-next').onclick=function(){var cur=JSON.parse(JSON.stringify((I['game:choice']&&I['game:choice'].v)||{q:0,answers:{}}));cur.q=(cur.q+1)%choices.length;cur.answers={};set('game:choice',cur);games();};
   function pick(a,id){$('#'+id).textContent=a[Math.floor(Math.random()*a.length)];}
-  $('#truth').onclick=function(){pick(truths,'tod')};$('#dare').onclick=function(){pick(dares,'tod')};$('#nexttod').onclick=function(){pick(truths.concat(dares),'tod')};$('#nextknow').onclick=function(){pick(know,'knowq')};pick(know,'knowq');
+  $('#truth').onclick=function(){pick(truthList,'tod')};$('#dare').onclick=function(){pick(dareList,'tod')};$('#nexttod').onclick=function(){pick(truthList.concat(dareList),'tod')};$('#nextknow').onclick=function(){pick(know,'knowq')};pick(know,'knowq');
+  $('#daily-done').onclick=function(){set('challenge:'+today,{done:true,text:'امروز هر کدام سه ویژگی بگویید که در دیگری تحسین می‌کنید.',at:Date.now()});games();};
+  var lettersNF=['م','س','آ','ر','ن','ک','ب','د','ش','ف'],nf=I['game:namefamily']&&I['game:namefamily'].v;if(!nf)nf={letter:'م',answers:{}};
+  $('#nf-letter').textContent=nf.letter;var mine=nf.answers&&nf.answers[role]||{};['name','family','city','food','animal'].forEach(function(k){$('#nf-'+k).value=mine[k]||''});
+  var otherAns=nf.answers&&nf.answers[role==='a'?'b':'a'];$('#nf-status').textContent='وضعیت شما: '+(nf.answers&&nf.answers[role]?'ثبت شده':'ثبت نشده')+' · پارتنر: '+(otherAns?'ثبت کرده':'منتظر پاسخ');
+  $('#nf-save').onclick=function(){var cur=JSON.parse(JSON.stringify((I['game:namefamily']&&I['game:namefamily'].v)||nf));cur.answers=cur.answers||{};cur.answers[role]={name:$('#nf-name').value.trim(),family:$('#nf-family').value.trim(),city:$('#nf-city').value.trim(),food:$('#nf-food').value.trim(),animal:$('#nf-animal').value.trim()};set('game:namefamily',cur);games()};
+  $('#nf-next').onclick=function(){var cur={letter:lettersNF[Math.floor(Math.random()*lettersNF.length)],answers:{}};set('game:namefamily',cur);games()};
+  var words=[{w:'باران',h:'از آسمان می‌بارد و زمین را خیس می‌کند.'},{w:'قهوه',h:'نوشیدنی گرم و محبوب صبح‌ها.'},{w:'ستاره',h:'شب‌ها در آسمان دیده می‌شود.'},{w:'آغوش',h:'گاهی بدون حرف زدن آرامت می‌کند.'},{w:'سفر',h:'با هم رفتنش می‌تواند خاطره‌ساز باشد.'},{w:'شکلات',h:'خوراکی شیرین که خیلی‌ها دوستش دارند.'}];
+  var wi=I['game:word']&&I['game:word'].v;if(!wi||typeof wi.index!=='number')wi={index:0};var word=words[wi.index%words.length];$('#word-hint').textContent='سرنخ: '+word.h;
+  $('#word-check').onclick=function(){var guess=$('#word-guess').value.replace(/\s/g,'').trim();$('#word-result').textContent=guess===word.w?'آفرین! درست حدس زدی 💗':'هنوز نه؛ دوباره فکر کن یا از سرنخ استفاده کن.'};
+  $('#word-next').onclick=function(){set('game:word',{index:Math.floor(Math.random()*words.length)});games()};
+}
+
+function drawPage(){
+  var strokes=Object.keys(I).filter(function(k){return k.indexOf('draw:')===0&&k!=='draw:clear'&&I[k]&&I[k].v&&Array.isArray(I[k].v.points)}).map(function(k){return {id:k,v:I[k].v,t:I[k].t||0}}).filter(function(s){return s.t>((I['draw:clear']&&I['draw:clear'].t)||0)}).sort(function(a,b){return a.t-b.t});
+  var palette=['#e84375','#6c4bd3','#1e9d83','#f39c12','#253047','#111111'];
+  V.innerHTML='<h2>🎨 بوم نقاشی دونفره</h2><p class="muted">هر دو نفر هم‌زمان نقاشی بکشید؛ خط‌ها به‌صورت جداگانه همگام می‌شوند. صفحه را باز نگه دارید تا تغییرات سریع‌تر برسند.</p><div class="card draw-tools"><label>رنگ <select id="draw-color">'+palette.map(function(c){return '<option value="'+c+'">'+c+'</option>'}).join('')+'</select></label><label>ضخامت <input id="draw-width" type="range" min="2" max="18" value="5"></label><button id="draw-undo" class="secondary">پاک‌کردن آخرین خط من</button><button id="draw-clear" class="secondary">پاک‌کردن کل بوم</button></div><div class="card draw-wrap"><canvas id="draw-canvas" aria-label="بوم نقاشی مشترک"></canvas></div><div class="card"><h3>💡 ایده‌های نقاشی</h3><p>چشم‌بسته یکدیگر را بکشید، خانه‌ی رؤیایی‌تان را طراحی کنید یا هر نفر نصف یک قلب را بکشد.</p><small id="draw-status">خطوط ذخیره‌شده: '+fa(strokes.length)+' · '+(API&&cfg.id?'همگام‌سازی مشترک فعال':'فقط روی این دستگاه؛ برای نقاشی از دو گوشی فضای مشترک را فعال کنید')+'</small></div>';
+  var canvas=$('#draw-canvas'),ctx=canvas.getContext('2d'),drawing=false,current=null,last=null;
+  function size(){var r=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.max(1,Math.round(r.width*dpr));canvas.height=Math.max(1,Math.round(360*dpr));canvas.style.height='360px';ctx.setTransform(dpr,0,0,dpr,0,0);paint()}
+  function paint(){var w=canvas.clientWidth,h=360;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fffdfd';ctx.fillRect(0,0,w,h);strokes.forEach(function(s){var p=s.v.points;if(!p.length)return;ctx.strokeStyle=s.v.color||'#e84375';ctx.lineWidth=s.v.width||5;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(p[0][0]*w,p[0][1]*h);for(var i=1;i<p.length;i++)ctx.lineTo(p[i][0]*w,p[i][1]*h);if(p.length===1){ctx.lineTo(p[0][0]*w+.01,p[0][1]*h+.01)}ctx.stroke()});if(current&&current.points.length){ctx.strokeStyle=current.color;ctx.lineWidth=current.width;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(current.points[0][0]*w,current.points[0][1]*h);for(var j=1;j<current.points.length;j++)ctx.lineTo(current.points[j][0]*w,current.points[j][1]*h);ctx.stroke()}}
+  function point(e){var r=canvas.getBoundingClientRect();return [Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))]}
+  canvas.addEventListener('pointerdown',function(e){drawing=true;canvas.setPointerCapture(e.pointerId);current={points:[point(e)],color:$('#draw-color').value,width:+$('#draw-width').value,by:cfg.me||'local',at:Date.now()};last=point(e);paint()});
+  canvas.addEventListener('pointermove',function(e){if(!drawing||!current)return;var p=point(e);if(!last||Math.hypot((p[0]-last[0])*canvas.clientWidth,(p[1]-last[1])*360)>1){current.points.push(p);last=p;paint()}});
+  function finish(){if(!drawing||!current)return;drawing=false;if(current.points.length){var sid='draw:'+rid(),stamp=Date.now();set(sid,current);strokes.push({id:sid,v:current,t:stamp});}current=null;last=null;paint();var s=$('#draw-status');if(s)s.textContent='خطوط ذخیره‌شده: '+fa(strokes.length)+' · '+(API&&cfg.id?'در حال همگام‌سازی':'ذخیره محلی')}
+  canvas.addEventListener('pointerup',finish);canvas.addEventListener('pointercancel',finish);window.addEventListener('resize',size);size();
+  $('#draw-undo').onclick=function(){var me=cfg.me||'local',mine=strokes.filter(function(s){return s.v.by===me});if(!mine.length)return toast('خطی از شما برای پاک‌کردن نیست.');var lastStroke=mine[mine.length-1];set(lastStroke.id,null);strokes=strokes.filter(function(s){return s.id!==lastStroke.id});paint()};
+  $('#draw-clear').onclick=function(){if(!confirm('کل نقاشی برای هر دو نفر پاک شود؟'))return;set('draw:clear',{at:Date.now(),by:cfg.me||'local'});strokes.forEach(function(s){set(s.id,null)});strokes=[];paint();toast('بوم پاک شد.')};
+}
+
+function challengesPage(){
+  var prompts=['هر کدام سه ویژگی بگویید که در دیگری تحسین می‌کنید.','یک آهنگ انتخاب کنید که حال‌وهوای رابطه‌تان را توصیف کند.','یک قرار کم‌هزینه برای این هفته طراحی کنید.','هر کدام یک خاطره بگویید که هنوز لبخندتان می‌آورد.','ده دقیقه بدون گوشی با هم حرف بزنید.','یک چیز تازه درباره‌ی آرزوهای هم بپرسید.','برای یکدیگر یک پیام تشکر صادقانه بنویسید.'];
+  var today=new Date().toISOString().slice(0,10),key='challenge:'+today,st=I[key]&&I[key].v,idx=Math.floor(Date.now()/86400000)%prompts.length,txt=st&&st.text||prompts[idx];
+  V.innerHTML='<h2>چالش‌های دونفره 🌟</h2><p>فعالیت‌های کوچک برای نزدیک‌تر شدن؛ بدون اجبار و با احترام به مرزهای هر دو نفر.</p><div class="card"><small>چالش امروز · '+E(today)+'</small><h3>'+E(txt)+'</h3><p>'+(st&&st.done?'این چالش ثبت شده؛ آفرین به شما 💗':'با هم انجامش دهید و بعد ثبت کنید.')+'</p><button id="challenge-done" '+(st&&st.done?'disabled':'')+'>'+(st&&st.done?'انجام شده 💗':'ما انجامش دادیم')+'</button><button id="challenge-next" class="secondary">یک ایده‌ی دیگر</button></div><div class="card"><h3>ایده‌های قرار دونفره</h3><ul><li>شب فیلم با خوراکی خانگی</li><li>پیاده‌روی و گرفتن یک عکس یادگاری</li><li>درست‌کردن یک غذای جدید با هم</li><li>نوشتن نامه برای آینده‌ی رابطه</li><li>ساختن پلی‌لیست مشترک</li></ul></div>';
+  $('#challenge-done').onclick=function(){set(key,{done:true,text:txt,at:Date.now()});challengesPage();};
+  $('#challenge-next').onclick=function(){set(key,{done:false,text:prompts[Math.floor(Math.random()*prompts.length)],at:Date.now()});challengesPage();};
+}
+function achievementsPage(){
+  var gamesPlayed=Object.keys(I).filter(function(k){return k.indexOf('game:')===0&&I[k]&&I[k].v;}).length;
+  var stories=D.story.length,letters=D.letters.length,events=D.events.length,done=D.wishes.filter(function(w){return w.k}).length;
+  var days=day();
+  var badges=[{ok:stories>0,icon:'📸',title:'خاطره‌ساز',desc:'اولین خاطره را ثبت کنید.'},{ok:letters>0,icon:'💌',title:'نامه‌نویس',desc:'اولین نامه را بنویسید.'},{ok:done>0,icon:'✨',title:'آرزوپرداز',desc:'یک آرزو را انجام‌شده کنید.'},{ok:events>0,icon:'📅',title:'مناسبت‌شناس',desc:'یک مناسبت ثبت کنید.'},{ok:gamesPlayed>0,icon:'🎮',title:'اهل بازی',desc:'یکی از بازی‌ها را امتحان کنید.'},{ok:days>=30,icon:'💗',title:'یک ماه کنار هم',desc:'به روز سی‌ام رابطه برسید.'}];
+  V.innerHTML='<h2>دستاوردهای ما 🏆</h2><p>این صفحه برای جشن گرفتن قدم‌های کوچک رابطه است، نه رقابت با یکدیگر.</p><div class="stats-grid"><div class="stat-card"><b>'+fa(stories)+'</b><span>خاطره</span></div><div class="stat-card"><b>'+fa(letters)+'</b><span>نامه</span></div><div class="stat-card"><b>'+fa(done)+'</b><span>آرزوی انجام‌شده</span></div><div class="stat-card"><b>'+fa(days)+'</b><span>روز رابطه</span></div></div><div class="badge-grid">'+badges.map(function(b){return '<div class="card badge-card '+(b.ok?'unlocked':'locked')+'"><div class="badge-icon">'+b.icon+'</div><h3>'+E(b.title)+'</h3><p>'+E(b.desc)+'</p><small>'+(b.ok?'دریافت‌شده ✓':'هنوز قفل است')+'</small></div>';}).join('')+'</div><div class="card"><h3>قدم بعدی</h3><p>یک خاطره ثبت کنید، برای هم نامه بنویسید یا یک چالش دونفره انجام دهید.</p><div class="go"><a href="story.html">ثبت خاطره</a><a href="letters.html">نوشتن نامه</a><a href="challenges.html">چالش امروز</a></div></div>';
 }
 var mapWatch=null,mapExpiry=null,lastLocAt=0;
 function mapPage(){
@@ -334,7 +407,7 @@ function settings(){
   $('#clearlocal').onclick=function(){if(!confirm('همه داده‌های محلی این مرورگر پاک شود؟ قبل از ادامه پشتیبان بگیرید.'))return;localStorage.removeItem(K);location.reload();};
 }
 
-var R={index:home,story:story,letters:letters,wishes:wishes,calendar:cal,qa:qa,chat:chat,games:games,map:mapPage,settings:settings};
+var R={index:home,story:story,letters:letters,wishes:wishes,calendar:cal,qa:qa,chat:chat,games:games,draw:drawPage,challenges:challengesPage,achievements:achievementsPage,map:mapPage,settings:settings};
 V.addEventListener('click',function(e){
   var d=e.target.getAttribute&&e.target.getAttribute('data-del');
   if(d&&I[d]&&confirm('حذف شود؟')){set(d,null);R[P]()}
