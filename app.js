@@ -359,6 +359,7 @@ var ld=day();
 function tick(){var d=day();if(d!==ld&&!editing()){ld=d;R[P]()}}
 setInterval(tick,30000);setInterval(poll,3000);
 document.addEventListener('visibilitychange',function(){if(!document.hidden){tick();poll()}});
+window.addEventListener('ourhome:localchange',function(){var liveCfg=Object.assign({},cfg);if(loadLS()){cfg=Object.assign({},cfg,liveCfg);applyStartSetting();build();if(Object.keys(dirty).length)sched();if(!editing())(R[P]||home)();}});
 window.addEventListener('storage',function(e){if(e.key===K&&!editing()){loadLS();build();R[P]()}});
 (R[P]||home)();status();
 if(cfg.id)flush();
