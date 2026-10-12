@@ -8,7 +8,7 @@ const hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(
 const rnd=n=>hex(crypto.getRandomValues(new Uint8Array(n)));
 const enc=s=>new TextEncoder().encode(s);
 const sha=async s=>hex(await crypto.subtle.digest('SHA-256',enc(s)));
-async function hashPassword(password,salt){const key=await crypto.subtle.importKey('raw',enc(password),'PBKDF2',false,['deriveBits']);const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt:enc(salt),iterations:210000,hash:'SHA-256'},key,256);return hex(bits)}
+async function hashPassword(password,salt){const key=await crypto.subtle.importKey('raw',enc(password),'PBKDF2',false,['deriveBits']);const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt:enc(salt),iterations:100000,hash:'SHA-256'},key,256);return hex(bits)}
 async function verifyPassword(password,rec){try{return (await hashPassword(password,rec.salt))===rec.ph}catch{return false}}
 function accountKey(username){return 'u:'+username}
 export default {
