@@ -6,7 +6,7 @@ var I={},dirty={},cfg={},D,otherSeen=0,busy=false,dead=false,timer=null;
 /* ---------- اعتبارسنجی ---------- */
 function str(v,n){return typeof v==='string'?v.slice(0,n):''}
 function clean(c,v){
-  if(c==='story')return ISO.test(v.d)&&str(v.t,1)?{d:v.d,t:str(v.t,120),x:str(v.x,3000)}:0;
+  if(c==='story')return ISO.test(v.d)&&str(v.t,1)?{d:v.d,t:str(v.t,120),x:str(v.x,3000),img:typeof v.img==='string'&&/^data:image\\/(?:jpeg|png|webp);base64,/.test(v.img)&&v.img.length<=180000?v.img:''}:0;
   if(c==='letters')return ISO.test(v.c)&&str(v.t,1)?{f:v.f?1:0,t:str(v.t,120),x:str(v.x,20000),c:v.c,u:ISO.test(v.u)?v.u:''}:0;
   if(c==='wishes')return str(v.t,1)?{t:str(v.t,200),k:v.k?1:0,p:['low','normal','high'].indexOf(v.p)>-1?v.p:'normal',budget:Math.max(0,Math.min(1000000000,Number(v.budget)||0)),due:ISO.test(v.due)?v.due:'',owner:['0','1','both'].indexOf(String(v.owner))>-1?String(v.owner):'both',note:str(v.note,500)}:0;
   if(c==='events')return ISO.test(v.d)&&str(v.t,1)?{d:v.d,t:str(v.t,120),r:!!v.r}:0;
@@ -161,9 +161,27 @@ function home(){
 function story(){
   var h='';
   D.story.slice().sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:a.id<b.id?-1:1}).forEach(function(s){
-    h+='<div class="card"><small>'+sh(s.d)+'</small><h3>'+E(s.t)+'</h3><p>'+E(s.x)+'</p><button class="x" data-del="story:'+E(s.id)+'" aria-label="حذف «'+E(s.t)+'»">حذف</button></div>'});
-  V.innerHTML='<h2>داستان ما</h2><div class="card"><input type="date" id="a" value="'+iso()+'" aria-label="تاریخ"><input id="b" maxlength="120" placeholder="عنوان لحظه" aria-label="عنوان لحظه"><textarea id="c" rows="2" maxlength="3000" placeholder="چه اتفاقی افتاد؟" aria-label="توضیح"></textarea><button id="ad">افزودن به داستان</button></div>'+h;
-  $('#ad').onclick=function(){var t=$('#b').value.trim();if(!t||!$('#a').value)return toast('تاریخ و عنوان لازم است');set('story:'+rid(),{d:$('#a').value,t:t,x:$('#c').value});story();focusB()};
+    h+='<div class="card memory-entry"><small>'+sh(s.d)+'</small><h3>'+E(s.t)+'</h3><p>'+E(s.x)+'</p>'+(s.img?'<img class="memory-photo" src="'+E(s.img)+'" alt="عکس خاطره: '+E(s.t)+'" loading="lazy">':'')+'<button class="x" data-del="story:'+E(s.id)+'" aria-label="حذف «'+E(s.t)+'»">حذف</button></div>'});
+  V.innerHTML='<h2>داستان ما 📸</h2><p class="muted">خاطره‌ها می‌توانند متن یا عکس داشته باشند. عکس پیش از ذخیره کوچک می‌شود تا همگام‌سازی سبک‌تر بماند.</p><div class="card"><label for="a">تاریخ خاطره</label><input type="date" id="a" value="'+iso()+'" aria-label="تاریخ"><label for="b">عنوان لحظه</label><input id="b" maxlength="120" placeholder="عنوان لحظه" aria-label="عنوان لحظه"><label for="c">توضیح خاطره</label><textarea id="c" rows="2" maxlength="3000" placeholder="چه اتفاقی افتاد؟" aria-label="توضیح"></textarea><label for="photo">عکس خاطره (اختیاری)</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp" aria-label="انتخاب عکس خاطره"><small>فرمت JPG، PNG یا WebP؛ حداکثر فایل اولیه ۱۲ مگابایت. عکس برای همگام‌سازی فشرده می‌شود.</small><button id="ad">ذخیره‌ی خاطره</button></div>'+(h||'<p class="muted">هنوز خاطره‌ای ثبت نشده؛ اولین خاطره‌تان را اضافه کنید.</p>');
+  $('#ad').onclick=function(){
+    var t=$('#b').value.trim(),date=$('#a').value,desc=$('#c').value,file=$('#photo').files[0];
+    if(!t||!date)return toast('تاریخ و عنوان لازم است');
+    function commit(img){set('story:'+rid(),{d:date,t:t,x:desc,img:img||''});story();toast('خاطره ذخیره شد.');}
+    if(!file){commit('');return}
+    if(!/^image\\/(?:jpeg|png|webp)$/.test(file.type)||file.size>12*1024*1024)return toast('عکس باید JPG، PNG یا WebP و حداکثر ۱۲ مگابایت باشد.');
+    var url=URL.createObjectURL(file),image=new Image();
+    image.onload=function(){
+      URL.revokeObjectURL(url);
+      var scale=Math.min(1,1000/Math.max(image.naturalWidth,image.naturalHeight)),w=Math.max(1,Math.round(image.naturalWidth*scale)),hh=Math.max(1,Math.round(image.naturalHeight*scale)),canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+      canvas.width=w;canvas.height=hh;ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,hh);ctx.drawImage(image,0,0,w,hh);
+      var data='',quality=.76;
+      while(quality>=.4){data=canvas.toDataURL('image/jpeg',quality);if(data.length<=180000)break;quality-=.08}
+      if(data.length>180000)return toast('این عکس هنوز بزرگ است؛ عکس دیگری انتخاب کنید.');
+      commit(data);
+    };
+    image.onerror=function(){URL.revokeObjectURL(url);toast('خواندن عکس ممکن نشد؛ فایل دیگری انتخاب کنید.')};
+    image.src=url;
+  };
 }
 
 function letters(){
