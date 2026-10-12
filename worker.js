@@ -46,7 +46,19 @@ export default {
      raw=await env.DB.get(accountKey(username));
     }
     if(!raw)return J({error:'حساب کاربری پیدا نشد؛ Secrets کلودفلر را بررسی کنید.'},503);
-    const rec=JSON.parse(raw);if(!await verifyPassword(password,rec))return J({error:'نام کاربری یا رمز عبور اشتباه است'},401);
+    const rec=JSON.parse(raw);
+    let valid=await verifyPassword(password,rec);
+    // Migration for accounts hashed by the older Worker (210000 PBKDF2 rounds).
+    // Since this runtime caps PBKDF2 at 100000, verify against the Cloudflare Secret
+    // and re-hash with the supported setting. Preserve doc ID, role, and shared tokens.
+    const configuredPassword=username==='424'?env.USER_424_PASSWORD:env.USER_626_PASSWORD;
+    if(!valid && typeof configuredPassword==='string' && password===configuredPassword){
+      const salt=rnd(16), ph=await hashPassword(password,salt);
+      rec.salt=salt; rec.ph=ph;
+      await env.DB.put(accountKey(username),JSON.stringify(rec));
+      valid=true;
+    }
+    if(!valid)return J({error:'نام کاربری یا رمز عبور اشتباه است'},401);
     const session=rnd(32),sessionHash=await sha(session);
     await env.DB.put('s:'+sessionHash,JSON.stringify({id:rec.id,role:rec.role,username:rec.username,createdAt:Date.now()}),{expirationTtl:2592000});
     return J({ok:true,session,id:rec.id,me:rec.role,username:rec.username,name:rec.name,expiresIn:2592000});
