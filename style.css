@@ -58,3 +58,8 @@ button.secondary{background:transparent;color:var(--wine);border:1px solid var(-
 .map-frame{width:100%;height:280px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
 .card a{color:var(--wine);text-decoration:underline}
 @media(min-width:760px){main{max-width:780px;padding-top:26px}.go{grid-template-columns:repeat(3,1fr)}}
+
+/* حالت لینک فقط-مشاهده */
+.readonly-note{padding:12px 14px;margin:0 0 14px;border:1px solid var(--line,#ddd);border-radius:12px;background:var(--card,#f7f7f7);font-size:.92rem}
+.readonly-mode [contenteditable=true]{cursor:default}
+.readonly-mode button:disabled{opacity:.55;cursor:not-allowed}

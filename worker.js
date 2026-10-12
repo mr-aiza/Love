@@ -35,9 +35,20 @@ export default {
         const n = +(await env.DB.get(rk) || 0);
         if (n >= 10) return J({ error: 'درخواست زیاد است؛ یک ساعت دیگر تلاش کنید' }, 429);
         await env.DB.put(rk, String(n + 1), { expirationTtl: 3700 });
-        const id = rnd(8), a = rnd(24), b = rnd(24);
-        await env.DB.put('d:' + id, JSON.stringify({ ta: await sha(a), tb: await sha(b), items: {}, seen: { a: 0, b: 0 } }));
-        return J({ id, a, b });
+        const id = rnd(8), a = rnd(24), b = rnd(24), v = rnd(24);
+        await env.DB.put('d:' + id, JSON.stringify({ ta: await sha(a), tb: await sha(b), tv: await sha(v), items: {}, seen: { a: 0, b: 0 } }));
+        return J({ id, a, b, v });
+      }
+
+      const vm = u.pathname.match(/^\/api\/view-token\/([a-f0-9]{16})$/);
+      if (req.method === 'POST' && vm) {
+        const rawDoc = await env.DB.get('d:' + vm[1]);
+        if (!rawDoc) return J({ error: 'فضای مشترک پیدا نشد' }, 404);
+        const vd = JSON.parse(rawDoc), tokenHash = await sha(req.headers.get('x-token') || '');
+        if (tokenHash !== vd.ta && tokenHash !== vd.tb) return J({ error: 'فقط اعضای فضای مشترک می‌توانند لینک مشاهده بسازند' }, 401);
+        const v = rnd(24); vd.tv = await sha(v);
+        await env.DB.put('d:' + vm[1], JSON.stringify(vd));
+        return J({ v });
       }
 
       const m = u.pathname.match(/^\/api\/doc\/([a-f0-9]{16})$/);
@@ -46,9 +57,10 @@ export default {
       if (!raw) return J({ error: 'سند پیدا نشد' }, 404);
       const doc = JSON.parse(raw);
       const h = await sha(req.headers.get('x-token') || '');
-      const role = h === doc.ta ? 'a' : h === doc.tb ? 'b' : '';
+      const role = h === doc.ta ? 'a' : h === doc.tb ? 'b' : h === doc.tv ? 'v' : '';
       if (!role) return J({ error: 'دسترسی مجاز نیست' }, 401);
       if (req.method === 'GET') return J({ items: doc.items, seen: doc.seen });
+      if (role === 'v') return J({ error: 'این لینک فقط اجازه مشاهده دارد' }, 403);
       if (req.method !== 'PUT') return J({ error: 'روش نامعتبر' }, 405);
 
       const declared = +(req.headers.get('content-length') || 0);

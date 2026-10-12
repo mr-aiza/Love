@@ -2,6 +2,7 @@
 'use strict';
 var API=(window.OURHOME_API||'').replace(/\/+$/,''),K='hd2',S=new Date(2026,8,29),MS=[30,50,100,200,365,500,1000],P=document.body.getAttribute('data-page'),ISO=/^\d{4}-\d{2}-\d{2}$/,tt;
 var I={},dirty={},cfg={},D,otherSeen=0,busy=false,dead=false,timer=null;
+function isViewer(){return !!cfg.readOnly||cfg.me==='v'}
 
 /* ---------- اعتبارسنجی ---------- */
 function str(v,n){return typeof v==='string'?v.slice(0,n):''}
@@ -52,10 +53,16 @@ applyStartSetting();
 if(cfg.theme==='dark'||cfg.theme==='light')document.documentElement.setAttribute('data-theme',cfg.theme);
 if(!I['story:start'])I['story:start']={v:{d:'2026-09-29',t:'شروع داستان ما',x:'روز اول؛ جایی که همه‌چیز شروع شد.'},t:0};
 else if(I['story:start'].v&&I['story:start'].v.d==='2026-09-30'){I['story:start']={v:Object.assign({},I['story:start'].v,{d:'2026-09-29'}),t:Math.max(Date.now(),(I['story:start'].t||0)+1)};dirty['story:start']=1;}
-(function(){ /* پیوستن با لینک پارتنر */
-  var h=new URLSearchParams(location.hash.slice(1)),d=h.get('d'),t=h.get('t');
+(function(){ /* ورود از لینک پارتنر یا لینک فقط-مشاهده */
+  var h=new URLSearchParams(location.hash.slice(1)),d=h.get('d'),t=h.get('t'),p=h.get('p');
   if(API&&d&&t&&/^[a-f0-9]{16}$/.test(d)&&/^[a-f0-9]{48}$/.test(t)){
-    cfg={id:d,tok:t,me:h.get('p')==='a'?'a':'b'};Object.keys(I).forEach(function(k){dirty[k]=1});
+    if(p==='v'){
+      cfg={id:d,tok:t,me:'v',readOnly:true,viewer:t,start:cfg.start||'2026-09-29'};
+      dirty={};
+    } else {
+      cfg={id:d,tok:t,me:p==='a'?'a':'b',other:h.get('o')||'',viewer:h.get('v')||'',start:cfg.start||'2026-09-29'};
+      Object.keys(I).forEach(function(k){dirty[k]=1});
+    }
     try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}save();
   }
 })();
@@ -90,10 +97,10 @@ function merge(r){
   var o=cfg.me==='a'?'b':'a';if(r.seen&&r.seen[o])otherSeen=r.seen[o];
   if(ch){applyStartSetting();build();save()}return ch;
 }
-function ensureSharedStart(){if(cfg.id&&API&&!I['settings:start'])set('settings:start',cfg.start||'2026-09-29')}
+function ensureSharedStart(){if(!isViewer()&&cfg.id&&API&&!I['settings:start'])set('settings:start',cfg.start||'2026-09-29')}
 function sched(){clearTimeout(timer);timer=setTimeout(function(){timer=null;flush()},800)}
 function flush(){
-  if(!cfg.id||!API||busy||dead)return status();
+  if(!cfg.id||!API||busy||dead||isViewer())return status();
   var ks=Object.keys(dirty).slice(0,200);if(!ks.length)return status();
   var body={items:{}};ks.forEach(function(k){body.items[k]=I[k]});
   busy=true;status('در حال همگام‌سازی…');
@@ -109,11 +116,29 @@ function poll(){
   if(document.hidden||!cfg.id||!API||busy||dead||Object.keys(dirty).length)return;
   api('GET').then(function(r){if(merge(r)&&!editing())(R[P]||home)();ensureSharedStart();status()}).catch(function(e){if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1)}else status('ارتباط با سرور برقرار نیست',1)});
 }
-function link(){
-  var u=new URL('index.html',location.href).href+'#d='+cfg.id+'&t='+cfg.other+'&p=b';
-  if(navigator.share)navigator.share({title:'خانه‌ی ما',url:u}).catch(function(){});
-  else if(navigator.clipboard)navigator.clipboard.writeText(u).then(function(){toast('لینک پارتنر کپی شد')},function(){prompt('لینک را کپی کنید:',u)});
+function shareUrl(u,title,ok){
+  if(navigator.share)navigator.share({title:title,url:u}).catch(function(){});
+  else if(navigator.clipboard)navigator.clipboard.writeText(u).then(function(){toast(ok)},function(){prompt('لینک را کپی کنید:',u)});
   else prompt('لینک را کپی کنید:',u);
+}
+function link(){
+  if(!cfg.id||!cfg.other)return toast('لینک دعوت پارتنر فقط از حساب سازنده فضای مشترک در دسترس است.');
+  var u=new URL('index.html',location.href).href+'#d='+cfg.id+'&t='+cfg.other+'&p=b&v='+(cfg.viewer||'');
+  shareUrl(u,'دعوت به خانه‌ی ما','لینک ویرایش پارتنر آماده‌ی ارسال است.');
+}
+function viewLink(){
+  if(!cfg.id||!API)return toast('ابتدا فضای مشترک و API را فعال کنید.');
+  function finish(token){
+    cfg.viewer=token;save();
+    var u=new URL('index.html',location.href).href+'#d='+cfg.id+'&t='+token+'&p=v';
+    shareUrl(u,'مشاهده‌ی خاطرات خانه‌ی ما','لینک فقط-مشاهده کپی شد؛ دارنده‌ی آن نمی‌تواند چیزی را ویرایش کند.');
+  }
+  if(cfg.viewer)return finish(cfg.viewer);
+  if(isViewer())return finish(cfg.tok);
+  fetch(API+'/api/view-token/'+cfg.id,{method:'POST',headers:{'content-type':'application/json','x-token':cfg.tok}})
+    .then(function(r){return r.json().then(function(j){if(!r.ok)throw j;return j})})
+    .then(function(j){if(!j.v)throw j;finish(j.v)})
+    .catch(function(e){toast((e&&e.error)||'ساخت لینک مشاهده ناموفق بود')});
 }
 
 /* ---------- منو ---------- */
@@ -136,16 +161,17 @@ function home(){
     b=hero(n,'روز با هم','<small>از '+shD(S)+'</small>'+vis+'<small>'+fa(nx-n)+' روز تا روز '+fa(nx)+'ام ('+shD(new Date(S.getTime()+(nx-1)*864e5))+')</small>')
      +(MS.indexOf(n)>-1?'<div class="card">🎉 امروز روز '+fa(n)+'ام است!</div>':'');
   }
-  var sy=!API?'':(!cfg.id?'<button id="sc">ساخت فضای مشترک دو نفره</button> ':(cfg.other?'<button id="sl">ارسال لینک پارتنر</button> ':''));
+  var sy=!API?'':(!cfg.id?'<button id="sc">ساخت فضای مشترک دو نفره</button> ':(isViewer()?'':(cfg.other?'<button id="sl">لینک ویرایش پارتنر</button> ':'') )+(cfg.viewer?'<button id="vl" class="secondary">لینک فقط-مشاهده</button>':'<button id="vl" class="secondary">ساخت لینک فقط-مشاهده</button>'));
   V.innerHTML=b+'<div class="go"><a href="story.html">📖 ثبت لحظه‌ی تازه</a><a href="letters.html">💌 نوشتن نامه</a><a href="wishes.html">✨ آرزوها</a><a href="calendar.html">📅 رویداد تازه</a><a href="qa.html">💬 سؤال امروز</a><a href="pledge.html">📜 تعهدنامه</a><a href="chat.html">💌 چت دونفره</a><a href="games.html">🎮 بازی‌های دونفره</a><a href="map.html">📍 نقشه و GPS</a><a href="settings.html">⚙️ تنظیمات</a></div>'
    +'<p><small>'+(cfg.id?'خاطرات، نامه‌ها، آرزوها، رویدادها و تغییرات بین هر دو نفر تقریباً زنده همگام می‌شوند.':'برای همگام‌سازی خاطرات و دسترسی پارتنر، فضای مشترک بسازید و لینک دعوت را بفرستید؛ تا قبل از آن اطلاعات فقط روی همین دستگاه است.')+' گاهی پشتیبان بگیرید.</small></p>'+sy+'<button id="ex">دانلود پشتیبان</button> <button id="im">بازیابی</button><input type="file" id="fi" accept=".json,application/json" hidden>';
   if($('#sc'))$('#sc').onclick=function(){
-    if(!confirm('یک فضای مشترک ساخته می‌شود و نوشته‌های فعلی داخلش می‌رود. سپس «ارسال لینک پارتنر» را بزنید و لینک را فقط برای پارتنرتان بفرستید (هر کس با آن لینک می‌تواند ویرایش کند). ادامه؟'))return;
+    if(!confirm('یک فضای مشترک ساخته می‌شود و نوشته‌های فعلی داخلش می‌رود. سپس «ارسال لینک پارتنر» را بزنید و لینک را فقط برای پارتنرتان بفرستید این لینک فقط برای پارتنر است و امکان ویرایش دارد. لینک عمومیِ فقط-مشاهده جداگانه ساخته می‌شود. ادامه؟'))return;
     fetch(API+'/api/create',{method:'POST'}).then(function(r){return r.json()}).then(function(j){
-      if(!j.id)throw j;cfg={id:j.id,tok:j.a,me:'a',other:j.b,start:cfg.start||'2026-09-29'};applyStartSetting();if(!I['settings:start']||!ISO.test(I['settings:start'].v))I['settings:start']={v:cfg.start,t:Date.now()};else if(I['settings:start'].v==='2026-09-30')I['settings:start']={v:'2026-09-29',t:Date.now()};Object.keys(I).forEach(function(k){dirty[k]=1});save();flush();home();link();
+      if(!j.id)throw j;cfg={id:j.id,tok:j.a,me:'a',other:j.b,viewer:j.v||'',start:cfg.start||'2026-09-29'};applyStartSetting();if(!I['settings:start']||!ISO.test(I['settings:start'].v))I['settings:start']={v:cfg.start,t:Date.now()};else if(I['settings:start'].v==='2026-09-30')I['settings:start']={v:'2026-09-29',t:Date.now()};Object.keys(I).forEach(function(k){dirty[k]=1});save();flush();home();link();
     }).catch(function(e){toast((e&&e.error)||'ساخت فضای مشترک ناموفق بود')});
   };
   if($('#sl'))$('#sl').onclick=link;
+  if($('#vl'))$('#vl').onclick=viewLink;
   $('#ex').onclick=function(){downloadBackup();toast('فایل پشتیبان دانلود شد')};
   $('#im').onclick=function(){$('#fi').click()};
   $('#fi').onchange=function(){var f=this.files[0];if(!f)return;if(f.size>12000000){toast('فایل پشتیبان بیش از حد بزرگ است.');return}var r=new FileReader();r.onload=function(){try{var raw=JSON.parse(r.result);if(!confirm('داده‌های فعلی با فایل پشتیبان جایگزین شود؟ قبل از ادامه مطمئن شوید نسخه پشتیبان دارید.'))return;restoreAll(raw);home();toast('بازیابی انجام شد')}catch(e){toast(e.message||'فایل پشتیبان معتبر نیست')}};r.readAsText(f)};
@@ -367,6 +393,17 @@ V.addEventListener('focusout',function(e){
   var v=e.target.textContent.replace(/\s+/g,' ').trim().slice(0,24);
   if(v&&v!==D.names[+i])set('names:'+i,v);e.target.textContent=D.names[+i];
 });
+function applyReadOnly(){
+  if(!isViewer()||!V)return;
+  document.body.classList.add('readonly-mode');
+  if(!$('#readonly-note')){var note=document.createElement('div');note.id='readonly-note';note.className='readonly-note';note.textContent='حالت مشاهده فقط است؛ امکان ویرایش، افزودن یا حذف اطلاعات وجود ندارد.';V.insertBefore(note,V.firstChild)}
+  V.querySelectorAll('input,textarea').forEach(function(el){el.readOnly=true;el.setAttribute('aria-readonly','true')});
+  V.querySelectorAll('select,button').forEach(function(el){el.disabled=true});
+  V.querySelectorAll('[contenteditable="true"]').forEach(function(el){el.setAttribute('contenteditable','false');el.removeAttribute('role')});
+  V.querySelectorAll('.card').forEach(function(card){if(card.querySelector('input,textarea,select')&&card.querySelector('button'))card.style.display='none'});
+}
+/* اعمال محدودیت مشاهده پس از هر بار بازسازی صفحه */
+Object.keys(R).forEach(function(k){var original=R[k];R[k]=function(){original();applyReadOnly()}});
 var ld=day();
 function tick(){var d=day();if(d!==ld&&!editing()){ld=d;R[P]()}}
 setInterval(tick,30000);setInterval(poll,3000);
