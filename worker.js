@@ -19,6 +19,7 @@ export default {
   if(!env.ORIGIN)return J({error:'متغیر ORIGIN را در تنظیمات Worker تعریف کنید'},503);
   if(req.method==='OPTIONS'){if(origin!==env.ORIGIN)return J({error:'دامنه مجاز نیست'},403);return new Response(null,{status:204,headers:cors})}
   try{
+   if(!env.DB)return J({error:'اتصال فضای ذخیره‌سازی KV با نام DB در تنظیمات Worker وصل نشده است.'},503);
    if(origin!==env.ORIGIN)return J({error:'دامنه مجاز نیست'},403);
    const u=new URL(req.url);
    const readBody=async()=>{let s=await req.text();if(s.length>10000)throw new Error('درخواست بیش از حد بزرگ است');try{return JSON.parse(s)}catch{return null}};
@@ -75,7 +76,7 @@ export default {
    const inc=body&&body.items;if(!inc||typeof inc!=='object'||Array.isArray(inc))return J({error:'items نامعتبر است'},400);const ks=Object.keys(inc);if(ks.length>300)return J({error:'تعداد تغییرات در یک درخواست زیاد است'},413);const now=Date.now();
    for(const k of ks){const it=inc[k];if(!KEY.test(k)||!it||typeof it.t!=='number'||!isFinite(it.t))return J({error:'کلید یا مقدار نامعتبر'},400);const v=it.v===undefined?null:it.v;if(JSON.stringify(v).length>MAX_ITEM)return J({error:'یکی از موارد بیش از حد بزرگ است'},413);if((k==='s:0'&&role!=='a')||(k==='s:1'&&role!=='b'))return J({error:'این امضا مخصوص طرف دیگر است'},403);const cur=doc.items[k],t=Math.min(it.t,now+36e5);if(!cur||t>cur.t||(t===cur.t&&JSON.stringify(v)>JSON.stringify(cur.v)))doc.items[k]={v,t}}
    if(Object.keys(doc.items).length>MAX_KEYS)return J({error:'سند بیش از حد بزرگ شد'},413);doc.seen[role]=now;const out=JSON.stringify(doc);if(out.length>MAX_DOC)return J({error:'فضای مشترک بیش از حد بزرگ شد'},413);await env.DB.put('d:'+m[1],out);return J({items:doc.items,seen:doc.seen});
-  }catch(e){return J({error:'خطای سرور؛ تنظیمات Worker و KV را بررسی کنید'},500)}
+  }catch(e){console.error('OurHome Worker error:',e&&e.stack||e);return J({error:'خطای سرور؛ در تنظیمات Worker، اتصال KV با نام DB و متغیرهای محیطی را بررسی کنید.'},500)}
  }
 };
 async function resolveRole(env,id,hash,doc){
