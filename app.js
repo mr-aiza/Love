@@ -129,21 +129,6 @@ function link(){
   var u=new URL('index.html',location.href).href+'#d='+cfg.id+'&t='+cfg.other+'&p=b&v='+(cfg.viewer||'');
   shareUrl(u,'دعوت به خانه‌ی ما','لینک ویرایش پارتنر آماده‌ی ارسال است.');
 }
-function viewLink(){
-  if(!cfg.id||!API)return toast('ابتدا فضای مشترک و API را فعال کنید.');
-  function finish(token){
-    cfg.viewer=token;save();
-    var u=new URL('index.html',location.href).href+'#d='+cfg.id+'&t='+token+'&p=v';
-    shareUrl(u,'مشاهده‌ی خاطرات خانه‌ی ما','لینک فقط-مشاهده کپی شد؛ دارنده‌ی آن نمی‌تواند چیزی را ویرایش کند.');
-  }
-  if(cfg.viewer)return finish(cfg.viewer);
-  if(isViewer())return finish(cfg.tok);
-  fetch(API+'/api/view-token/'+cfg.id,{method:'POST',headers:{'content-type':'application/json','x-token':cfg.tok}})
-    .then(function(r){return r.json().then(function(j){if(!r.ok)throw j;return j})})
-    .then(function(j){if(!j.v)throw j;finish(j.v)})
-    .catch(function(e){toast((e&&e.error)||'ساخت لینک مشاهده ناموفق بود')});
-}
-
 /* ---------- منو ---------- */
 var N=[['index','🏠','خانه'],['story','📖','داستان ما'],['letters','💌','نامه‌ها'],['wishes','✨','آرزوها'],['calendar','📅','تقویم'],['qa','💬','سؤال'],['pledge','📜','تعهدنامه'],['chat','💌','چت'],['games','🎮','بازی'],['map','📍','نقشه'],['settings','⚙️','تنظیمات']];
 var nv=document.createElement('nav');nv.setAttribute('aria-label','منوی اصلی');
@@ -164,20 +149,17 @@ function home(){
     b=hero(n,'روز با هم','<small>از '+shD(S)+'</small>'+vis+'<small>'+fa(nx-n)+' روز تا روز '+fa(nx)+'ام ('+shD(new Date(S.getTime()+(nx-1)*864e5))+')</small>')
      +(MS.indexOf(n)>-1?'<div class="card">🎉 امروز روز '+fa(n)+'ام است!</div>':'');
   }
-  var sy=!API?'':(!cfg.id?'<button id="sc">ساخت فضای مشترک دو نفره</button> ':(isViewer()?'':(cfg.other?'<button id="sl">لینک ویرایش پارتنر</button> ':'') )+(cfg.viewer?'<button id="vl" class="secondary">لینک فقط-مشاهده</button>':'<button id="vl" class="secondary">ساخت لینک فقط-مشاهده</button>'));
+  var sy=!API?'':(!cfg.id?'<button id="sc">ساخت فضای مشترک دو نفره</button> ':(isViewer()?'':(cfg.other?'<button id="sl">لینک ویرایش پارتنر</button> ':'')));
+  b += '<div class="card live-counter-card" style="text-align:center"><h3>⏱️ روزشمار لحظه‌ای رابطه</h3><div id="live-counter" data-start="'+new Date(S.getFullYear(),S.getMonth(),S.getDate()).getTime()+'" style="font-size:1.35rem;font-weight:700;line-height:2;direction:rtl" aria-live="off">در حال محاسبه…</div><small>روز · ساعت · دقیقه · ثانیه</small></div>';
   V.innerHTML=b+'<div class="go"><a href="story.html">📖 ثبت لحظه‌ی تازه</a><a href="letters.html">💌 نوشتن نامه</a><a href="wishes.html">✨ آرزوها</a><a href="calendar.html">📅 رویداد تازه</a><a href="qa.html">💬 سؤال امروز</a><a href="pledge.html">📜 تعهدنامه</a><a href="chat.html">💌 چت دونفره</a><a href="games.html">🎮 بازی‌های دونفره</a><a href="map.html">📍 نقشه و GPS</a><a href="settings.html">⚙️ تنظیمات</a></div>'
-   +'<p><small>'+(cfg.id?'خاطرات، نامه‌ها، آرزوها، رویدادها و تغییرات بین هر دو نفر تقریباً زنده همگام می‌شوند.':'برای همگام‌سازی خاطرات و دسترسی پارتنر، فضای مشترک بسازید و لینک دعوت را بفرستید؛ تا قبل از آن اطلاعات فقط روی همین دستگاه است.')+' گاهی پشتیبان بگیرید.</small></p>'+sy+'<button id="ex">دانلود پشتیبان</button> <button id="im">بازیابی</button><input type="file" id="fi" accept=".json,application/json" hidden>';
+   +'<p><small>'+(cfg.id?'خاطرات، نامه‌ها، آرزوها، رویدادها و تغییرات بین هر دو نفر تقریباً زنده همگام می‌شوند.':'برای همگام‌سازی خاطرات و دسترسی پارتنر، فضای مشترک بسازید و لینک دعوت را بفرستید؛ تا قبل از آن اطلاعات فقط روی همین دستگاه است.')+'</small></p>'+sy;
   if($('#sc'))$('#sc').onclick=function(){
-    if(!confirm('یک فضای مشترک ساخته می‌شود و نوشته‌های فعلی داخلش می‌رود. سپس «ارسال لینک پارتنر» را بزنید و لینک را فقط برای پارتنرتان بفرستید این لینک فقط برای پارتنر است و امکان ویرایش دارد. لینک عمومیِ فقط-مشاهده جداگانه ساخته می‌شود. ادامه؟'))return;
+    if(!confirm('یک فضای مشترک ساخته می‌شود و نوشته‌های فعلی داخلش می‌رود. سپس «ارسال لینک پارتنر» را بزنید و لینک را فقط برای پارتنرتان بفرستید این لینک فقط برای پارتنر است و امکان ویرایش دارد. ادامه؟'))return;
     fetch(API+'/api/create',{method:'POST'}).then(function(r){return r.json()}).then(function(j){
       if(!j.id)throw j;cfg={id:j.id,tok:j.a,me:'a',other:j.b,viewer:j.v||'',start:cfg.start||'2026-09-29'};applyStartSetting();if(!I['settings:start']||!ISO.test(I['settings:start'].v))I['settings:start']={v:cfg.start,t:Date.now()};else if(I['settings:start'].v==='2026-09-30')I['settings:start']={v:'2026-09-29',t:Date.now()};Object.keys(I).forEach(function(k){dirty[k]=1});save();flush();home();link();
     }).catch(function(e){toast((e&&e.error)||'ساخت فضای مشترک ناموفق بود')});
   };
   if($('#sl'))$('#sl').onclick=link;
-  if($('#vl'))$('#vl').onclick=viewLink;
-  $('#ex').onclick=function(){downloadBackup();toast('فایل پشتیبان دانلود شد')};
-  $('#im').onclick=function(){$('#fi').click()};
-  $('#fi').onchange=function(){var f=this.files[0];if(!f)return;if(f.size>12000000){toast('فایل پشتیبان بیش از حد بزرگ است.');return}var r=new FileReader();r.onload=function(){try{var raw=JSON.parse(r.result);if(!confirm('داده‌های فعلی با فایل پشتیبان جایگزین شود؟ قبل از ادامه مطمئن شوید نسخه پشتیبان دارید.'))return;restoreAll(raw);home();toast('بازیابی انجام شد')}catch(e){toast(e.message||'فایل پشتیبان معتبر نیست')}};r.readAsText(f)};
 }
 
 function story(){
@@ -234,34 +216,16 @@ function qa(){
 
 /* ---------- امکانات افزوده: چت، بازی، نقشه و تنظیمات ---------- */
 
-function exportAll(){
-  var safe={};
-  Object.keys(I).forEach(function(k){if(k.indexOf('location:')===0)return;safe[k]=I[k];});
-  return {format:'our-home-backup',version:2,exportedAt:new Date().toISOString(),I:safe,preferences:{start:cfg.start||null,theme:cfg.theme||null}};
+function updateLiveCounter(){
+  var el=document.getElementById('live-counter');if(!el)return;
+  var start=Number(el.getAttribute('data-start'));if(!isFinite(start))return;
+  var delta=Date.now()-start,remaining=delta<0,seconds=Math.floor(Math.abs(delta)/1000);
+  var d=Math.floor(seconds/86400);seconds%=86400;
+  var h=Math.floor(seconds/3600);seconds%=3600;
+  var m=Math.floor(seconds/60);var s=seconds%60;
+  el.textContent=(remaining?'شروع رابطه تا ': 'با هم: ')+fa(d)+' روز و '+fa(h)+' ساعت و '+fa(m)+' دقیقه و '+fa(s)+' ثانیه';
 }
-function restoreAll(raw){
-  if(raw&&raw.format==='our-home-backup'&&raw.version===2&&raw.I&&typeof raw.I==='object'&&!Array.isArray(raw.I)){
-    var ks=Object.keys(raw.I);if(ks.length>5000)throw new Error('تعداد داده‌ها بیش از حد مجاز است');
-    var next={};
-    ks.forEach(function(k){
-      if(!/^[a-z]{1,12}(:[A-Za-z0-9_-]{1,40}){1,2}$/.test(k))throw new Error('کلید پشتیبان نامعتبر است');
-      var x=raw.I[k];if(!x||typeof x!=='object'||typeof x.t!=='number'||!isFinite(x.t))throw new Error('ساختار پشتیبان نامعتبر است');
-      var encoded=JSON.stringify(x.v);if(typeof encoded!=='string'||encoded.length>300000)throw new Error('یک مورد بیش از حد بزرگ است');
-      if(k.indexOf('location:')!==0)next[k]={v:x.v,t:x.t};
-    });
-    I=next;dirty={};Object.keys(I).forEach(function(k){dirty[k]=1});
-    if(raw.preferences&&ISO.test(raw.preferences.start||'')){cfg.start=raw.preferences.start;S=new Date(cfg.start+'T12:00:00');}
-    if(raw.preferences&&(raw.preferences.theme==='dark'||raw.preferences.theme==='light')){cfg.theme=raw.preferences.theme;document.documentElement.setAttribute('data-theme',cfg.theme);}
-    build();save();sched();return true;
-  }
-  var old=norm(raw);if(old){imp(old);return true;}
-  throw new Error('فایل پشتیبان معتبر نیست');
-}
-function downloadBackup(){
-  var blob=new Blob([JSON.stringify(exportAll())],{type:'application/json'});
-  var url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='our-home-backup.json';a.click();
-  setTimeout(function(){URL.revokeObjectURL(url)},1500);
-}
+setInterval(updateLiveCounter,1000);
 
 function customItems(prefix){
   return Object.keys(I).filter(function(k){return k.indexOf(prefix+':')===0&&I[k]&&I[k].v!==null;}).map(function(k){return {id:k.slice(prefix.length+1),v:I[k].v,t:I[k].t};});
@@ -367,11 +331,10 @@ function mapPage(){
 }
 function settings(){
   var start=S.getFullYear()+'-'+pad(S.getMonth()+1)+'-'+pad(S.getDate());
-  V.innerHTML='<h2>تنظیمات خانه‌ی ما ⚙️</h2><div class="card"><h3>ظاهر سایت</h3><label for="theme">پوسته</label><select id="theme"><option value="light" '+(cfg.theme==='light'?'selected':'')+'>روشن</option><option value="dark" '+(cfg.theme==='dark'?'selected':'')+'>تیره</option><option value="auto" '+(!cfg.theme?'selected':'')+'>مطابق دستگاه</option></select><button id="savetheme">ذخیره پوسته</button></div><div class="card"><h3>تنظیمات رابطه</h3><label for="startdate">تاریخ شروع رابطه</label><input type="date" id="startdate" value="'+start+'"><p><small>تغییر این تاریخ فقط روزشمار را تنظیم می‌کند و خاطرات ثبت‌شده حذف نمی‌شوند.</small></p><button id="savestart">ذخیره تاریخ</button></div><div class="card"><h3>نام‌ها</h3><label for="name0">نام نفر اول</label><input id="name0" maxlength="24" value="'+E(D.names[0])+'"><label for="name1">نام نفر دوم</label><input id="name1" maxlength="24" value="'+E(D.names[1])+'"><button id="savenames">ذخیره نام‌ها</button></div><div class="card"><h3>پشتیبان‌گیری</h3><p>قبل از تغییرات بزرگ، از اطلاعات خود خروجی بگیر.</p><button id="backup">دانلود پشتیبان JSON</button><button id="clearlocal" class="secondary">پاک‌کردن داده‌های محلی</button><p><small>پاک‌کردن داده‌های محلی قابل بازگشت نیست مگر پشتیبان داشته باشی. این کار داده ابری را حذف نمی‌کند.</small></p></div><div class="card"><h3>وضعیت اتصال</h3><p>'+(API?'آدرس API تنظیم شده است.':'آدرس API هنوز در config.js تنظیم نشده است.')+'</p><p>'+(cfg.id?'فضای مشترک: فعال':'فضای مشترک: تنظیم نشده')+'</p><p><small>برای استفاده دونفره، API باید روی سرور واقعی نصب و متغیر ORIGIN آن محدود به دامنه سایت شود.</small></p></div>';
+  V.innerHTML='<h2>تنظیمات خانه‌ی ما ⚙️</h2><div class="card"><h3>ظاهر سایت</h3><label for="theme">پوسته</label><select id="theme"><option value="light" '+(cfg.theme==='light'?'selected':'')+'>روشن</option><option value="dark" '+(cfg.theme==='dark'?'selected':'')+'>تیره</option><option value="auto" '+(!cfg.theme?'selected':'')+'>مطابق دستگاه</option></select><button id="savetheme">ذخیره پوسته</button></div><div class="card"><h3>تنظیمات رابطه</h3><label for="startdate">تاریخ شروع رابطه</label><input type="date" id="startdate" value="'+start+'"><p><small>تغییر این تاریخ فقط روزشمار را تنظیم می‌کند و خاطرات ثبت‌شده حذف نمی‌شوند.</small></p><button id="savestart">ذخیره تاریخ</button></div><div class="card"><h3>نام‌ها</h3><label for="name0">نام نفر اول</label><input id="name0" maxlength="24" value="'+E(D.names[0])+'"><label for="name1">نام نفر دوم</label><input id="name1" maxlength="24" value="'+E(D.names[1])+'"><button id="savenames">ذخیره نام‌ها</button></div><div class="card"><h3>داده‌های همین دستگاه</h3><button id="clearlocal" class="secondary">پاک‌کردن داده‌های محلی</button><p><small>این کار فقط داده‌های ذخیره‌شده در همین مرورگر را پاک می‌کند و داده‌های ابری را حذف نمی‌کند.</small></p></div><div class="card"><h3>وضعیت اتصال</h3><p>'+(API?'آدرس API تنظیم شده است.':'آدرس API هنوز در config.js تنظیم نشده است.')+'</p><p>'+(cfg.id?'فضای مشترک: فعال':'فضای مشترک: تنظیم نشده')+'</p><p><small>برای استفاده دونفره، API باید روی سرور واقعی نصب و متغیر ORIGIN آن محدود به دامنه سایت شود.</small></p></div>';
   $('#savetheme').onclick=function(){var t=$('#theme').value;cfg.theme=t==='auto'?'':t;if(cfg.theme)document.documentElement.setAttribute('data-theme',cfg.theme);else document.documentElement.removeAttribute('data-theme');save();toast('پوسته ذخیره شد.');};
   $('#savestart').onclick=function(){var v=$('#startdate').value;if(!ISO.test(v))return toast('تاریخ معتبر انتخاب کنید.');cfg.start=v;set('settings:start',v);toast('تاریخ شروع برای هر دو نفر ذخیره شد.');home();};
   $('#savenames').onclick=function(){var a=$('#name0').value.trim(),b=$('#name1').value.trim();if(!a||!b)return toast('هر دو نام را وارد کنید.');set('names:0',a);set('names:1',b);settings();toast('نام‌ها ذخیره شدند.');};
-  $('#backup').onclick=function(){downloadBackup();toast('پشتیبان کامل دانلود شد')};
   $('#clearlocal').onclick=function(){if(!confirm('همه داده‌های محلی این مرورگر پاک شود؟ قبل از ادامه پشتیبان بگیرید.'))return;localStorage.removeItem(K);location.reload();};
 }
 
