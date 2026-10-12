@@ -1,4 +1,4 @@
-var C='our-home-v2',A=['index.html','story.html','letters.html','wishes.html','calendar.html','qa.html','pledge.html','style.css','app.js','icon.svg','manifest.webmanifest'];
+var C='our-home-v3',A=['index.html','story.html','letters.html','wishes.html','calendar.html','qa.html','pledge.html','style.css','app.js','config.js','icon.svg','manifest.webmanifest'];
 self.addEventListener('install',function(e){e.waitUntil(caches.open(C).then(function(c){return c.addAll(A)}));self.skipWaiting()});
 self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x!==C}).map(function(x){return caches.delete(x)}))}));self.clients.claim()});
 self.addEventListener('fetch',function(e){

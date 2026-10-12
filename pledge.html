@@ -1896,11 +1896,12 @@ body{padding-bottom:84px}
   <input type="file" id="tb-file" accept="application/json,.json" hidden>
 </div></div>
 <div class="tb-toast" id="tb-toast" role="status"></div>
+<script src="config.js"></script>
 <script>
 (function(){
 'use strict';
 /* ⚠️ آدرس Worker خودتان را اینجا بگذارید؛ اگر خالی بماند فقط ذخیره محلی کار می‌کند */
-var API='';
+var API=(window.OURHOME_API||'').replace(/\/+$/,'');
 var KEY='tahdname-v2:'+location.pathname;
 var blanks=[].slice.call(document.querySelectorAll('.جای-خالی, .خط-پر'));
 var checks=[].slice.call(document.querySelectorAll('input[type=checkbox]'));

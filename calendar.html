@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://*.workers.dev; base-uri 'none'; form-action 'none'">
 <meta name="robots" content="noindex,nofollow">
 <meta name="description" content="فضای خصوصی دو نفره: روز‌شمار، داستان، نامه، آرزوها و تقویم">
 <meta name="theme-color" content="#2a1830">
@@ -16,6 +16,7 @@
 </head>
 <body data-page="calendar">
 <main id="v"></main>
+<script src="config.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
