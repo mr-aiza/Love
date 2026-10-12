@@ -1,0 +1,19 @@
+name: Project checks
+on:
+  push:
+    branches: [feature/home-v2-dashboard]
+  pull_request:
+    branches: [feature/home-v2-dashboard]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Syntax and compatibility smoke tests
+        run: node scripts/smoke-check.mjs
