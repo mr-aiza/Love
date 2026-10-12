@@ -2,7 +2,6 @@
 'use strict';
 var API=(window.OURHOME_API||'').replace(/\/+$/,''),K='hd2',S=new Date(2026,8,29),MS=[30,50,100,200,365,500,1000],P=document.body.getAttribute('data-page'),ISO=/^\d{4}-\d{2}-\d{2}$/,tt;
 var I={},dirty={},cfg={},D,otherSeen=0,busy=false,dead=false,timer=null;
-function isViewer(){return !!cfg.readOnly||cfg.me==='v'}
 
 /* ---------- اعتبارسنجی ---------- */
 function str(v,n){return typeof v==='string'?v.slice(0,n):''}
@@ -23,7 +22,7 @@ function norm(d){ /* برای فایل پشتیبان و داده‌ی نسخه�
 
 /* ---------- حافظه: هر مورد یک کلید جدا با زمان (آخرین تغییر برنده) ---------- */
 function rid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
-function save(){try{var safeCfg=Object.assign({},cfg);['id','tok','other','viewer'].forEach(function(k){delete safeCfg[k]});localStorage.setItem(K,JSON.stringify({I:I,cfg:safeCfg,dirty:dirty}))}catch(e){toast('ذخیره ممکن نیست؛ مرورگر در حالت خصوصی است یا حافظه پر شده. از «دانلود پشتیبان» استفاده کنید.')}}
+function save(){try{var safeCfg=Object.assign({},cfg);['id','tok','other','viewer'].forEach(function(k){delete safeCfg[k]});localStorage.setItem(K,JSON.stringify({I:I,cfg:safeCfg,dirty:dirty}))}catch(e){toast('ذخیره ممکن نیست؛ مرورگر در حالت خصوصی است یا حافظه پر شده. فضای ذخیره‌سازی مرورگر را بررسی کنید.')}}
 function loadLS(){var r=null;try{r=JSON.parse(localStorage.getItem(K))}catch(e){}if(r&&r.I&&typeof r.I==='object'){I=r.I;dirty=r.dirty||{};cfg=r.cfg||{};return true}return false}
 function build(){
   var d={names:['من','پارتنرم'],story:[],letters:[],wishes:[],events:[],qa:{}};
@@ -56,17 +55,14 @@ applyStartSetting();
 if(cfg.theme==='dark'||cfg.theme==='light')document.documentElement.setAttribute('data-theme',cfg.theme);
 if(!I['story:start'])I['story:start']={v:{d:'2026-09-29',t:'شروع داستان ما',x:'روز اول؛ جایی که همه‌چیز شروع شد.'},t:0};
 else if(I['story:start'].v&&I['story:start'].v.d==='2026-09-30'){I['story:start']={v:Object.assign({},I['story:start'].v,{d:'2026-09-29'}),t:Math.max(Date.now(),(I['story:start'].t||0)+1)};dirty['story:start']=1;}
-(function(){ /* ورود از لینک پارتنر یا لینک فقط-مشاهده */
+(function(){ /* ورود از لینک دعوت ویرایش پارتنر؛ لینک‌های مشاهده‌ی قدیمی دیگر پشتیبانی نمی‌شوند */
   var h=new URLSearchParams(location.hash.slice(1)),d=h.get('d'),t=h.get('t'),p=h.get('p');
-  if(API&&d&&t&&/^[a-f0-9]{16}$/.test(d)&&/^[a-f0-9]{48}$/.test(t)){
-    if(p==='v'){
-      cfg={id:d,tok:t,me:'v',readOnly:true,viewer:t,start:cfg.start||'2026-09-29'};
-      dirty={};
-    } else {
-      cfg={id:d,tok:t,me:p==='a'?'a':'b',other:h.get('o')||'',viewer:h.get('v')||'',start:cfg.start||'2026-09-29'};
-      Object.keys(I).forEach(function(k){dirty[k]=1});
-    }
+  if(API&&d&&t&&p!=='v'&&/^[a-f0-9]{16}$/.test(d)&&/^[a-f0-9]{48}$/.test(t)){
+    cfg={id:d,tok:t,me:p==='a'?'a':'b',other:h.get('o')||'',start:cfg.start||'2026-09-29'};
+    Object.keys(I).forEach(function(k){dirty[k]=1});
     try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}save();
+  } else if(p==='v') {
+    try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
   }
 })();
 build();
@@ -100,10 +96,10 @@ function merge(r){
   var o=cfg.me==='a'?'b':'a';if(r.seen&&r.seen[o])otherSeen=r.seen[o];
   if(ch){applyStartSetting();build();save()}return ch;
 }
-function ensureSharedStart(){if(!isViewer()&&cfg.id&&API&&!I['settings:start'])set('settings:start',cfg.start||'2026-09-29')}
+function ensureSharedStart(){if(cfg.id&&API&&!I['settings:start'])set('settings:start',cfg.start||'2026-09-29')}
 function sched(){clearTimeout(timer);timer=setTimeout(function(){timer=null;flush()},800)}
 function flush(){
-  if(!cfg.id||!API||busy||dead||isViewer())return status();
+  if(!cfg.id||!API||busy||dead)return status();
   var ks=Object.keys(dirty).slice(0,200);if(!ks.length)return status();
   var body={items:{}};ks.forEach(function(k){body.items[k]=I[k]});
   busy=true;status('در حال همگام‌سازی…');
@@ -126,7 +122,7 @@ function shareUrl(u,title,ok){
 }
 function link(){
   if(!cfg.id||!cfg.other)return toast('لینک دعوت پارتنر فقط از حساب سازنده فضای مشترک در دسترس است.');
-  var u=new URL('index.html',location.href).href+'#d='+cfg.id+'&t='+cfg.other+'&p=b&v='+(cfg.viewer||'');
+  var u=new URL('index.html',location.href).href+'#d='+cfg.id+'&t='+cfg.other+'&p=b';
   shareUrl(u,'دعوت به خانه‌ی ما','لینک ویرایش پارتنر آماده‌ی ارسال است.');
 }
 /* ---------- منو ---------- */
@@ -149,14 +145,14 @@ function home(){
     b=hero(n,'روز با هم','<small>از '+shD(S)+'</small>'+vis+'<small>'+fa(nx-n)+' روز تا روز '+fa(nx)+'ام ('+shD(new Date(S.getTime()+(nx-1)*864e5))+')</small>')
      +(MS.indexOf(n)>-1?'<div class="card">🎉 امروز روز '+fa(n)+'ام است!</div>':'');
   }
-  var sy=!API?'':(!cfg.id?'<button id="sc">ساخت فضای مشترک دو نفره</button> ':(isViewer()?'':(cfg.other?'<button id="sl">لینک ویرایش پارتنر</button> ':'')));
+  var sy=!API?'':(!cfg.id?'<button id="sc">ساخت فضای مشترک دو نفره</button> ':(cfg.other?'<button id="sl">لینک ویرایش پارتنر</button> ':''));
   b += '<div class="card live-counter-card" style="text-align:center"><h3>⏱️ روزشمار لحظه‌ای رابطه</h3><div id="live-counter" data-start="'+new Date(S.getFullYear(),S.getMonth(),S.getDate()).getTime()+'" style="font-size:1.35rem;font-weight:700;line-height:2;direction:rtl" aria-live="off">در حال محاسبه…</div><small>روز · ساعت · دقیقه · ثانیه</small></div>';
   V.innerHTML=b+'<div class="go"><a href="story.html">📖 ثبت لحظه‌ی تازه</a><a href="letters.html">💌 نوشتن نامه</a><a href="wishes.html">✨ آرزوها</a><a href="calendar.html">📅 رویداد تازه</a><a href="qa.html">💬 سؤال امروز</a><a href="pledge.html">📜 تعهدنامه</a><a href="chat.html">💌 چت دونفره</a><a href="games.html">🎮 بازی‌های دونفره</a><a href="map.html">📍 نقشه و GPS</a><a href="settings.html">⚙️ تنظیمات</a></div>'
    +'<p><small>'+(cfg.id?'خاطرات، نامه‌ها، آرزوها، رویدادها و تغییرات بین هر دو نفر تقریباً زنده همگام می‌شوند.':'برای همگام‌سازی خاطرات و دسترسی پارتنر، فضای مشترک بسازید و لینک دعوت را بفرستید؛ تا قبل از آن اطلاعات فقط روی همین دستگاه است.')+'</small></p>'+sy;
   if($('#sc'))$('#sc').onclick=function(){
     if(!confirm('یک فضای مشترک ساخته می‌شود و نوشته‌های فعلی داخلش می‌رود. سپس «ارسال لینک پارتنر» را بزنید و لینک را فقط برای پارتنرتان بفرستید این لینک فقط برای پارتنر است و امکان ویرایش دارد. ادامه؟'))return;
     fetch(API+'/api/create',{method:'POST'}).then(function(r){return r.json()}).then(function(j){
-      if(!j.id)throw j;cfg={id:j.id,tok:j.a,me:'a',other:j.b,viewer:j.v||'',start:cfg.start||'2026-09-29'};applyStartSetting();if(!I['settings:start']||!ISO.test(I['settings:start'].v))I['settings:start']={v:cfg.start,t:Date.now()};else if(I['settings:start'].v==='2026-09-30')I['settings:start']={v:'2026-09-29',t:Date.now()};Object.keys(I).forEach(function(k){dirty[k]=1});save();flush();home();link();
+      if(!j.id)throw j;cfg={id:j.id,tok:j.a,me:'a',other:j.b,start:cfg.start||'2026-09-29'};applyStartSetting();if(!I['settings:start']||!ISO.test(I['settings:start'].v))I['settings:start']={v:cfg.start,t:Date.now()};else if(I['settings:start'].v==='2026-09-30')I['settings:start']={v:'2026-09-29',t:Date.now()};Object.keys(I).forEach(function(k){dirty[k]=1});save();flush();home();link();
     }).catch(function(e){toast((e&&e.error)||'ساخت فضای مشترک ناموفق بود')});
   };
   if($('#sl'))$('#sl').onclick=link;
@@ -359,17 +355,6 @@ V.addEventListener('focusout',function(e){
   var v=e.target.textContent.replace(/\s+/g,' ').trim().slice(0,24);
   if(v&&v!==D.names[+i])set('names:'+i,v);e.target.textContent=D.names[+i];
 });
-function applyReadOnly(){
-  if(!isViewer()||!V)return;
-  document.body.classList.add('readonly-mode');
-  if(!$('#readonly-note')){var note=document.createElement('div');note.id='readonly-note';note.className='readonly-note';note.textContent='حالت مشاهده فقط است؛ امکان ویرایش، افزودن یا حذف اطلاعات وجود ندارد.';V.insertBefore(note,V.firstChild)}
-  V.querySelectorAll('input,textarea').forEach(function(el){el.readOnly=true;el.setAttribute('aria-readonly','true')});
-  V.querySelectorAll('select,button').forEach(function(el){el.disabled=true});
-  V.querySelectorAll('[contenteditable="true"]').forEach(function(el){el.setAttribute('contenteditable','false');el.removeAttribute('role')});
-  V.querySelectorAll('.card').forEach(function(card){if(card.querySelector('input,textarea,select')&&card.querySelector('button'))card.style.display='none'});
-}
-/* اعمال محدودیت مشاهده پس از هر بار بازسازی صفحه */
-Object.keys(R).forEach(function(k){var original=R[k];R[k]=function(){original();applyReadOnly()}});
 var ld=day();
 function tick(){var d=day();if(d!==ld&&!editing()){ld=d;R[P]()}}
 setInterval(tick,30000);setInterval(poll,3000);
