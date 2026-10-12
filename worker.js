@@ -11,7 +11,7 @@ export default {
   async fetch(req, env) {
     const origin = req.headers.get('Origin') || '';
     const cors = {
-      'access-control-allow-origin': env.ORIGIN || '*',
+      'access-control-allow-origin': env.ORIGIN || origin || 'null',
       'access-control-allow-headers': 'content-type,x-token',
       'access-control-allow-methods': 'GET,PUT,POST,OPTIONS',
       'access-control-max-age': '86400',
@@ -20,9 +20,13 @@ export default {
     const J = (x, s = 200) => new Response(JSON.stringify(x), {
       status: s, headers: { ...cors, 'content-type': 'application/json;charset=utf-8', 'cache-control': 'no-store' }
     });
-    if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
+    if (!env.ORIGIN) return J({ error: 'برای امنیت، متغیر ORIGIN باید در تنظیمات Worker تعریف شود' }, 503);
+    if (req.method === 'OPTIONS') {
+      if (origin !== env.ORIGIN) return J({ error: 'دامنه مجاز نیست' }, 403);
+      return new Response(null, { status: 204, headers: cors });
+    }
     try {
-      if (env.ORIGIN && origin && origin !== env.ORIGIN) return J({ error: 'دامنه مجاز نیست' }, 403);
+      if (origin !== env.ORIGIN) return J({ error: 'دامنه مجاز نیست' }, 403);
       const u = new URL(req.url);
 
       if (req.method === 'POST' && u.pathname === '/api/create') {
@@ -47,6 +51,8 @@ export default {
       if (req.method === 'GET') return J({ items: doc.items, seen: doc.seen });
       if (req.method !== 'PUT') return J({ error: 'روش نامعتبر' }, 405);
 
+      const declared = +(req.headers.get('content-length') || 0);
+      if (declared > 2e6) return J({ error: 'حجم درخواست زیاد است' }, 413);
       const txt = await req.text();
       if (txt.length > 2e6) return J({ error: 'حجم درخواست زیاد است' }, 413);
       let body; try { body = JSON.parse(txt) } catch { return J({ error: 'JSON نامعتبر' }, 400) }
@@ -62,7 +68,7 @@ export default {
         if (JSON.stringify(v).length > MAX_ITEM) return J({ error: 'یکی از موارد بیش از حد بزرگ است' }, 413);
         if ((k === 's:0' && role !== 'a') || (k === 's:1' && role !== 'b')) return J({ error: 'این امضا مخصوص طرف دیگر است' }, 403);
         const cur = doc.items[k], t = Math.min(it.t, now + 36e5);
-        if (!cur || t > cur.t) doc.items[k] = { v, t };
+        if (!cur || t > cur.t || (t === cur.t && JSON.stringify(v) > JSON.stringify(cur.v))) doc.items[k] = { v, t };
       }
       if (Object.keys(doc.items).length > MAX_KEYS) return J({ error: 'سند بیش از حد بزرگ شد' }, 413);
       doc.seen[role] = now;

@@ -8,7 +8,7 @@ function str(v,n){return typeof v==='string'?v.slice(0,n):''}
 function clean(c,v){
   if(c==='story')return ISO.test(v.d)&&str(v.t,1)?{d:v.d,t:str(v.t,120),x:str(v.x,3000)}:0;
   if(c==='letters')return ISO.test(v.c)&&str(v.t,1)?{f:v.f?1:0,t:str(v.t,120),x:str(v.x,20000),c:v.c,u:ISO.test(v.u)?v.u:''}:0;
-  if(c==='wishes')return str(v.t,1)?{t:str(v.t,200),k:v.k?1:0}:0;
+  if(c==='wishes')return str(v.t,1)?{t:str(v.t,200),k:v.k?1:0,p:['low','normal','high'].indexOf(v.p)>-1?v.p:'normal',budget:Math.max(0,Math.min(1000000000,Number(v.budget)||0)),due:ISO.test(v.due)?v.due:'',owner:['0','1','both'].indexOf(String(v.owner))>-1?String(v.owner):'both',note:str(v.note,500)}:0;
   if(c==='events')return ISO.test(v.d)&&str(v.t,1)?{d:v.d,t:str(v.t,120),r:!!v.r}:0;
   return 0;
 }
@@ -35,7 +35,7 @@ function build(){
   ['story','letters','wishes','events'].forEach(function(c){d[c].sort(function(a,b){return a.id<b.id?-1:1})});
   D=d;
 }
-function set(k,v){I[k]={v:v,t:Date.now()};dirty[k]=1;build();save();sched()}
+function set(k,v){var prev=I[k]&&typeof I[k].t==='number'?I[k].t:0;I[k]={v:v,t:Math.max(Date.now(),prev+1)};dirty[k]=1;build();save();sched()}
 function imp(d){
   var n=Date.now();Object.keys(I).forEach(function(k){I[k]={v:null,t:n}});
   function put(k,v){I[k]={v:v,t:n+1}}
@@ -45,6 +45,8 @@ function imp(d){
   Object.keys(I).forEach(function(k){dirty[k]=1});build();save();sched();
 }
 if(!loadLS()){var old=null;try{old=norm(JSON.parse(localStorage.getItem('hd1')))}catch(e){}if(old){I['story:start']={v:null,t:1};imp(old)}}
+if(cfg.start&&ISO.test(cfg.start))S=new Date(cfg.start+'T12:00:00');
+if(cfg.theme==='dark'||cfg.theme==='light')document.documentElement.setAttribute('data-theme',cfg.theme);
 if(!I['story:start'])I['story:start']={v:{d:'2026-09-30',t:'شروع داستان ما',x:'روز اول؛ جایی که همه‌چیز شروع شد.'},t:0};
 (function(){ /* پیوستن با لینک پارتنر */
   var h=new URLSearchParams(location.hash.slice(1)),d=h.get('d'),t=h.get('t');
@@ -80,19 +82,19 @@ function status(t,err){
 /* ---------- همگام‌سازی با Worker ---------- */
 function api(m,b){return fetch(API+'/api/doc/'+cfg.id,{method:m,headers:{'content-type':'application/json','x-token':cfg.tok},body:b?JSON.stringify(b):undefined}).then(function(r){return r.json().catch(function(){return{}}).then(function(j){if(!r.ok){j.status=r.status;throw j}return j})})}
 function merge(r){
-  var ch=false;Object.keys(r.items||{}).forEach(function(k){var x=r.items[k],l=I[k];if(x&&typeof x.t==='number'&&(!l||x.t>l.t)){I[k]={v:x.v,t:x.t};ch=true}});
+  var ch=false;Object.keys(r.items||{}).forEach(function(k){var x=r.items[k],l=I[k];if(x&&typeof x.t==='number'&&(!l||x.t>l.t||(x.t===l.t&&JSON.stringify(x.v)>JSON.stringify(l.v)))){I[k]={v:x.v,t:x.t};ch=true}});
   var o=cfg.me==='a'?'b':'a';if(r.seen&&r.seen[o])otherSeen=r.seen[o];
   if(ch){build();save()}return ch;
 }
 function sched(){clearTimeout(timer);timer=setTimeout(function(){timer=null;flush()},800)}
 function flush(){
   if(!cfg.id||!API||busy||dead)return status();
-  var ks=Object.keys(dirty);if(!ks.length)return status();
+  var ks=Object.keys(dirty).slice(0,200);if(!ks.length)return status();
   var body={items:{}};ks.forEach(function(k){body.items[k]=I[k]});
   busy=true;status('در حال همگام‌سازی…');
   api('PUT',body).then(function(r){
     ks.forEach(function(k){var s=r.items&&r.items[k];if(s&&s.t>=body.items[k].t&&I[k]===body.items[k])delete dirty[k]});
-    if(merge(r)&&!editing())R[P]();save();status();
+    if(merge(r)&&!editing())(R[P]||home)();save();status();
   }).catch(function(e){
     if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1);return}
     status((e&&e.error)||'ارتباط با سرور برقرار نیست؛ دوباره تلاش می‌شود',1);
@@ -100,7 +102,7 @@ function flush(){
 }
 function poll(){
   if(document.hidden||!cfg.id||!API||busy||dead||Object.keys(dirty).length)return;
-  api('GET').then(function(r){if(merge(r)&&!editing())R[P]();status()}).catch(function(e){if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1)}else status('ارتباط با سرور برقرار نیست',1)});
+  api('GET').then(function(r){if(merge(r)&&!editing())(R[P]||home)();status()}).catch(function(e){if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1)}else status('ارتباط با سرور برقرار نیست',1)});
 }
 function link(){
   var u=new URL('index.html',location.href).href+'#d='+cfg.id+'&t='+cfg.other+'&p=b';
@@ -110,7 +112,7 @@ function link(){
 }
 
 /* ---------- منو ---------- */
-var N=[['index','🏠','خانه'],['story','📖','داستان ما'],['letters','💌','نامه‌ها'],['wishes','✨','آرزوها'],['calendar','📅','تقویم'],['qa','💬','سؤال'],['pledge','📜','تعهدنامه']];
+var N=[['index','🏠','خانه'],['story','📖','داستان ما'],['letters','💌','نامه‌ها'],['wishes','✨','آرزوها'],['calendar','📅','تقویم'],['qa','💬','سؤال'],['pledge','📜','تعهدنامه'],['chat','💌','چت'],['games','🎮','بازی'],['map','📍','نقشه'],['settings','⚙️','تنظیمات']];
 var nv=document.createElement('nav');nv.setAttribute('aria-label','منوی اصلی');
 nv.innerHTML=N.map(function(n){return '<a href="'+n[0]+'.html"'+(n[0]===P?' class="on" aria-current="page"':'')+'><b aria-hidden="true">'+n[1]+'</b>'+n[2]+'</a>'}).join('');
 document.body.appendChild(nv);
@@ -130,7 +132,7 @@ function home(){
      +(MS.indexOf(n)>-1?'<div class="card">🎉 امروز روز '+fa(n)+'ام است!</div>':'');
   }
   var sy=!API?'':(!cfg.id?'<button id="sc">ساخت فضای مشترک دو نفره</button> ':(cfg.other?'<button id="sl">ارسال لینک پارتنر</button> ':''));
-  V.innerHTML=b+'<div class="go"><a href="story.html">📖 ثبت لحظه‌ی تازه</a><a href="letters.html">💌 نوشتن نامه</a><a href="wishes.html">✨ آرزوها</a><a href="calendar.html">📅 رویداد تازه</a><a href="qa.html">💬 سؤال امروز</a><a href="pledge.html">📜 تعهدنامه</a></div>'
+  V.innerHTML=b+'<div class="go"><a href="story.html">📖 ثبت لحظه‌ی تازه</a><a href="letters.html">💌 نوشتن نامه</a><a href="wishes.html">✨ آرزوها</a><a href="calendar.html">📅 رویداد تازه</a><a href="qa.html">💬 سؤال امروز</a><a href="pledge.html">📜 تعهدنامه</a><a href="chat.html">💌 چت دونفره</a><a href="games.html">🎮 بازی‌های دونفره</a><a href="map.html">📍 نقشه و GPS</a><a href="settings.html">⚙️ تنظیمات</a></div>'
    +'<p><small>'+(cfg.id?'نوشته‌ها بین شما و پارتنرتان همگام می‌شود.':'نوشته‌ها فقط روی همین دستگاه ذخیره می‌شوند.')+' گاهی پشتیبان بگیرید.</small></p>'+sy+'<button id="ex">دانلود پشتیبان</button> <button id="im">بازیابی</button><input type="file" id="fi" accept=".json,application/json" hidden>';
   if($('#sc'))$('#sc').onclick=function(){
     if(!confirm('یک فضای مشترک ساخته می‌شود و نوشته‌های فعلی داخلش می‌رود. سپس «ارسال لینک پارتنر» را بزنید و لینک را فقط برای پارتنرتان بفرستید (هر کس با آن لینک می‌تواند ویرایش کند). ادامه؟'))return;
@@ -139,9 +141,9 @@ function home(){
     }).catch(function(e){toast((e&&e.error)||'ساخت فضای مشترک ناموفق بود')});
   };
   if($('#sl'))$('#sl').onclick=link;
-  $('#ex').onclick=function(){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(D)],{type:'application/json'}));a.download='our-home-backup.json';a.click();toast('فایل پشتیبان دانلود شد')};
+  $('#ex').onclick=function(){downloadBackup();toast('فایل پشتیبان دانلود شد')};
   $('#im').onclick=function(){$('#fi').click()};
-  $('#fi').onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var d=norm(JSON.parse(r.result));if(!d)throw 0;if(!confirm('داده‌های فعلی با فایل پشتیبان جایگزین شود؟'))return;imp(d);home();toast('بازیابی شد')}catch(e){toast('فایل پشتیبان معتبر نیست')}};r.readAsText(f)};
+  $('#fi').onchange=function(){var f=this.files[0];if(!f)return;if(f.size>12000000){toast('فایل پشتیبان بیش از حد بزرگ است.');return}var r=new FileReader();r.onload=function(){try{var raw=JSON.parse(r.result);if(!confirm('داده‌های فعلی با فایل پشتیبان جایگزین شود؟ قبل از ادامه مطمئن شوید نسخه پشتیبان دارید.'))return;restoreAll(raw);home();toast('بازیابی انجام شد')}catch(e){toast(e.message||'فایل پشتیبان معتبر نیست')}};r.readAsText(f)};
 }
 
 function story(){
@@ -166,12 +168,20 @@ function letters(){
 function cnt(){var c=$('#cnt');if(c)c.textContent=fa(D.wishes.filter(function(w){return w.k}).length)+' از '+fa(D.wishes.length)+' آرزو انجام شده'}
 function wishes(){
   var h='';
-  D.wishes.forEach(function(w){h+='<div class="card row'+(w.k?' done':'')+'"><input type="checkbox" data-chk="'+E(w.id)+'"'+(w.k?' checked':'')+' aria-label="انجام شد: '+E(w.t)+'"><span class="grow">'+E(w.t)+'</span><button class="x" data-del="wishes:'+E(w.id)+'" aria-label="حذف «'+E(w.t)+'»">حذف</button></div>'});
-  V.innerHTML='<h2>آرزوهای مشترک</h2><div class="card"><input id="b" maxlength="200" placeholder="مثلاً: دیدن شفق قطبی" aria-label="آرزوی تازه"><button id="ad">افزودن آرزو</button></div><p><small id="cnt"></small></p>'+(h||'<p><small>هنوز آرزویی ثبت نشده.</small></p>');
+  D.wishes.forEach(function(w){
+    var owner=w.owner==='0'?D.names[0]:w.owner==='1'?D.names[1]:'هر دو';
+    h+='<div class="card row'+(w.k?' done':'')+'"><input type="checkbox" data-chk="'+E(w.id)+'"'+(w.k?' checked':'')+' aria-label="انجام شد: '+E(w.t)+'"><div class="grow"><b>'+E(w.t)+'</b><p><small>اولویت: '+(w.p==='high'?'زیاد':w.p==='low'?'کم':'معمولی')+' · مسئول: '+E(owner)+(w.due?' · موعد: '+sh(w.due):'')+(w.budget?' · بودجه: '+fa(w.budget):'')+'</small></p>'+(w.note?'<p>'+E(w.note)+'</p>':'')+'</div><button class="x" data-del="wishes:'+E(w.id)+'" aria-label="حذف «'+E(w.t)+'»">حذف</button></div>';
+  });
+  V.innerHTML='<h2>آرزوها و هدف‌های مشترک</h2><div class="card"><label for="wishtext">هدف یا آرزوی تازه</label><input id="b" maxlength="200" placeholder="مثلاً: سفر دونفره به شمال" aria-label="آرزوی تازه"><div class="row"><div class="grow"><label for="wishpriority">اولویت</label><select id="wishpriority"><option value="normal">معمولی</option><option value="high">زیاد</option><option value="low">کم</option></select></div><div class="grow"><label for="wishowner">مسئول</label><select id="wishowner"><option value="both">هر دو</option><option value="0">'+E(D.names[0])+'</option><option value="1">'+E(D.names[1])+'</option></select></div></div><label for="wishdue">تاریخ هدف (اختیاری)</label><input id="wishdue" type="date"><label for="wishbudget">بودجه تخمینی (اختیاری)</label><input id="wishbudget" type="number" min="0" max="1000000000" placeholder="مبلغ به واحد پول دلخواه"><label for="wishnote">یادداشت</label><textarea id="wishnote" rows="2" maxlength="500" placeholder="جزئیات یا قدم بعدی"></textarea><button id="ad">افزودن هدف</button></div><p><small id="cnt"></small></p>'+(h||'<p><small>هنوز هدفی ثبت نشده؛ اولین آرزوی مشترک را اضافه کنید.</small></p>');
   cnt();
-  $('#ad').onclick=function(){var t=$('#b').value.trim();if(!t)return toast('آرزو را بنویسید');set('wishes:'+rid(),{t:t,k:0});wishes();focusB()};
+  $('#ad').onclick=function(){
+    var t=$('#b').value.trim(),budget=Number($('#wishbudget').value)||0;
+    if(!t)return toast('هدف را بنویسید');
+    if(budget<0||budget>1000000000)return toast('بودجه معتبر نیست');
+    set('wishes:'+rid(),{t:t,k:0,p:$('#wishpriority').value,budget:budget,due:$('#wishdue').value,owner:$('#wishowner').value,note:$('#wishnote').value.trim()});
+    wishes();focusB();
+  };
 }
-
 function cal(){
   var h='';
   D.events.map(function(e){return{e:e,n:until(e.d,e.r)}}).sort(function(a,b){return ((a.n<0)-(b.n<0))||Math.abs(a.n)-Math.abs(b.n)}).forEach(function(o){
@@ -187,7 +197,151 @@ function qa(){
   $('#ad').onclick=function(){var t=document.querySelectorAll('[data-a]');[0,1].forEach(function(i){if(t[i].value!==a[i])set('qa:'+n+':'+i,t[i].value)});a=[t[0].value,t[1].value];this.textContent='ذخیره شد ✓'};
 }
 
-var R={index:home,story:story,letters:letters,wishes:wishes,calendar:cal,qa:qa};
+
+/* ---------- امکانات افزوده: چت، بازی، نقشه و تنظیمات ---------- */
+
+function exportAll(){
+  var safe={};
+  Object.keys(I).forEach(function(k){if(k.indexOf('location:')===0)return;safe[k]=I[k];});
+  return {format:'our-home-backup',version:2,exportedAt:new Date().toISOString(),I:safe,preferences:{start:cfg.start||null,theme:cfg.theme||null}};
+}
+function restoreAll(raw){
+  if(raw&&raw.format==='our-home-backup'&&raw.version===2&&raw.I&&typeof raw.I==='object'&&!Array.isArray(raw.I)){
+    var ks=Object.keys(raw.I);if(ks.length>5000)throw new Error('تعداد داده‌ها بیش از حد مجاز است');
+    var next={};
+    ks.forEach(function(k){
+      if(!/^[a-z]{1,12}(:[A-Za-z0-9_-]{1,40}){1,2}$/.test(k))throw new Error('کلید پشتیبان نامعتبر است');
+      var x=raw.I[k];if(!x||typeof x!=='object'||typeof x.t!=='number'||!isFinite(x.t))throw new Error('ساختار پشتیبان نامعتبر است');
+      var encoded=JSON.stringify(x.v);if(typeof encoded!=='string'||encoded.length>300000)throw new Error('یک مورد بیش از حد بزرگ است');
+      if(k.indexOf('location:')!==0)next[k]={v:x.v,t:x.t};
+    });
+    I=next;dirty={};Object.keys(I).forEach(function(k){dirty[k]=1});
+    if(raw.preferences&&ISO.test(raw.preferences.start||'')){cfg.start=raw.preferences.start;S=new Date(cfg.start+'T12:00:00');}
+    if(raw.preferences&&(raw.preferences.theme==='dark'||raw.preferences.theme==='light')){cfg.theme=raw.preferences.theme;document.documentElement.setAttribute('data-theme',cfg.theme);}
+    build();save();sched();return true;
+  }
+  var old=norm(raw);if(old){imp(old);return true;}
+  throw new Error('فایل پشتیبان معتبر نیست');
+}
+function downloadBackup(){
+  var blob=new Blob([JSON.stringify(exportAll())],{type:'application/json'});
+  var url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='our-home-backup.json';a.click();
+  setTimeout(function(){URL.revokeObjectURL(url)},1500);
+}
+
+function customItems(prefix){
+  return Object.keys(I).filter(function(k){return k.indexOf(prefix+':')===0&&I[k]&&I[k].v!==null;}).map(function(k){return {id:k.slice(prefix.length+1),v:I[k].v,t:I[k].t};});
+}
+function chat(){
+  var msgs=customItems('chat').filter(function(m){return m.v&&typeof m.v.text==='string';})
+    .sort(function(a,b){return (a.v.at||a.t)-(b.v.at||b.t);});
+  var html='<h2>چت دونفره 💌</h2><div class="card"><small>'+(cfg.id?'پیام‌ها در فضای مشترک همگام می‌شوند؛ برای دیدن تغییرات طرف مقابل اتصال سرور لازم است.':'حالت محلی: پیام‌ها فقط در همین مرورگر ذخیره می‌شوند.')+'</small></div><section id="chatlog" aria-live="polite">';
+  msgs.forEach(function(m){
+    var own=(!cfg.id)||m.v.from===(cfg.me||'a');
+    html+='<div class="card chat-msg '+(own?'mine':'theirs')+'"><small>'+E(m.v.fromName||((m.v.from==='b')?D.names[1]:D.names[0]))+' · '+E(new Date(m.v.at||m.t).toLocaleString('fa-IR'))+'</small><p>'+E(m.v.text)+'</p><button class="x" data-del="'+E('chat:'+m.id)+'">حذف</button></div>';
+  });
+  html+='</section><form class="card" id="chatform"><label for="chattext">پیام شما</label><textarea id="chattext" rows="3" maxlength="3000" placeholder="یک پیام دوست‌داشتنی بنویس…" required></textarea><button type="submit">ارسال پیام</button></form>';
+  V.innerHTML=html;
+  $('#chatform').onsubmit=function(e){e.preventDefault();var t=$('#chattext').value.trim();if(!t)return;
+    set('chat:'+rid(),{text:t,from:cfg.me||'a',fromName:D.names[cfg.me==='b'?1:0],at:Date.now()});
+    var all=customItems('chat').sort(function(a,b){return (a.v.at||a.t)-(b.v.at||b.t);});
+    while(all.length>300){var old=all.shift();set('chat:'+old.id,null);}
+    chat();var log=$('#chatlog');if(log)log.scrollTop=log.scrollHeight;};
+}
+function winner(b){
+  var lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  for(var i=0;i<lines.length;i++){var l=lines[i];if(b[l[0]]&&b[l[0]]===b[l[1]]&&b[l[1]]===b[l[2]])return b[l[0]];}
+  return b.every(Boolean)?'draw':'';
+}
+function games(){
+  var g=I['game:state']&&I['game:state'].v;
+  if(!g||!Array.isArray(g.board)||g.board.length!==9)g={board:['','','','','','','','',''],turn:'a',status:'playing',winner:'',updated:Date.now()};
+  var role=cfg.me||'a',online=!!(API&&cfg.id),w=winner(g.board);
+  var board='<div class="ttt" role="group" aria-label="صفحه بازی دوز">';
+  g.board.forEach(function(x,i){board+='<button type="button" class="cell" data-cell="'+i+'" aria-label="خانه '+(i+1)+' '+(x||'خالی')+'" '+(x||g.status!=='playing'||(online&&g.turn!==role)?'disabled':'')+'>'+E(x||'·')+'</button>';});
+  board+='</div>';
+  V.innerHTML='<h2>بازی‌های دونفره 🎮</h2><div class="card"><h3>دوز عاشقانه</h3><p>'+(online?'اتاق مشترک فعال است؛ نوبت شما: '+(role==='a'?'X':'O'):'حالت محلی؛ دو نفر می‌توانند روی همین دستگاه بازی کنند.')+'</p><small>برای بازی از دو گوشی، ابتدا فضای مشترک را از صفحه خانه بسازید و لینک دعوت را برای نفر دوم بفرستید.</small></div><div class="card">'+board+'<p class="game-status">'+(w?(w==='draw'?'بازی مساوی شد.':('برنده: '+(w==='a'?'X':'O'))):(g.status==='playing'?'نوبت: '+(g.turn==='a'?'X':'O'):'بازی تمام شده'))+'</p><button id="newgame">شروع دوباره</button></div><div class="card"><h3>حقیقت یا جرئت</h3><p id="tod">یک سؤال انتخاب کن و با هم جواب بدهید.</p><button id="truth">حقیقت</button> <button id="dare">جرئت</button><button id="nexttod" class="secondary">سؤال بعدی</button></div><div class="card"><h3>چقدر من را می‌شناسی؟</h3><p>هر نفر جداگانه پاسخ بدهد و سپس جواب‌ها را با هم مقایسه کنید.</p><p id="knowq"></p><button id="nextknow">سؤال بعدی</button></div>';
+  V.querySelectorAll('[data-cell]').forEach(function(b){b.onclick=function(){
+    var idx=+b.getAttribute('data-cell'),cur=I['game:state']&&I['game:state'].v;
+    if(!cur||!Array.isArray(cur.board))cur={board:['','','','','','','','',''],turn:'a',status:'playing'};
+    if(cur.status!=='playing'||cur.board[idx]||(online&&cur.turn!==role))return;
+    cur=JSON.parse(JSON.stringify(cur));cur.board[idx]=online?(role==='a'?'X':'O'):(cur.turn==='a'?'X':'O');
+    var win=winner(cur.board);cur.winner=win;cur.status=win?'finished':'playing';cur.turn=cur.turn==='a'?'b':'a';cur.updated=Date.now();
+    set('game:state',cur);games();
+  }});
+  $('#newgame').onclick=function(){if(!confirm('بازی فعلی از نو شروع شود؟'))return;set('game:state',{board:['','','','','','','','',''],turn:'a',status:'playing',winner:'',updated:Date.now()});games();};
+  var truths=['کدام خاطره‌مان را همیشه به یاد می‌آوری؟','چه کاری باعث می‌شود بیشتر احساس دوست‌داشته‌شدن کنی؟','قرار رؤیایی تو چه شکلی است؟','چه چیزی را دوست داری با هم تجربه کنیم؟','اولین چیزی که در من توجهت را جلب کرد چه بود؟'];
+  var dares=['یک پیام عاشقانه در سه جمله بگو.','یک آهنگ برای رابطه‌مان انتخاب کن.','سه ویژگی دوست‌داشتنی طرف مقابل را بگو.','یک قرار ساده برای این هفته پیشنهاد بده.','یک خاطره خنده‌دارمان را تعریف کن.'];
+  var know=['غذای موردعلاقه من چیست؟','کدام مقصد را بیشتر دوست دارم؟','چه چیزی سریع حالم را بهتر می‌کند؟','کدام خاطره‌مان برایم خاص‌تر است؟','چه مهارتی را دوست دارم یاد بگیرم؟'];
+  function pick(a,id){$('#'+id).textContent=a[Math.floor(Math.random()*a.length)];}
+  $('#truth').onclick=function(){pick(truths,'tod')};$('#dare').onclick=function(){pick(dares,'tod')};$('#nexttod').onclick=function(){pick(truths.concat(dares),'tod')};$('#nextknow').onclick=function(){pick(know,'knowq')};pick(know,'knowq');
+}
+var mapWatch=null,mapExpiry=null,lastLocAt=0;
+function mapPage(){
+  var role=cfg.me||'a',other=role==='a'?'b':'a';
+  var mine=I['location:'+role]&&I['location:'+role].v, theirs=I['location:'+other]&&I['location:'+other].v;
+  if(!mine){try{mine=JSON.parse(sessionStorage.getItem('ourhome_current_location')||'null')}catch(e){mine=null}}
+  if(mine&&mine.expires&&mine.expires<Date.now())mine=null;
+  if(theirs&&theirs.expires&&theirs.expires<Date.now())theirs=null;
+  function frame(loc){
+    if(!loc||typeof loc.lat!=='number'||typeof loc.lon!=='number')return '<p><small>موقعیتی برای نمایش وجود ندارد.</small></p>';
+    var d=.012,bbox=[loc.lon-d,loc.lat-d,loc.lon+d,loc.lat+d].join(',');
+    return '<iframe class="map-frame" title="نقشه موقعیت به اشتراک گذاشته‌شده" loading="lazy" referrerpolicy="no-referrer" src="https://www.openstreetmap.org/export/embed.html?bbox='+encodeURIComponent(bbox)+'&layer=mapnik&marker='+encodeURIComponent(loc.lat+','+loc.lon)+'"></iframe><p><a target="_blank" rel="noopener noreferrer" href="https://www.openstreetmap.org/?mlat='+loc.lat+'&mlon='+loc.lon+'#map=16/'+loc.lat+'/'+loc.lon+'">بازکردن نقشه در صفحه جدید ↗</a></p><small>آخرین به‌روزرسانی: '+E(new Date(loc.at||Date.now()).toLocaleString('fa-IR'))+'</small>';
+  }
+  V.innerHTML='<h2>نقشه و موقعیت 📍</h2><div class="card"><p>موقعیت مکانی فقط با اقدام آگاهانه و مجوز خود فرد دریافت می‌شود. اشتراک‌گذاری را هر زمان می‌توان متوقف کرد.</p><small>'+(cfg.id?'فضای مشترک تنظیم شده است.':'برای ارسال موقعیت به گوشی دیگر، ابتدا فضای مشترک را در صفحه خانه فعال کنید.')+'</small></div><div class="card"><h3>موقعیت من</h3>'+frame(mine)+'<button id="getloc" class="secondary">دریافت موقعیت فقط روی این دستگاه</button><label for="duration">مدت اشتراک‌گذاری زنده</label><select id="duration"><option value="900">۱۵ دقیقه</option><option value="3600">۱ ساعت</option><option value="14400">۴ ساعت</option><option value="28800">تا توقف دستی یا حداکثر ۸ ساعت</option></select><button id="startloc">شروع اشتراک‌گذاری موقعیت</button> <button id="stoploc" class="secondary">توقف فوری</button></div><div class="card"><h3>موقعیت پارتنر</h3>'+frame(theirs)+'</div><div class="card"><h3>ذخیره یک مکان خاطره‌انگیز</h3><p>می‌توانی موقعیت فعلی خودت را به‌عنوان مکان خاطره ذخیره کنی.</p><input id="placename" maxlength="100" placeholder="نام مکان؛ مثلاً اولین کافه‌مان"><button id="saveplace">ثبت مکان در این دستگاه</button><div id="places"></div></div>';
+  var places=[];try{places=JSON.parse(localStorage.getItem('ourhome_places')||'[]');if(!Array.isArray(places))places=[];}catch(e){places=[];}
+  $('#places').innerHTML=places.map(function(p,i){return '<div class="card"><b>'+E(p.name)+'</b><p>'+p.lat.toFixed(5)+', '+p.lon.toFixed(5)+'</p><a target="_blank" rel="noopener noreferrer" href="https://www.openstreetmap.org/?mlat='+p.lat+'&mlon='+p.lon+'#map=16/'+p.lat+'/'+p.lon+'">دیدن روی نقشه</a> <button class="x" data-place-del="'+i+'">حذف</button></div>';}).join('');
+  $('#getloc').onclick=function(){
+    if(!navigator.geolocation)return toast('این مرورگر موقعیت مکانی را پشتیبانی نمی‌کند.');
+    if(!window.isSecureContext)return toast('برای GPS باید سایت روی HTTPS یا localhost باشد.');
+    navigator.geolocation.getCurrentPosition(function(pos){var loc={lat:pos.coords.latitude,lon:pos.coords.longitude,at:Date.now(),expires:0};try{sessionStorage.setItem('ourhome_current_location',JSON.stringify(loc))}catch(e){}mapPage();toast('موقعیت فقط روی این دستگاه دریافت شد.');},function(err){toast(err.code===1?'اجازه موقعیت مکانی داده نشد.':'دریافت موقعیت ناموفق بود.');},{enableHighAccuracy:true,maximumAge:5000,timeout:15000});
+  };
+  $('#startloc').onclick=function(){
+    if(!navigator.geolocation)return toast('این مرورگر موقعیت مکانی را پشتیبانی نمی‌کند.');
+    if(!window.isSecureContext)return toast('برای GPS باید سایت روی HTTPS یا localhost باشد.');
+    if(!API||!cfg.id)return toast('برای اشتراک‌گذاری بین دو گوشی، ابتدا فضای مشترک و API را فعال کنید.');
+    var dur=+$('#duration').value,expires=dur?Date.now()+dur*1000:0;
+    if(mapWatch!==null)navigator.geolocation.clearWatch(mapWatch);
+    if(mapExpiry)clearTimeout(mapExpiry);
+    lastLocAt=0;
+    toast('در انتظار اجازه و دریافت موقعیت…');
+    mapWatch=navigator.geolocation.watchPosition(function(pos){
+      if(Date.now()-lastLocAt<15000)return;
+      lastLocAt=Date.now();
+      var loc={lat:pos.coords.latitude,lon:pos.coords.longitude,at:Date.now(),expires:expires};
+      set('location:'+role,loc);mapPage();
+      if(expires&&Date.now()>=expires)stopLocation();
+    },function(err){toast(err.code===1?'اجازه موقعیت مکانی داده نشد.':'دریافت موقعیت ناموفق بود.');},{enableHighAccuracy:true,maximumAge:5000,timeout:15000});
+    if(expires)mapExpiry=setTimeout(stopLocation,dur*1000);
+  };
+  function stopLocation(){
+    if(mapWatch!==null&&navigator.geolocation)navigator.geolocation.clearWatch(mapWatch);
+    mapWatch=null;if(mapExpiry)clearTimeout(mapExpiry);mapExpiry=null;
+    if(cfg.id&&API)set('location:'+role,null);
+    toast('اشتراک‌گذاری موقعیت متوقف شد.');
+  }
+  $('#stoploc').onclick=stopLocation;
+  $('#saveplace').onclick=function(){
+    var loc=I['location:'+role]&&I['location:'+role].v;
+    if(!loc){try{loc=JSON.parse(sessionStorage.getItem('ourhome_current_location')||'null')}catch(e){loc=null}}
+    if(!loc||typeof loc.lat!=='number')return toast('ابتدا موقعیت خود را دریافت کنید.');
+    var name=$('#placename').value.trim();if(!name)return toast('برای مکان یک نام بنویسید.');
+    places.push({name:name,lat:loc.lat,lon:loc.lon,at:Date.now()});
+    try{localStorage.setItem('ourhome_places',JSON.stringify(places));toast('مکان روی همین دستگاه ذخیره شد.');mapPage();}catch(e){toast('ذخیره مکان ناموفق بود.');}
+  };
+  V.querySelectorAll('[data-place-del]').forEach(function(b){b.onclick=function(){var i=+b.getAttribute('data-place-del');places.splice(i,1);localStorage.setItem('ourhome_places',JSON.stringify(places));mapPage();};});
+}
+function settings(){
+  var start=S.getFullYear()+'-'+pad(S.getMonth()+1)+'-'+pad(S.getDate());
+  V.innerHTML='<h2>تنظیمات خانه‌ی ما ⚙️</h2><div class="card"><h3>ظاهر سایت</h3><label for="theme">پوسته</label><select id="theme"><option value="light" '+(cfg.theme==='light'?'selected':'')+'>روشن</option><option value="dark" '+(cfg.theme==='dark'?'selected':'')+'>تیره</option><option value="auto" '+(!cfg.theme?'selected':'')+'>مطابق دستگاه</option></select><button id="savetheme">ذخیره پوسته</button></div><div class="card"><h3>تنظیمات رابطه</h3><label for="startdate">تاریخ شروع رابطه</label><input type="date" id="startdate" value="'+start+'"><p><small>تغییر این تاریخ فقط روزشمار را تنظیم می‌کند و خاطرات ثبت‌شده حذف نمی‌شوند.</small></p><button id="savestart">ذخیره تاریخ</button></div><div class="card"><h3>نام‌ها</h3><label for="name0">نام نفر اول</label><input id="name0" maxlength="24" value="'+E(D.names[0])+'"><label for="name1">نام نفر دوم</label><input id="name1" maxlength="24" value="'+E(D.names[1])+'"><button id="savenames">ذخیره نام‌ها</button></div><div class="card"><h3>پشتیبان‌گیری</h3><p>قبل از تغییرات بزرگ، از اطلاعات خود خروجی بگیر.</p><button id="backup">دانلود پشتیبان JSON</button><button id="clearlocal" class="secondary">پاک‌کردن داده‌های محلی</button><p><small>پاک‌کردن داده‌های محلی قابل بازگشت نیست مگر پشتیبان داشته باشی. این کار داده ابری را حذف نمی‌کند.</small></p></div><div class="card"><h3>وضعیت اتصال</h3><p>'+(API?'آدرس API تنظیم شده است.':'آدرس API هنوز در config.js تنظیم نشده است.')+'</p><p>'+(cfg.id?'فضای مشترک: فعال':'فضای مشترک: تنظیم نشده')+'</p><p><small>برای استفاده دونفره، API باید روی سرور واقعی نصب و متغیر ORIGIN آن محدود به دامنه سایت شود.</small></p></div>';
+  $('#savetheme').onclick=function(){var t=$('#theme').value;cfg.theme=t==='auto'?'':t;if(cfg.theme)document.documentElement.setAttribute('data-theme',cfg.theme);else document.documentElement.removeAttribute('data-theme');save();toast('پوسته ذخیره شد.');};
+  $('#savestart').onclick=function(){var v=$('#startdate').value;if(!ISO.test(v))return toast('تاریخ معتبر انتخاب کنید.');cfg.start=v;S=new Date(v+'T12:00:00');save();toast('تاریخ شروع ذخیره شد.');home();};
+  $('#savenames').onclick=function(){var a=$('#name0').value.trim(),b=$('#name1').value.trim();if(!a||!b)return toast('هر دو نام را وارد کنید.');set('names:0',a);set('names:1',b);settings();toast('نام‌ها ذخیره شدند.');};
+  $('#backup').onclick=function(){downloadBackup();toast('پشتیبان کامل دانلود شد')};
+  $('#clearlocal').onclick=function(){if(!confirm('همه داده‌های محلی این مرورگر پاک شود؟ قبل از ادامه پشتیبان بگیرید.'))return;localStorage.removeItem(K);location.reload();};
+}
+
+var R={index:home,story:story,letters:letters,wishes:wishes,calendar:cal,qa:qa,chat:chat,games:games,map:mapPage,settings:settings};
 V.addEventListener('click',function(e){
   var d=e.target.getAttribute&&e.target.getAttribute('data-del');
   if(d&&I[d]&&confirm('حذف شود؟')){set(d,null);R[P]()}
@@ -195,7 +349,7 @@ V.addEventListener('click',function(e){
 V.addEventListener('change',function(e){
   var c=e.target.getAttribute('data-chk');if(c===null)return;
   var w=D.wishes.filter(function(x){return x.id===c})[0];if(!w)return;
-  set('wishes:'+c,{t:w.t,k:e.target.checked?1:0});
+  set('wishes:'+c,{t:w.t,k:e.target.checked?1:0,p:w.p,budget:w.budget,due:w.due,owner:w.owner,note:w.note});
   e.target.closest('.card').className='card row'+(e.target.checked?' done':'');cnt();
 });
 V.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.getAttribute('data-i')!==null){e.preventDefault();e.target.blur()}});
@@ -213,7 +367,7 @@ function tick(){var d=day();if(d!==ld&&!editing()){ld=d;R[P]()}}
 setInterval(tick,60000);setInterval(poll,8000);
 document.addEventListener('visibilitychange',function(){if(!document.hidden){tick();poll()}});
 window.addEventListener('storage',function(e){if(e.key===K&&!editing()){loadLS();build();R[P]()}});
-R[P]();status();
+(R[P]||home)();status();
 if(cfg.id)flush();
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(function(){});
 })();
