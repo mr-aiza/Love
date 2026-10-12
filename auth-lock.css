@@ -1,0 +1,15 @@
+/* Fail-closed visual gate: pages remain hidden until auth.js adds auth-ready. */
+html, body { min-height: 100%; }
+body:not(.auth-ready) {
+  background: #110b18 !important;
+  overflow: hidden !important;
+  min-height: 100vh;
+}
+body:not(.auth-ready) > :not(#auth-screen) {
+  display: none !important;
+  visibility: hidden !important;
+}
+body:not(.auth-ready) #auth-screen {
+  display: grid !important;
+  visibility: visible !important;
+}
