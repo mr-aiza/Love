@@ -1,6 +1,6 @@
 /* Cloudflare Worker: خانه‌ی ما — حساب کاربری + همگام‌سازی امن
  * Bindings: KV namespace DB
- * Variables: ORIGIN=https://mr-aiza.github.io ; SETUP_KEY=<یک کلید طولانی و محرمانه>
+ * Variables/Secrets: ORIGIN=https://mr-aiza.github.io ; USER_424_PASSWORD ; USER_626_PASSWORD
  */
 const MAX_ITEM=300000, MAX_DOC=4500000, MAX_KEYS=5000;
 const KEY=/^[a-z]{1,12}(:[A-Za-z0-9_-]{1,40}){1,2}$/;
@@ -26,28 +26,26 @@ export default {
    const ip=req.headers.get('CF-Connecting-IP')||'x';
    const limited=async(tag,max=12)=>{const rk='rl:'+tag+':'+ip+':'+Math.floor(Date.now()/36e5);const n=+(await env.DB.get(rk)||0);if(n>=max)return false;await env.DB.put(rk,String(n+1),{expirationTtl:3700});return true};
 
-   // راه‌اندازی یک‌باره حساب‌های 424 و 626
-   if(req.method==='POST'&&u.pathname==='/api/setup'){
-    if(!env.SETUP_KEY)return J({error:'متغیر SETUP_KEY در Cloudflare تنظیم نشده است'},503);
-    if(!await limited('setup',5))return J({error:'تلاش‌های زیاد؛ بعداً دوباره امتحان کنید'},429);
-    const body=await readBody();if(!body||typeof body.setupKey!=='string'||body.setupKey!==env.SETUP_KEY)return J({error:'کلید راه‌اندازی صحیح نیست'},403);
-    if(await env.DB.get(accountKey('424'))||await env.DB.get(accountKey('626')))return J({error:'حساب‌ها قبلاً راه‌اندازی شده‌اند'},409);
-    const password=typeof body.password==='string'?body.password:'';
-    if(password.length<3||password.length>128)return J({error:'رمز عبور معتبر نیست'},400);
-    const id=rnd(8),a=rnd(24),b=rnd(24),salt=rnd(16),ph=await hashPassword(password,salt);
-    const doc={ta:await sha(a),tb:await sha(b),tv:'',items:{'names:0':{v:'علیرضا',t:Date.now()},'names:1':{v:'صبا',t:Date.now()+1}},seen:{a:0,b:0}};
-    await env.DB.put('d:'+id,JSON.stringify(doc));
-    const common={id,salt,ph,createdAt:Date.now()};
-    await env.DB.put(accountKey('424'),JSON.stringify({...common,username:'424',name:'علیرضا',role:'a',docToken:a}));
-    await env.DB.put(accountKey('626'),JSON.stringify({...common,username:'626',name:'صبا',role:'b',docToken:b}));
-    return J({ok:true,message:'حساب‌های 424 و 626 ساخته شدند. اکنون وارد شوید.'},201);
-   }
-
    if(req.method==='POST'&&u.pathname==='/api/login'){
     if(!await limited('login',12))return J({error:'تلاش‌های ورود زیاد است؛ یک ساعت دیگر امتحان کنید'},429);
     const body=await readBody(),username=body&&String(body.username||''),password=body&&String(body.password||'');
     if(!['424','626'].includes(username)||!password)return J({error:'نام کاربری یا رمز عبور اشتباه است'},401);
-    const raw=await env.DB.get(accountKey(username));if(!raw)return J({error:'حساب‌ها هنوز راه‌اندازی نشده‌اند. از «راه‌اندازی اولیه» استفاده کنید.'},404);
+    let raw=await env.DB.get(accountKey(username));
+    // ساخت خودکار فضای مشترک در اولین ورود؛ اطلاعات ورود فقط از Secrets کلودفلر خوانده می‌شود.
+    if(!await env.DB.get(accountKey('424'))&&!await env.DB.get(accountKey('626'))){
+     const p424=env.USER_424_PASSWORD, p626=env.USER_626_PASSWORD;
+     if(typeof p424!=='string'||p424.length<3||typeof p626!=='string'||p626.length<3)
+      return J({error:'در Cloudflare دو Secret با نام USER_424_PASSWORD و USER_626_PASSWORD تعریف کنید.'},503);
+     const id=rnd(8),a=rnd(24),b=rnd(24),now=Date.now();
+     const doc={ta:await sha(a),tb:await sha(b),tv:'',items:{'names:0':{v:'علیرضا',t:now},'names:1':{v:'صبا',t:now+1}},seen:{a:0,b:0}};
+     await env.DB.put('d:'+id,JSON.stringify(doc));
+     for(const [un,pw,role,name,token] of [['424',p424,'a','علیرضا',a],['626',p626,'b','صبا',b]]){
+      const salt=rnd(16),ph=await hashPassword(pw,salt);
+      await env.DB.put(accountKey(un),JSON.stringify({id,salt,ph,createdAt:now,username:un,name,role,docToken:token}));
+     }
+     raw=await env.DB.get(accountKey(username));
+    }
+    if(!raw)return J({error:'حساب کاربری پیدا نشد؛ Secrets کلودفلر را بررسی کنید.'},503);
     const rec=JSON.parse(raw);if(!await verifyPassword(password,rec))return J({error:'نام کاربری یا رمز عبور اشتباه است'},401);
     const session=rnd(32),sessionHash=await sha(session);
     await env.DB.put('s:'+sessionHash,JSON.stringify({id:rec.id,role:rec.role,username:rec.username,createdAt:Date.now()}),{expirationTtl:2592000});
