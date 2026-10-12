@@ -71,16 +71,13 @@ export default {
    // لینک مشاهده قدیمی/سازگاری نسخه قبل
    if(req.method==='POST'&&u.pathname==='/api/create'){
     if(!await limited('create',10))return J({error:'درخواست زیاد است؛ بعداً تلاش کنید'},429);
-    const id=rnd(8),a=rnd(24),b=rnd(24),v=rnd(24);
-    await env.DB.put('d:'+id,JSON.stringify({ta:await sha(a),tb:await sha(b),tv:await sha(v),items:{},seen:{a:0,b:0}}));return J({id,a,b,v});
+    const id=rnd(8),a=rnd(24),b=rnd(24);
+    await env.DB.put('d:'+id,JSON.stringify({ta:await sha(a),tb:await sha(b),items:{},seen:{a:0,b:0}}));return J({id,a,b});
    }
-   const vm=u.pathname.match(/^\/api\/view-token\/([a-f0-9]{16})$/);
-   if(req.method==='POST'&&vm){const raw=await env.DB.get('d:'+vm[1]);if(!raw)return J({error:'فضای مشترک پیدا نشد'},404);const d=JSON.parse(raw),h=await sha(req.headers.get('x-token')||'');const role=await resolveRole(env,vm[1],h,d);if(role!=='a'&&role!=='b')return J({error:'فقط اعضای فضای مشترک می‌توانند لینک مشاهده بسازند'},401);const v=rnd(24);d.tv=await sha(v);await env.DB.put('d:'+vm[1],JSON.stringify(d));return J({v})}
    const m=u.pathname.match(/^\/api\/doc\/([a-f0-9]{16})$/);if(!m)return J({ok:true});
    const raw=await env.DB.get('d:'+m[1]);if(!raw)return J({error:'فضای خصوصی پیدا نشد'},404);const doc=JSON.parse(raw),h=await sha(req.headers.get('x-token')||'');const role=await resolveRole(env,m[1],h,doc);
    if(!role)return J({error:'برای دیدن این فضا باید وارد حساب خود شوید'},401);
    if(req.method==='GET')return J({items:doc.items,seen:doc.seen});
-   if(role==='v')return J({error:'این لینک فقط اجازه مشاهده دارد'},403);
    if(req.method!=='PUT')return J({error:'روش نامعتبر'},405);
    const declared=+(req.headers.get('content-length')||0);if(declared>2e6)return J({error:'حجم درخواست زیاد است'},413);const txt=await req.text();if(txt.length>2e6)return J({error:'حجم درخواست زیاد است'},413);let body;try{body=JSON.parse(txt)}catch{return J({error:'JSON نامعتبر است'},400)}
    const inc=body&&body.items;if(!inc||typeof inc!=='object'||Array.isArray(inc))return J({error:'items نامعتبر است'},400);const ks=Object.keys(inc);if(ks.length>300)return J({error:'تعداد تغییرات در یک درخواست زیاد است'},413);const now=Date.now();
@@ -90,6 +87,6 @@ export default {
  }
 };
 async function resolveRole(env,id,hash,doc){
- if(hash===doc.ta)return 'a';if(hash===doc.tb)return 'b';if(doc.tv&&hash===doc.tv)return 'v';
+ if(hash===doc.ta)return 'a';if(hash===doc.tb)return 'b';
  const raw=await env.DB.get('s:'+hash);if(!raw)return '';try{const s=JSON.parse(raw);return s.id===id?s.role:''}catch{return ''}
 }
