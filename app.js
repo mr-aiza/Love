@@ -6,7 +6,7 @@ var I={},dirty={},cfg={},D,otherSeen=0,busy=false,dead=false,timer=null;
 /* ---------- اعتبارسنجی ---------- */
 function str(v,n){return typeof v==='string'?v.slice(0,n):''}
 function clean(c,v){
-  if(c==='story')return ISO.test(v.d)&&str(v.t,1)?{d:v.d,t:str(v.t,120),x:str(v.x,3000),img:typeof v.img==='string'&&/^data:image\\/(?:jpeg|png|webp);base64,/.test(v.img)&&v.img.length<=180000?v.img:''}:0;
+  if(c==='story')return ISO.test(v.d)&&str(v.t,1)?{d:v.d,t:str(v.t,120),x:str(v.x,3000),img:typeof v.img==='string'&&/^data:image\/(?:jpeg|png|webp);base64,/.test(v.img)&&v.img.length<=180000?v.img:''}:0;
   if(c==='letters')return ISO.test(v.c)&&str(v.t,1)?{f:v.f?1:0,t:str(v.t,120),x:str(v.x,20000),c:v.c,u:ISO.test(v.u)?v.u:''}:0;
   if(c==='wishes')return str(v.t,1)?{t:str(v.t,200),k:v.k?1:0,p:['low','normal','high'].indexOf(v.p)>-1?v.p:'normal',budget:Math.max(0,Math.min(1000000000,Number(v.budget)||0)),due:ISO.test(v.due)?v.due:'',owner:['0','1','both'].indexOf(String(v.owner))>-1?String(v.owner):'both',note:str(v.note,500)}:0;
   if(c==='events')return ISO.test(v.d)&&str(v.t,1)?{d:v.d,t:str(v.t,120),r:!!v.r}:0;
@@ -168,7 +168,7 @@ function story(){
     if(!t||!date)return toast('تاریخ و عنوان لازم است');
     function commit(img){set('story:'+rid(),{d:date,t:t,x:desc,img:img||''});story();toast('خاطره ذخیره شد.');}
     if(!file){commit('');return}
-    if(!/^image\\/(?:jpeg|png|webp)$/.test(file.type)||file.size>12*1024*1024)return toast('عکس باید JPG، PNG یا WebP و حداکثر ۱۲ مگابایت باشد.');
+    if(!/^image\/(?:jpeg|png|webp)$/.test(file.type)||file.size>12*1024*1024)return toast('عکس باید JPG، PNG یا WebP و حداکثر ۱۲ مگابایت باشد.');
     var url=URL.createObjectURL(file),image=new Image();
     image.onload=function(){
       URL.revokeObjectURL(url);
