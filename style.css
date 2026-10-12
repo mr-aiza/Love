@@ -85,3 +85,11 @@ button.secondary{background:transparent;color:var(--wine);border:1px solid var(-
 .muted{color:var(--mute)}
 button:disabled{opacity:.6;cursor:not-allowed}
 @media(min-width:540px){.stats-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.badge-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.memory-card{min-height:78px}}
+
+/* Live shared drawing */
+.draw-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.draw-tools label{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.draw-tools select{max-width:130px;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+.draw-tools input[type=range]{width:100px}
+.draw-wrap{padding:8px;overflow:hidden}
+#draw-canvas{display:block;width:100%;height:360px;background:#fffdfd;border:1px solid var(--line);border-radius:14px;touch-action:none;cursor:crosshair}
