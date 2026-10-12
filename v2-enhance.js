@@ -16,6 +16,9 @@ function put(k,v){var s=get(),old=s.I[k]&&+s.I[k].t||0;s.I[k]={v:v,t:Math.max(Da
 function question(n){var q=['کوچک‌ترین چیزی که امروز تو را خوشحال کرد چه بود؟','اگر فردا یک روز آزاد داشتیم، کجا می‌رفتیم؟','کدام خاطره‌ی ما را بیشتر از همه دوست داری؟','چه چیزی در من تو را آرام می‌کند؟','یک آرزوی کوچک برای این ماه؟','چه آهنگی تو را یاد من می‌اندازد؟','چه چیزی را امسال دوست داری با هم یاد بگیریم؟','چه کاری از من تو را بی‌دلیل می‌خنداند؟','اگر قرار بود یک غذا را همیشه با هم بپزیم، کدام؟','امروز از من برای چه چیزی ممنونی؟'];return q[n%q.length]}
 function countdown(e){var now=new Date(today()+'T00:00:00'),d=new Date((e.d||'')+'T00:00:00');if(isNaN(+d))return 99999;if(e.r){d.setFullYear(now.getFullYear());if(d<now)d.setFullYear(now.getFullYear()+1)}return Math.round((d-now)/86400000)}
 function render(){
+ /* روی موبایل، بازسازی DOM هنگام تایپ فوکوس را می‌گیرد و کیبورد را می‌بندد؛ تا وقتی کاربر داخل فیلدهای V2 است رندر را متوقف کن. */
+ var active=document.activeElement;
+ if(active&&active.closest&&active.closest('#'+PID)&&(/^(INPUT|TEXTAREA|SELECT)$/.test(active.tagName)||active.isContentEditable))return;
  var root=document.getElementById('v');if(!root||!root.querySelector('.go'))return;
  var s=get(),I=s.I,u=read(SID)||{},role=u.me==='b'?'b':'a',other=role==='a'?'b':'a',names=[0,1].map(function(i){return I['names:'+i]&&I['names:'+i].v||['من','پارتنرم'][i]});
  var stories=list(I,'story').filter(function(x){return x.v&&x.v.t}),letters=list(I,'letters'),wishes=list(I,'wishes'),events=list(I,'events');
@@ -45,6 +48,6 @@ function render(){
  var nb=p.querySelector('#v2-notify');if(nb)nb.onclick=function(){var msg=p.querySelector('#v2-notify-msg');if(!('Notification'in window)){msg.textContent='این مرورگر اعلان را پشتیبانی نمی‌کند.';return}Notification.requestPermission().then(function(x){msg.textContent=x==='granted'?'مجوز اعلان فعال شد.':'مجوز اعلان داده نشد.';render()})};
 }
 function notifyMood(){var s=get(),u=read(SID)||{},role=u.me==='b'?'b':'a',x=s.I['mood:'+(role==='a'?'b':'a')];if(!x||!x.v)return;if(lastMood&&+x.t>lastMood&&document.hidden&&window.Notification&&Notification.permission==='granted'){try{new Notification('خانه‌ی ما',{body:'پارتنرت حال امروز خود را به‌روزرسانی کرد 💗'})}catch(e){}}lastMood=Math.max(lastMood,+x.t||0)}
-function boot(){render();notifyMood();if(observer)observer.disconnect();var root=document.getElementById('v');if(root){observer=new MutationObserver(function(){if(!document.getElementById(PID))render()});observer.observe(root,{childList:true,subtree:true})}if(timer)clearInterval(timer);timer=setInterval(function(){render();notifyMood()},5000)}
+function boot(){render();notifyMood();if(observer)observer.disconnect();var root=document.getElementById('v');if(root){observer=new MutationObserver(function(){if(!document.getElementById(PID))render()});observer.observe(root,{childList:true,subtree:true})}if(timer)clearInterval(timer);timer=setInterval(function(){var a=document.activeElement,typing=!!(a&&a.closest&&a.closest('#'+PID)&&(/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)||a.isContentEditable));if(!typing)render();notifyMood()},5000)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
