@@ -23,7 +23,7 @@ function norm(d){ /* برای فایل پشتیبان و داده‌ی نسخه�
 
 /* ---------- حافظه: هر مورد یک کلید جدا با زمان (آخرین تغییر برنده) ---------- */
 function rid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
-function save(){try{localStorage.setItem(K,JSON.stringify({I:I,cfg:cfg,dirty:dirty}))}catch(e){toast('ذخیره ممکن نیست؛ مرورگر در حالت خصوصی است یا حافظه پر شده. از «دانلود پشتیبان» استفاده کنید.')}}
+function save(){try{var safeCfg=Object.assign({},cfg);['id','tok','other','viewer'].forEach(function(k){delete safeCfg[k]});localStorage.setItem(K,JSON.stringify({I:I,cfg:safeCfg,dirty:dirty}))}catch(e){toast('ذخیره ممکن نیست؛ مرورگر در حالت خصوصی است یا حافظه پر شده. از «دانلود پشتیبان» استفاده کنید.')}}
 function loadLS(){var r=null;try{r=JSON.parse(localStorage.getItem(K))}catch(e){}if(r&&r.I&&typeof r.I==='object'){I=r.I;dirty=r.dirty||{};cfg=r.cfg||{};return true}return false}
 function build(){
   var d={names:['من','پارتنرم'],story:[],letters:[],wishes:[],events:[],qa:{}};
@@ -47,6 +47,9 @@ function imp(d){
   Object.keys(I).forEach(function(k){dirty[k]=1});build();save();sched();
 }
 if(!loadLS()){var old=null;try{old=norm(JSON.parse(localStorage.getItem('hd1')))}catch(e){}if(old){I['story:start']={v:null,t:1};imp(old)}}
+/* احراز هویت: شناسه و توکن فقط از نشست معتبر ورود دریافت می‌شوند. */
+var AUTH_SESSION=null;try{AUTH_SESSION=JSON.parse(localStorage.getItem('ourhome_session')||'null')}catch(e){}
+if(AUTH_SESSION&&AUTH_SESSION.id&&AUTH_SESSION.session){cfg=Object.assign({},cfg,{id:AUTH_SESSION.id,tok:AUTH_SESSION.session,me:AUTH_SESSION.me,username:AUTH_SESSION.username,accountName:AUTH_SESSION.name,other:'',viewer:''});if(!localStorage.getItem('ourhome_migrated_'+AUTH_SESSION.username)){Object.keys(I).forEach(function(k){dirty[k]=1});localStorage.setItem('ourhome_migrated_'+AUTH_SESSION.username,'1')}}else{cfg={start:cfg.start||'2026-09-29',theme:cfg.theme||''};dirty={}}
 if(cfg.start==='2026-09-30')cfg.start='2026-09-29';
 if(I['settings:start']&&I['settings:start'].v==='2026-09-30'){I['settings:start']={v:'2026-09-29',t:Date.now()};dirty['settings:start']=1;}
 applyStartSetting();
@@ -86,7 +89,7 @@ function toast(m){var t=$('#toast');if(!t){t=document.createElement('div');t.id=
 function focusB(){var b=$('#b');if(b&&b.focus)b.focus()}
 function status(t,err){
   var s=$('#sync');if(!s){s=document.createElement('p');s.id='sync';s.setAttribute('role','status');document.body.appendChild(s)}
-  if(!t){if(!API)t='';else if(!cfg.id)t='ذخیره‌ی محلی؛ فضای مشترک ساخته نشده';else{t='همگام ✓ · شما: '+(cfg.me==='a'?'نفر اول':'نفر دوم');if(otherSeen){var m=Math.max(0,Math.round((Date.now()-otherSeen)/6e4));t+=' · پارتنر: '+(m<1?'همین الان':fa(m)+' دقیقه پیش')}}}
+  if(!t){if(!API)t='';else if(!cfg.id)t='ذخیره‌ی محلی؛ فضای مشترک ساخته نشده';else{t='همگام ✓ · شما: '+(cfg.accountName|| (cfg.me==='a'?'نفر اول':'نفر دوم'));if(otherSeen){var m=Math.max(0,Math.round((Date.now()-otherSeen)/6e4));t+=' · پارتنر: '+(m<1?'همین الان':fa(m)+' دقیقه پیش')}}}
   s.textContent=t;s.className=err?'sync err':'sync';
 }
 
