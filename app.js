@@ -113,7 +113,7 @@ function flush(){
 }
 function poll(){
   if(document.hidden||!cfg.id||!API||busy||dead||Object.keys(dirty).length)return;
-  api('GET').then(function(r){if(merge(r)&&!editing())(R[P]||home)();ensureSharedStart();status()}).catch(function(e){if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1)}else status('ارتباط با سرور برقرار نیست',1)});
+  api('GET').then(function(r){if(merge(r)&&!editing()){if(P==='draw'&&typeof window.__ourhomeDrawRefresh==='function')window.__ourhomeDrawRefresh();else (R[P]||home)()}ensureSharedStart();status()}).catch(function(e){if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1)}else status('ارتباط با سرور برقرار نیست',1)});
 }
 function shareUrl(u,title,ok){
   if(navigator.share)navigator.share({title:title,url:u}).catch(function(){});
@@ -332,21 +332,76 @@ function games(){
 }
 
 function drawPage(){
-  var strokes=Object.keys(I).filter(function(k){return k.indexOf('draw:')===0&&k!=='draw:clear'&&I[k]&&I[k].v&&Array.isArray(I[k].v.points)}).map(function(k){return {id:k,v:I[k].v,t:I[k].t||0}}).filter(function(s){return s.t>((I['draw:clear']&&I['draw:clear'].t)||0)}).sort(function(a,b){return a.t-b.t});
   var palette=['#e84375','#6c4bd3','#1e9d83','#f39c12','#253047','#111111'];
-  V.innerHTML='<h2>🎨 بوم نقاشی دونفره</h2><p class="muted">هر دو نفر هم‌زمان نقاشی بکشید؛ خط‌ها به‌صورت جداگانه همگام می‌شوند. صفحه را باز نگه دارید تا تغییرات سریع‌تر برسند.</p><div class="card draw-tools"><label>رنگ <select id="draw-color">'+palette.map(function(c){return '<option value="'+c+'">'+c+'</option>'}).join('')+'</select></label><label>ضخامت <input id="draw-width" type="range" min="2" max="18" value="5"></label><button id="draw-undo" class="secondary">پاک‌کردن آخرین خط من</button><button id="draw-clear" class="secondary">پاک‌کردن کل بوم</button></div><div class="card draw-wrap"><canvas id="draw-canvas" aria-label="بوم نقاشی مشترک"></canvas></div><div class="card"><h3>💡 ایده‌های نقاشی</h3><p>چشم‌بسته یکدیگر را بکشید، خانه‌ی رؤیایی‌تان را طراحی کنید یا هر نفر نصف یک قلب را بکشد.</p><small id="draw-status">خطوط ذخیره‌شده: '+fa(strokes.length)+' · '+(API&&cfg.id?'همگام‌سازی مشترک فعال':'فقط روی این دستگاه؛ برای نقاشی از دو گوشی فضای مشترک را فعال کنید')+'</small></div>';
-  var canvas=$('#draw-canvas'),ctx=canvas.getContext('2d'),drawing=false,current=null,last=null;
-  function size(){var r=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.max(1,Math.round(r.width*dpr));canvas.height=Math.max(1,Math.round(360*dpr));canvas.style.height='360px';ctx.setTransform(dpr,0,0,dpr,0,0);paint()}
-  function paint(){var w=canvas.clientWidth,h=360;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fffdfd';ctx.fillRect(0,0,w,h);strokes.forEach(function(s){var p=s.v.points;if(!p.length)return;ctx.strokeStyle=s.v.color||'#e84375';ctx.lineWidth=s.v.width||5;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(p[0][0]*w,p[0][1]*h);for(var i=1;i<p.length;i++)ctx.lineTo(p[i][0]*w,p[i][1]*h);if(p.length===1){ctx.lineTo(p[0][0]*w+.01,p[0][1]*h+.01)}ctx.stroke()});if(current&&current.points.length){ctx.strokeStyle=current.color;ctx.lineWidth=current.width;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(current.points[0][0]*w,current.points[0][1]*h);for(var j=1;j<current.points.length;j++)ctx.lineTo(current.points[j][0]*w,current.points[j][1]*h);ctx.stroke()}}
-  function point(e){var r=canvas.getBoundingClientRect();return [Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))]}
-  canvas.addEventListener('pointerdown',function(e){drawing=true;canvas.setPointerCapture(e.pointerId);current={points:[point(e)],color:$('#draw-color').value,width:+$('#draw-width').value,by:cfg.me||'local',at:Date.now()};last=point(e);paint()});
-  canvas.addEventListener('pointermove',function(e){if(!drawing||!current)return;var p=point(e);if(!last||Math.hypot((p[0]-last[0])*canvas.clientWidth,(p[1]-last[1])*360)>1){current.points.push(p);last=p;paint()}});
-  function finish(){if(!drawing||!current)return;drawing=false;if(current.points.length){var sid='draw:'+rid(),stamp=Date.now();set(sid,current);strokes.push({id:sid,v:current,t:stamp});}current=null;last=null;paint();var s=$('#draw-status');if(s)s.textContent='خطوط ذخیره‌شده: '+fa(strokes.length)+' · '+(API&&cfg.id?'در حال همگام‌سازی':'ذخیره محلی')}
-  canvas.addEventListener('pointerup',finish);canvas.addEventListener('pointercancel',finish);window.addEventListener('resize',size);size();
-  $('#draw-undo').onclick=function(){var me=cfg.me||'local',mine=strokes.filter(function(s){return s.v.by===me});if(!mine.length)return toast('خطی از شما برای پاک‌کردن نیست.');var lastStroke=mine[mine.length-1];set(lastStroke.id,null);strokes=strokes.filter(function(s){return s.id!==lastStroke.id});paint()};
-  $('#draw-clear').onclick=function(){if(!confirm('کل نقاشی برای هر دو نفر پاک شود؟'))return;set('draw:clear',{at:Date.now(),by:cfg.me||'local'});strokes.forEach(function(s){set(s.id,null)});strokes=[];paint();toast('بوم پاک شد.')};
+  V.innerHTML='<h2>🎨 بوم نقاشی دونفره</h2><p class="muted">خطوط در حین کشیدن نیز همگام می‌شوند. برای تجربه‌ی بهتر هر دو نفر این صفحه را باز نگه دارید.</p><div class="card draw-tools"><label>رنگ <select id="draw-color">'+palette.map(function(c){return '<option value="'+c+'">'+c+'</option>'}).join('')+'</select></label><label>ضخامت <input id="draw-width" type="range" min="2" max="18" value="5"></label><button id="draw-undo" class="secondary">پاک‌کردن آخرین خط من</button><button id="draw-clear" class="secondary">پاک‌کردن کل بوم</button></div><div class="card draw-wrap"><canvas id="draw-canvas" aria-label="بوم نقاشی مشترک"></canvas></div><div class="card"><h3>💡 ایده‌های نقاشی</h3><p>چشم‌بسته یکدیگر را بکشید، خانه‌ی رؤیایی‌تان را طراحی کنید یا هر نفر نصف یک قلب را بکشد.</p><small id="draw-status" aria-live="polite"></small></div>';
+  var canvas=$('#draw-canvas'),ctx=canvas.getContext('2d'),drawing=false,current=null,last=null,liveTimer=null,lastLive=0,disposed=false;
+  var liveKey='draw:live:'+(cfg.me==='b'?'b':'a');
+  function getStrokes(){
+    var cleared=(I['draw:clear']&&I['draw:clear'].t)||0;
+    return Object.keys(I).filter(function(k){return k.indexOf('draw:')===0&&k!=='draw:clear'&&k.indexOf('draw:live:')!==0&&I[k]&&I[k].v&&Array.isArray(I[k].v.points)}).map(function(k){return {id:k,v:I[k].v,t:I[k].t||0}}).filter(function(s){return s.t>cleared}).sort(function(a,b){return a.t-b.t});
+  }
+  var strokes=getStrokes();
+  function liveStrokes(){
+    var now=Date.now(),out=[];
+    ['a','b'].forEach(function(role){var x=I['draw:live:'+role],v=x&&x.v;if(v&&Array.isArray(v.points)&&v.points.length&&now-(v.updated||v.at||0)<15000)out.push({id:'live-'+role,v:v,t:x.t||0})});
+    return out;
+  }
+  function updateStatus(){
+    var s=$('#draw-status');if(!s)return;
+    s.textContent='خطوط ذخیره‌شده: '+fa(strokes.length)+' · '+(API&&cfg.id?'همگام‌سازی مشترک '+(otherSeen?'فعال':'در انتظار اتصال'):'ذخیره فقط روی همین دستگاه؛ ورود به فضای مشترک برای دو گوشی لازم است');
+  }
+  function paint(){
+    if(disposed||!canvas.isConnected)return;
+    var w=canvas.clientWidth||canvas.getBoundingClientRect().width||300,h=360;
+    ctx.clearRect(0,0,w,h);ctx.fillStyle='#fffdfd';ctx.fillRect(0,0,w,h);
+    function line(v){
+      var p=v&&v.points;if(!p||!p.length)return;
+      ctx.strokeStyle=v.color||'#e84375';ctx.lineWidth=Number(v.width)||5;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(p[0][0]*w,p[0][1]*h);
+      for(var i=1;i<p.length;i++)ctx.lineTo(p[i][0]*w,p[i][1]*h);
+      if(p.length===1)ctx.lineTo(p[0][0]*w+.1,p[0][1]*h+.1);ctx.stroke();
+    }
+    strokes.forEach(function(s){line(s.v)});liveStrokes().forEach(function(s){line(s.v)});if(current)line(current);
+  }
+  function refresh(){strokes=getStrokes();paint();updateStatus()}
+  window.__ourhomeDrawRefresh=refresh;
+  function size(){if(disposed||!canvas.isConnected)return;var r=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.max(1,Math.round(r.width*dpr));canvas.height=Math.max(1,Math.round(360*dpr));canvas.style.height='360px';ctx.setTransform(dpr,0,0,dpr,0,0);paint()}
+  function point(e){var r=canvas.getBoundingClientRect();return [Math.max(0,Math.min(1,(e.clientX-r.left)/Math.max(1,r.width))),Math.max(0,Math.min(1,(e.clientY-r.top)/Math.max(1,r.height)))]}
+  function publishLive(force){
+    if(!current||!current.points.length)return;
+    var now=Date.now();if(!force&&now-lastLive<280)return;lastLive=now;
+    set(liveKey,{points:current.points.slice(),color:current.color,width:current.width,by:current.by,at:current.at,updated:now});
+  }
+  canvas.addEventListener('pointerdown',function(e){
+    e.preventDefault();drawing=true;try{canvas.setPointerCapture(e.pointerId)}catch(_){}
+    current={points:[point(e)],color:$('#draw-color').value,width:+$('#draw-width').value,by:cfg.me||'local',at:Date.now(),updated:Date.now()};last=current.points[0];publishLive(true);paint();
+  });
+  canvas.addEventListener('pointermove',function(e){
+    if(!drawing||!current)return;var p=point(e);
+    if(!last||Math.hypot((p[0]-last[0])*canvas.clientWidth,(p[1]-last[1])*360)>.8){current.points.push(p);last=p;paint();publishLive(false)}
+  });
+  function finish(){
+    if(!drawing||!current)return;drawing=false;var done=current;
+    if(done.points.length){var sid='draw:'+rid();set(sid,done);strokes.push({id:sid,v:done,t:(I[sid]&&I[sid].t)||Date.now()})}
+    current=null;last=null;set(liveKey,null);paint();updateStatus();
+  }
+  canvas.addEventListener('pointerup',finish);canvas.addEventListener('pointercancel',finish);canvas.addEventListener('lostpointercapture',finish);
+  window.addEventListener('resize',size);
+  // Refresh the live overlay periodically so a partner's unfinished line expires after a disconnect.
+  liveTimer=setInterval(function(){paint()},1000);
+  size();updateStatus();
+  $('#draw-undo').onclick=function(){
+    var me=cfg.me||'local',mine=strokes.filter(function(s){return s.v.by===me});
+    if(!mine.length)return toast('خطی از شما برای پاک‌کردن نیست.');
+    var lastStroke=mine[mine.length-1];set(lastStroke.id,null);strokes=strokes.filter(function(s){return s.id!==lastStroke.id});paint();updateStatus();
+  };
+  $('#draw-clear').onclick=function(){
+    if(!confirm('کل نقاشی برای هر دو نفر پاک شود؟'))return;
+    set('draw:clear',{at:Date.now(),by:cfg.me||'local'});strokes.forEach(function(s){set(s.id,null)});strokes=[];set('draw:live:a',null);set('draw:live:b',null);paint();updateStatus();toast('بوم پاک شد.');
+  };
+  // Avoid leaving the global callback bound to a canvas that was replaced by navigation.
+  var priorRoute=R[P]; // retained for the same page lifecycle
+  window.addEventListener('pagehide',function(){disposed=true;clearInterval(liveTimer);if(window.__ourhomeDrawRefresh===refresh)window.__ourhomeDrawRefresh=null},{once:true});
 }
-
 function challengesPage(){
   var prompts=['هر کدام سه ویژگی بگویید که در دیگری تحسین می‌کنید.','یک آهنگ انتخاب کنید که حال‌وهوای رابطه‌تان را توصیف کند.','یک قرار کم‌هزینه برای این هفته طراحی کنید.','هر کدام یک خاطره بگویید که هنوز لبخندتان می‌آورد.','ده دقیقه بدون گوشی با هم حرف بزنید.','یک چیز تازه درباره‌ی آرزوهای هم بپرسید.','برای یکدیگر یک پیام تشکر صادقانه بنویسید.'];
   var today=iso(),key='challenge:'+today,st=I[key]&&I[key].v,idx=Math.floor(new Date(today+'T12:00:00').getTime()/86400000)%prompts.length,txt=st&&st.text||prompts[idx],role=cfg.me==='b'?'b':'a',doneKey=key+':'+role,done=!!(I[doneKey]&&I[doneKey].v),doneA=!!(I[key+':a']&&I[key+':a'].v),doneB=!!(I[key+':b']&&I[key+':b'].v);
