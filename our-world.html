@@ -93,7 +93,7 @@ const defaultMissions=[
 let state,selected=null,editMode=true,drag=null,toastTimer;
 const $=s=>document.querySelector(s);
 const fa=n=>Number(n).toLocaleString('fa-IR');
-function fresh(){return {room:'living',stars:0,unlocked:['sofa','plant','lamp','heart','table','flower'],placed:{living:[{id:'sofa',x:50,y:70},{id:'plant',x:83,y:68},{id:'lamp',x:22,y:66},{id:'heart',x:55,y:27},{id:'table',x:50,y:83}],bedroom:[{id:'heart',x:54,y:28},{id:'moon',x:78,y:24}],garden:[{id:'flower',x:32,y:73},{id:'flower',x:60,y:78}],memory:[{id:'heart',x:53,y:25}]},missions:{},memories:[],doneActivities:[],level:1};}
+function fresh(){return {room:'living',stars:0,unlocked:['sofa','plant','lamp','heart','table','flower'],placed:{living:[{id:'sofa',x:50,y:70},{id:'plant',x:83,y:68},{id:'lamp',x:22,y:66},{id:'heart',x:55,y:27},{id:'table',x:50,y:83}],bedroom:[{id:'heart',x:54,y:28},{id:'moon',x:78,y:24}],garden:[{id:'flower',x:32,y:73},{id:'flower',x:60,y:78}],memory:[{id:'heart',x:53,y:25}],kitchen:[{id:'kitchen',x:50,y:45},{id:'fridge',x:80,y:48}],dining:[{id:'diningtable',x:50,y:63},{id:'chair',x:27,y:72},{id:'chair',x:73,y:72}],bathroom:[{id:'bathtub',x:50,y:67},{id:'sink',x:76,y:45}],balcony:[{id:'balconychair',x:36,y:68},{id:'planter',x:77,y:69}]},missions:{},memories:[],doneActivities:[],level:1};}
 function load(){try{let v=JSON.parse(localStorage.getItem(KEY));if(v&&v.placed&&Array.isArray(v.unlocked))return Object.assign(fresh(),v)}catch(e){}return fresh()}
 state=load();
 function save(silent){try{localStorage.setItem(KEY,JSON.stringify(state));if(!silent)notify('خانه‌تون ذخیره شد 💗');renderStats()}catch(e){notify('فضای ذخیره‌سازی در دسترس نیست.');}}
