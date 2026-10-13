@@ -318,8 +318,8 @@ function games(){
   }});
   $('#newgame').onclick=function(){set('game:state',{board:['','','','','','','','',''],turn:'a',status:'playing',winner:'',updated:Date.now()});games();};
   $('#memory-reset').onclick=function(){set('game:memory',{cards:['💌','🌹','🐻','💖','🌙','🧸','💌','🌹','🐻','💖','🌙','🧸'].sort(function(){return Math.random()-.5}),open:[],matched:[],moves:0});games();};
-  V.querySelectorAll('[data-choice]').forEach(function(b){b.onclick=function(){var cur=I['game:choice']&&I['game:choice'].v;if(!cur||typeof cur.q!=='number')cur={q:0};set('game:choice:'+role,{q:cur.q,answer:+b.getAttribute('data-choice'),at:Date.now()});games();};});
-  $('#choice-next').onclick=function(){var cur=I['game:choice']&&I['game:choice'].v;if(!cur||typeof cur.q!=='number')cur={q:0};set('game:choice',{q:(cur.q+1)%choices.length,at:Date.now()});games();};
+  V.querySelectorAll('[data-choice]').forEach(function(b){b.onclick=function(){var cur=I['game:choice']&&I['game:choice'].v;if(!cur||typeof cur.q!=='number')cur={q:0};var round=cur.round||('q'+cur.q);set('game:choice:'+role,{q:cur.q,round:round,answer:+b.getAttribute('data-choice'),at:Date.now()});games();};});
+  $('#choice-next').onclick=function(){var cur=I['game:choice']&&I['game:choice'].v;if(!cur||typeof cur.q!=='number')cur={q:0};set('game:choice',{q:(cur.q+1)%choices.length,round:rid(),at:Date.now()});games();};
   function pick(a,id){$('#'+id).textContent=a[Math.floor(Math.random()*a.length)];}
   $('#truth').onclick=function(){pick(truthList,'tod')};$('#dare').onclick=function(){pick(dareList,'tod')};$('#nexttod').onclick=function(){pick(truthList.concat(dareList),'tod')};$('#nextknow').onclick=function(){pick(know,'knowq')};pick(know,'knowq');
   $('#daily-done').onclick=function(){set('challenge:'+today,{done:true,text:'امروز هر کدام سه ویژگی بگویید که در دیگری تحسین می‌کنید.',at:Date.now()});games();};
