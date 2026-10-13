@@ -93,6 +93,19 @@ for (const [label, ok] of workerChecks) {
   else fail.push('Security regression check failed: ' + label);
 }
 
+// Explicit checks for known deployment/security boundaries.
+const deploymentChecks = [
+  ['Worker rejects requests from unapproved origins', worker.includes("if(origin!==env.ORIGIN)return J({error:'دامنه مجاز نیست'},403)")],
+  ['sessions are stored with a finite expiration', worker.includes("{expirationTtl:2592000}")],
+  ['time-capsule UI does not falsely claim server-side secrecy', app.includes('قفل فقط نمایشی است؛ هر کس به دستگاه یا فضای مشترک دسترسی داشته باشد می‌تواند متن را ببیند.')],
+  ['notification UI clearly discloses foreground-only behavior', app.includes('این گزینه اعلان پوش یا اعلان پس‌زمینه نیست.')],
+  ['image memories enforce a bounded data URL', app.includes('v.img.length<=180000') && app.includes('img:typeof v.img===\'string\'')]
+];
+for (const [label, ok] of deploymentChecks) {
+  if (ok) pass(label);
+  else fail.push('Deployment boundary check failed: ' + label);
+}
+
 if (fail.length) {
   console.error('\nSMOKE TEST FAILED\n- ' + fail.join('\n- '));
   process.exit(1);
