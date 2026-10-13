@@ -409,16 +409,38 @@ function challengesPage(){
   var prompts=['هر کدام سه ویژگی بگویید که در دیگری تحسین می‌کنید.','یک آهنگ انتخاب کنید که حال‌وهوای رابطه‌تان را توصیف کند.','یک قرار کم‌هزینه برای این هفته طراحی کنید.','هر کدام یک خاطره بگویید که هنوز لبخندتان می‌آورد.','ده دقیقه بدون گوشی با هم حرف بزنید.','یک چیز تازه درباره‌ی آرزوهای هم بپرسید.','برای یکدیگر یک پیام تشکر صادقانه بنویسید.'];
   var today=iso(),key='challenge:'+today,st=I[key]&&I[key].v,idx=Math.floor(new Date(today+'T12:00:00').getTime()/86400000)%prompts.length,txt=st&&st.text||prompts[idx],role=cfg.me==='b'?'b':'a',doneKey=key+':'+role,done=!!(I[doneKey]&&I[doneKey].v),doneA=!!(I[key+':a']&&I[key+':a'].v),doneB=!!(I[key+':b']&&I[key+':b'].v);
   V.innerHTML='<h2>چالش‌های دونفره 🌟</h2><p>فعالیت‌های کوچک برای نزدیک‌تر شدن؛ بدون اجبار و با احترام به مرزهای هر دو نفر.</p><div class="card"><small>چالش امروز · '+E(today)+'</small><h3>'+E(txt)+'</h3><p>'+(doneA&&doneB?'هر دوی شما انجام چالش را ثبت کرده‌اید؛ آفرین 💗':done?'ثبت تو انجام شد؛ منتظر ثبت پارتنرت هستیم.':(doneA||doneB?'یکی از شما انجام چالش را ثبت کرده است.':'بعد از انجام چالش، وضعیت خودت را ثبت کن.'))+'</p><p><small>وضعیت تو: '+(done?'انجام شده ✓':'هنوز ثبت نشده')+' · وضعیت پارتنر: '+((role==='a'?doneB:doneA)?'انجام شده ✓':'هنوز ثبت نشده')+'</small></p><button id="challenge-done" '+(done?'disabled':'')+'>'+(done?'ثبت شده 💗':'من انجامش دادم')+'</button><button id="challenge-next" class="secondary">یک ایده‌ی دیگر</button></div><div class="card"><h3>برنامه‌ریزی قرار دونفره 🗓️</h3><p>قرار را ثبت کنید تا در تقویم مشترک نمایش داده شود.</p><label for="date-title">عنوان قرار</label><input id="date-title" maxlength="120" placeholder="مثلاً پیک‌نیک دونفره"><label for="date-when">تاریخ قرار</label><input id="date-when" type="date" min="'+today+'" value="'+today+'"><button id="date-save">افزودن قرار به تقویم</button></div><div class="card"><h3>ایده‌های قرار</h3><ul><li>شب فیلم با خوراکی خانگی</li><li>پیاده‌روی و گرفتن یک عکس یادگاری</li><li>درست‌کردن یک غذای جدید با هم</li><li>نوشتن نامه برای آینده‌ی رابطه</li><li>ساختن پلی‌لیست مشترک</li></ul></div>';
-  $('#challenge-done').onclick=function(){set(doneKey,true);challengesPage();};
+  $('#challenge-done').onclick=function(){set(doneKey,true);set('score:challenge-'+today+':'+role,{points:10,source:'challenge',date:today,role:role});challengesPage();};
   $('#challenge-next').onclick=function(){var next=prompts[Math.floor(Math.random()*prompts.length)];set(key,{text:next,at:Date.now()});set(key+':a',false);set(key+':b',false);challengesPage();};
   $('#date-save').onclick=function(){var title=$('#date-title').value.trim(),date=$('#date-when').value;if(!title||!date)return toast('عنوان و تاریخ قرار را وارد کن.');if(date<today)return toast('تاریخ قرار نمی‌تواند در گذشته باشد.');set('events:'+rid(),{d:date,t:title,r:false});toast('قرار به تقویم مشترک اضافه شد 💗');$('#date-title').value='';};
 }
 function achievementsPage(){
   var gamesPlayed=Object.keys(I).filter(function(k){return k.indexOf('game:')===0&&I[k]&&I[k].v;}).length;
   var stories=D.story.length,letters=D.letters.length,events=D.events.length,done=D.wishes.filter(function(w){return w.k}).length;
-  var days=day();
-  var badges=[{ok:stories>0,icon:'📸',title:'خاطره‌ساز',desc:'اولین خاطره را ثبت کنید.'},{ok:letters>0,icon:'💌',title:'نامه‌نویس',desc:'اولین نامه را بنویسید.'},{ok:done>0,icon:'✨',title:'آرزوپرداز',desc:'یک آرزو را انجام‌شده کنید.'},{ok:events>0,icon:'📅',title:'مناسبت‌شناس',desc:'یک مناسبت ثبت کنید.'},{ok:gamesPlayed>0,icon:'🎮',title:'اهل بازی',desc:'یکی از بازی‌ها را امتحان کنید.'},{ok:days>=30,icon:'💗',title:'یک ماه کنار هم',desc:'به روز سی‌ام رابطه برسید.'}];
-  V.innerHTML='<h2>دستاوردهای ما 🏆</h2><p>این صفحه برای جشن گرفتن قدم‌های کوچک رابطه است، نه رقابت با یکدیگر.</p><div class="stats-grid"><div class="stat-card"><b>'+fa(stories)+'</b><span>خاطره</span></div><div class="stat-card"><b>'+fa(letters)+'</b><span>نامه</span></div><div class="stat-card"><b>'+fa(done)+'</b><span>آرزوی انجام‌شده</span></div><div class="stat-card"><b>'+fa(days)+'</b><span>روز رابطه</span></div></div><div class="badge-grid">'+badges.map(function(b){return '<div class="card badge-card '+(b.ok?'unlocked':'locked')+'"><div class="badge-icon">'+b.icon+'</div><h3>'+E(b.title)+'</h3><p>'+E(b.desc)+'</p><small>'+(b.ok?'دریافت‌شده ✓':'هنوز قفل است')+'</small></div>';}).join('')+'</div><div class="card"><h3>قدم بعدی</h3><p>یک خاطره ثبت کنید، برای هم نامه بنویسید یا یک چالش دونفره انجام دهید.</p><div class="go"><a href="story.html">ثبت خاطره</a><a href="letters.html">نوشتن نامه</a><a href="challenges.html">چالش امروز</a></div></div>';
+  var days=day(),scores={a:0,b:0},scoreEvents=0;
+  Object.keys(I).forEach(function(k){
+    if(k.indexOf('score:')!==0||!I[k]||!I[k].v)return;
+    var v=I[k].v;if(!v||typeof v.points!=='number'||(v.role!=='a'&&v.role!=='b'))return;
+    scores[v.role]+=Math.max(0,Math.min(1000,Math.floor(v.points)));scoreEvents++;
+  });
+  function level(n){return n>=200?{n:5,t:'هم‌مسیر طلایی'}:n>=100?{n:4,t:'هم‌مسیر درخشان'}:n>=50?{n:3,t:'هم‌مسیر صمیمی'}:n>=20?{n:2,t:'هم‌مسیر مشتاق'}:{n:1,t:'شروع عاشقانه'};}
+  var mine=cfg.me==='b'?'b':'a',other=mine==='a'?'b':'a',myLevel=level(scores[mine]),otherLevel=level(scores[other]);
+  var badges=[
+    {ok:stories>0,icon:'📸',title:'خاطره‌ساز',desc:'اولین خاطره را ثبت کنید.'},
+    {ok:letters>0,icon:'💌',title:'نامه‌نویس',desc:'اولین نامه را بنویسید.'},
+    {ok:done>0,icon:'✨',title:'آرزوپرداز',desc:'یک آرزو را انجام‌شده کنید.'},
+    {ok:events>0,icon:'📅',title:'مناسبت‌شناس',desc:'یک مناسبت ثبت کنید.'},
+    {ok:gamesPlayed>0,icon:'🎮',title:'اهل بازی',desc:'یکی از بازی‌ها را امتحان کنید.'},
+    {ok:days>=30,icon:'💗',title:'یک ماه کنار هم',desc:'به روز سی‌ام رابطه برسید.'},
+    {ok:scores[mine]>=10,icon:'🌟',title:'اولین قدم',desc:'یک چالش روزانه را ثبت کنید.'},
+    {ok:scores[mine]>=50,icon:'🏅',title:'پای کار رابطه',desc:'۵۰ امتیاز شخصی به دست آورید.'},
+    {ok:scores[mine]>=100,icon:'👑',title:'صد قدم کوچک',desc:'۱۰۰ امتیاز شخصی به دست آورید.'}
+  ];
+  var pct=Math.min(100,Math.round((myLevel.n===5?200:scores[mine])/(myLevel.n===1?20:myLevel.n===2?50:myLevel.n===3?100:myLevel.n===4?200:200)*100));
+  V.innerHTML='<h2>دستاوردهای ما 🏆</h2><p>این صفحه برای جشن گرفتن قدم‌های کوچک رابطه است، نه رقابت با یکدیگر.</p>'+
+  '<div class="stats-grid"><div class="stat-card"><b>'+fa(stories)+'</b><span>خاطره</span></div><div class="stat-card"><b>'+fa(letters)+'</b><span>نامه</span></div><div class="stat-card"><b>'+fa(done)+'</b><span>آرزوی انجام‌شده</span></div><div class="stat-card"><b>'+fa(days)+'</b><span>روز رابطه</span></div></div>'+
+  '<div class="card"><h3>🌟 امتیاز و سطح تو</h3><div class="stats-grid"><div class="stat-card"><b>'+fa(scores[mine])+'</b><span>امتیاز تو</span></div><div class="stat-card"><b>'+fa(myLevel.n)+'</b><span>'+E(myLevel.t)+'</span></div><div class="stat-card"><b>'+fa(scores[other])+'</b><span>امتیاز پارتنر</span></div><div class="stat-card"><b>'+fa(otherLevel.n)+'</b><span>'+E(otherLevel.t)+'</span></div></div><p><progress max="100" value="'+pct+'" aria-label="پیشرفت سطح فعلی"></progress></p><small>هر چالش روزانه که از صفحهٔ چالش‌ها ثبت کنی ۱۰ امتیاز می‌دهد. هر تاریخ و هر نفر فقط یک بار امتیاز می‌گیرد؛ امتیازها در فضای مشترک ذخیره می‌شوند.</small></div>'+
+  '<div class="badge-grid">'+badges.map(function(b){return '<div class="card badge-card '+(b.ok?'unlocked':'locked')+'"><div class="badge-icon">'+b.icon+'</div><h3>'+E(b.title)+'</h3><p>'+E(b.desc)+'</p><small>'+(b.ok?'دریافت‌شده ✓':'هنوز قفل است')+'</small></div>';}).join('')+'</div>'+
+  '<div class="card"><h3>قدم بعدی</h3><p>یک خاطره ثبت کنید، برای هم نامه بنویسید یا چالش امروز را انجام دهید.</p><div class="go"><a href="story.html">ثبت خاطره</a><a href="letters.html">نوشتن نامه</a><a href="challenges.html">چالش امروز</a></div></div>';
 }
 var mapWatch=null,mapExpiry=null,lastLocAt=0;
 function mapPage(){
