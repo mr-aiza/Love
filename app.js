@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 var API=(window.OURHOME_API||'').replace(/\/+$/,''),K='hd2',S=new Date(2026,8,29),MS=[30,50,100,200,365,500,1000],P=document.body.getAttribute('data-page'),ISO=/^\d{4}-\d{2}-\d{2}$/,tt;
-var I={},dirty={},cfg={},D,otherSeen=0,busy=false,dead=false,timer=null,appBootAt=Date.now(),notifiedChat={};
+var I={},dirty={},cfg={},D,otherSeen=0,busy=false,dead=false,timer=null,appBootAt=Date.now(),notifiedChat={},memoryFlipTimer=null;
 
 /* ---------- اعتبارسنجی ---------- */
 function str(v,n){return typeof v==='string'?v.slice(0,n):''}
@@ -70,6 +70,24 @@ try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}
 
 /* ---------- ابزارها ---------- */
 var V=document.getElementById('v');
+/* Keep mobile input focus, keyboard, selection and draft text when a live render replaces the page markup. */
+(function(){
+  var d=Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML');
+  if(!d||!d.get||!d.set)return;
+  try{Object.defineProperty(V,'innerHTML',{configurable:true,enumerable:true,get:function(){return d.get.call(this)},set:function(value){
+    var a=document.activeElement,info=null;
+    if(a&&V.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.id&&a.type!=='file'){
+      info={id:a.id,value:a.value,start:null,end:null,direction:'none',scrollTop:a.scrollTop,scrollLeft:a.scrollLeft};
+      try{info.start=a.selectionStart;info.end=a.selectionEnd;info.direction=a.selectionDirection||'none'}catch(_){}
+    }
+    d.set.call(this,value);
+    if(info){var n=document.getElementById(info.id);if(n&&V.contains(n)&&n.tagName===a.tagName&&n.type!=='file'){
+      n.value=info.value;try{n.focus({preventScroll:true})}catch(_){n.focus()}
+      try{if(info.start!==null&&n.setSelectionRange)n.setSelectionRange(info.start,info.end,info.direction)}catch(_){}
+      n.scrollTop=info.scrollTop;n.scrollLeft=info.scrollLeft;
+    }}
+  }});}catch(_){}
+})();
 function $(s){return document.querySelector(s)}
 function fa(n){return Number(n).toLocaleString('fa-IR')}
 function shD(d){return d.toLocaleDateString('fa-IR-u-ca-persian',{year:'numeric',month:'long',day:'numeric'})}
@@ -259,6 +277,9 @@ function notifyIncoming(r){
     var x=r.items[k],v=x&&x.v,at=v&&Number(v.at)||x&&x.t||0;
     if(!v||typeof v.text!=='string'||v.from===role||at<=appBootAt||notifiedChat[k])return;
     notifiedChat[k]=1;toast('💌 پیام تازه‌ای از پارتنرت داری.');
+    if('Notification' in window&&Notification.permission==='granted'){
+      try{var n=new Notification('خانه‌ی ما 💌',{body:String(v.text).slice(0,160),tag:'ourhome-'+k,icon:'icon.svg'});n.onclick=function(){try{window.focus()}catch(_){}location.href='chat.html';n.close()}}catch(_){}
+    }
   });
 }
 function chat(){
@@ -336,8 +357,10 @@ function games(){
     if(cur.matched.indexOf(idx)>-1||cur.open.indexOf(idx)>-1)return;
     if(cur.open.length>=2){cur.open=[];}
     cur.open.push(idx);
-    if(cur.open.length===2){cur.moves++;var a=cur.open[0],z=cur.open[1];if(cur.cards[a]===cur.cards[z]){cur.matched.push(a,z);cur.open=[];}}
+    var mismatch=false;if(cur.open.length===2){cur.moves++;var a=cur.open[0],z=cur.open[1];if(cur.cards[a]===cur.cards[z]){cur.matched.push(a,z);cur.open=[];}else mismatch=true;}
+    if(memoryFlipTimer){clearTimeout(memoryFlipTimer);memoryFlipTimer=null;}
     set('game:memory',cur);games();
+    if(mismatch){var pairNow=cur.open.slice();memoryFlipTimer=setTimeout(function(){var latest=I['game:memory']&&I['game:memory'].v;if(latest&&Array.isArray(latest.open)&&latest.open.length===2&&latest.open[0]===pairNow[0]&&latest.open[1]===pairNow[1]){latest=JSON.parse(JSON.stringify(latest));latest.open=[];set('game:memory',latest);if(P==='games')games()}memoryFlipTimer=null},900)}
   }});
   $('#newgame').onclick=function(){set('game:state',{board:['','','','','','','','',''],turn:'a',status:'playing',winner:'',updated:Date.now()});games();};
   $('#memory-reset').onclick=function(){set('game:memory',{cards:['💌','🌹','🐻','💖','🌙','🧸','💌','🌹','🐻','💖','🌙','🧸'].sort(function(){return Math.random()-.5}),open:[],matched:[],moves:0});games();};
@@ -523,7 +546,8 @@ function mapPage(){
 }
 function settings(){
   var start=S.getFullYear()+'-'+pad(S.getMonth()+1)+'-'+pad(S.getDate());
-  V.innerHTML='<h2>تنظیمات خانه‌ی ما ⚙️</h2><div class="card"><h3>ظاهر سایت</h3><label for="theme">پوسته</label><select id="theme"><option value="light" '+(cfg.theme==='light'?'selected':'')+'>روشن</option><option value="dark" '+(cfg.theme==='dark'?'selected':'')+'>تیره</option><option value="auto" '+(!cfg.theme?'selected':'')+'>مطابق دستگاه</option></select><button id="savetheme">ذخیره پوسته</button></div><div class="card"><h3>تنظیمات رابطه</h3><label for="startdate">تاریخ شروع رابطه</label><input type="date" id="startdate" value="'+start+'"><p><small>تغییر این تاریخ فقط روزشمار را تنظیم می‌کند و خاطرات ثبت‌شده حذف نمی‌شوند.</small></p><button id="savestart">ذخیره تاریخ</button></div><div class="card"><h3>نام‌ها</h3><label for="name0">نام نفر اول</label><input id="name0" maxlength="24" value="'+E(D.names[0])+'"><label for="name1">نام نفر دوم</label><input id="name1" maxlength="24" value="'+E(D.names[1])+'"><button id="savenames">ذخیره نام‌ها</button></div><div class="card"><h3>داده‌های همین دستگاه</h3><button id="clearlocal" class="secondary">پاک‌کردن داده‌های محلی</button><p><small>این کار فقط داده‌های ذخیره‌شده در همین مرورگر را پاک می‌کند و داده‌های ابری را حذف نمی‌کند.</small></p></div><div class="card"><h3>وضعیت اتصال</h3><p>'+(API?'آدرس API تنظیم شده است.':'آدرس API هنوز در config.js تنظیم نشده است.')+'</p><p>'+(cfg.id?'فضای مشترک: فعال':'فضای مشترک: تنظیم نشده')+'</p><p><small>برای استفاده دونفره، API باید روی سرور واقعی نصب و متغیر ORIGIN آن محدود به دامنه سایت شود.</small></p></div>';
+  V.innerHTML='<h2>تنظیمات خانه‌ی ما ⚙️</h2><div class="card"><h3>ظاهر سایت</h3><label for="theme">پوسته</label><select id="theme"><option value="light" '+(cfg.theme==='light'?'selected':'')+'>روشن</option><option value="dark" '+(cfg.theme==='dark'?'selected':'')+'>تیره</option><option value="auto" '+(!cfg.theme?'selected':'')+'>مطابق دستگاه</option></select><button id="savetheme">ذخیره پوسته</button></div><div class="card"><h3>تنظیمات رابطه</h3><label for="startdate">تاریخ شروع رابطه</label><input type="date" id="startdate" value="'+start+'"><p><small>تغییر این تاریخ فقط روزشمار را تنظیم می‌کند و خاطرات ثبت‌شده حذف نمی‌شوند.</small></p><button id="savestart">ذخیره تاریخ</button></div><div class="card"><h3>نام‌ها</h3><label for="name0">نام نفر اول</label><input id="name0" maxlength="24" value="'+E(D.names[0])+'"><label for="name1">نام نفر دوم</label><input id="name1" maxlength="24" value="'+E(D.names[1])+'"><button id="savenames">ذخیره نام‌ها</button></div><div class="card"><h3>داده‌های همین دستگاه</h3><button id="clearlocal" class="secondary">پاک‌کردن داده‌های محلی</button><p><small>این کار فقط داده‌های ذخیره‌شده در همین مرورگر را پاک می‌کند و داده‌های ابری را حذف نمی‌کند.</small></p></div><div class="card"><h3>اعلان پیام‌ها 🔔</h3><p><small>با اجازه‌ی مرورگر، هنگام بازبودن برنامه اعلان سیستمی پیام تازه هم نمایش داده می‌شود. این گزینه اعلان پوش یا اعلان پس‌زمینه نیست.</small></p><p id="notification-status">'+(!('Notification' in window)?'این مرورگر اعلان سیستمی را پشتیبانی نمی‌کند.':Notification.permission==='granted'?'اجازه‌ی اعلان فعال است.':Notification.permission==='denied'?'اجازه‌ی اعلان در تنظیمات مرورگر مسدود شده است.':'برای فعال‌سازی باید اجازه بدهید.')+'</p><button id="enable-notifications" '+(!('Notification' in window)||Notification.permission==='granted'||Notification.permission==='denied'?'disabled':'')+'>فعال‌کردن اعلان‌ها</button></div><div class="card"><h3>وضعیت اتصال</h3><p>'+(API?'آدرس API تنظیم شده است.':'آدرس API هنوز در config.js تنظیم نشده است.')+'</p><p>'+(cfg.id?'فضای مشترک: فعال':'فضای مشترک: تنظیم نشده')+'</p><p><small>برای استفاده دونفره، API باید روی سرور واقعی نصب و متغیر ORIGIN آن محدود به دامنه سایت شود.</small></p></div>';
+  var nb=$('#enable-notifications');if(nb)nb.onclick=function(){if(!('Notification' in window))return toast('این مرورگر اعلان سیستمی را پشتیبانی نمی‌کند.');Notification.requestPermission().then(function(p){var s=$('#notification-status');if(s)s.textContent=p==='granted'?'اجازه‌ی اعلان فعال شد.':p==='denied'?'اجازه رد شد؛ از تنظیمات سایت در مرورگر آن را فعال کنید.':'درخواست اجازه ناتمام ماند.';if(p==='granted'){toast('اعلان پیام‌ها فعال شد.');var b=$('#enable-notifications');if(b)b.disabled=true;}else toast('برای اعلان سیستمی باید اجازه بدهی.');}).catch(function(){toast('درخواست اجازه‌ی اعلان انجام نشد.');});};
   $('#savetheme').onclick=function(){var t=$('#theme').value;cfg.theme=t==='auto'?'':t;if(cfg.theme)document.documentElement.setAttribute('data-theme',cfg.theme);else document.documentElement.removeAttribute('data-theme');save();toast('پوسته ذخیره شد.');};
   $('#savestart').onclick=function(){var v=$('#startdate').value;if(!ISO.test(v))return toast('تاریخ معتبر انتخاب کنید.');cfg.start=v;set('settings:start',v);toast('تاریخ شروع برای هر دو نفر ذخیره شد.');home();};
   $('#savenames').onclick=function(){var a=$('#name0').value.trim(),b=$('#name1').value.trim();if(!a||!b)return toast('هر دو نام را وارد کنید.');set('names:0',a);set('names:1',b);settings();toast('نام‌ها ذخیره شدند.');};
