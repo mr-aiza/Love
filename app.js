@@ -279,8 +279,9 @@ function games(){
   memory+='</div>';
   var cq=I['game:choice']&&I['game:choice'].v;
   if(!cq||typeof cq.q!=='number')cq={q:0};
+  var choiceRound=cq.round||('q'+cq.q);
   var choiceA=I['game:choice:a']&&I['game:choice:a'].v,choiceB=I['game:choice:b']&&I['game:choice:b'].v;
-  var ans={a:choiceA&&choiceA.q===cq.q?choiceA.answer:undefined,b:choiceB&&choiceB.q===cq.q?choiceB.answer:undefined};
+  var ans={a:choiceA&&choiceA.q===cq.q&&choiceA.round===choiceRound?choiceA.answer:undefined,b:choiceB&&choiceB.q===cq.q&&choiceB.round===choiceRound?choiceB.answer:undefined};
   var choices=[
     ['قرار در خانه 🏡','قرار بیرون 🌃'],['سفر دونفره 🚗','شب فیلم 🎬'],['نامه عاشقانه 💌','هدیه غافلگیرکننده 🎁'],
     ['صبحانه باهم ☕','شام دونفره 🍝'],['تماشای ستاره‌ها ✨','قدم‌زدن زیر باران 🌧️'],['عکس یادگاری 📸','خاطره‌نویسی 📖']
