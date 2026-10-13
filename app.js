@@ -1,12 +1,12 @@
 (function(){
 'use strict';
 var API=(window.OURHOME_API||'').replace(/\/+$/,''),K='hd2',S=new Date(2026,8,29),MS=[30,50,100,200,365,500,1000],P=document.body.getAttribute('data-page'),ISO=/^\d{4}-\d{2}-\d{2}$/,tt;
-var I={},dirty={},cfg={},D,otherSeen=0,busy=false,dead=false,timer=null;
+var I={},dirty={},cfg={},D,otherSeen=0,busy=false,dead=false,timer=null,appBootAt=Date.now(),notifiedChat={};
 
 /* ---------- اعتبارسنجی ---------- */
 function str(v,n){return typeof v==='string'?v.slice(0,n):''}
 function clean(c,v){
-  if(c==='story')return ISO.test(v.d)&&str(v.t,1)?{d:v.d,t:str(v.t,120),x:str(v.x,3000)}:0;
+  if(c==='story')return ISO.test(v.d)&&str(v.t,1)?{d:v.d,t:str(v.t,120),x:str(v.x,3000),img:typeof v.img==='string'&&/^data:image\/(?:jpeg|png|webp);base64,/.test(v.img)&&v.img.length<=180000?v.img:''}:0;
   if(c==='letters')return ISO.test(v.c)&&str(v.t,1)?{f:v.f?1:0,t:str(v.t,120),x:str(v.x,20000),c:v.c,u:ISO.test(v.u)?v.u:''}:0;
   if(c==='wishes')return str(v.t,1)?{t:str(v.t,200),k:v.k?1:0,p:['low','normal','high'].indexOf(v.p)>-1?v.p:'normal',budget:Math.max(0,Math.min(1000000000,Number(v.budget)||0)),due:ISO.test(v.due)?v.due:'',owner:['0','1','both'].indexOf(String(v.owner))>-1?String(v.owner):'both',note:str(v.note,500)}:0;
   if(c==='events')return ISO.test(v.d)&&str(v.t,1)?{d:v.d,t:str(v.t,120),r:!!v.r}:0;
@@ -36,7 +36,7 @@ function build(){
   D=d;
 }
 function applyStartSetting(){var v=I['settings:start']&&I['settings:start'].v;if(!ISO.test(v||''))v=cfg.start;if(!ISO.test(v||''))v='2026-09-29';if(v==='2026-09-30')v='2026-09-29';cfg.start=v;S=new Date(v+'T12:00:00')}
-function set(k,v){var prev=I[k]&&typeof I[k].t==='number'?I[k].t:0;I[k]={v:v,t:Math.max(Date.now(),prev+1)};dirty[k]=1;if(k==='settings:start')applyStartSetting();build();save();sched()}
+function set(k,v){var prev=I[k]&&typeof I[k].t==='number'?I[k].t:0;I[k]={v:v,t:Math.max(Date.now(),prev+1)};dirty[k]=1;if(k==='settings:start')applyStartSetting();build();save();refreshChatBadge();sched()}
 function imp(d){
   var n=Date.now();Object.keys(I).forEach(function(k){I[k]={v:null,t:n}});
   function put(k,v){I[k]={v:v,t:n+1}}
@@ -94,7 +94,7 @@ function api(m,b){return fetch(API+'/api/doc/'+cfg.id,{method:m,headers:{'conten
 function merge(r){
   var ch=false;Object.keys(r.items||{}).forEach(function(k){var x=r.items[k],l=I[k];if(x&&typeof x.t==='number'&&(!l||x.t>l.t||(x.t===l.t&&JSON.stringify(x.v)>JSON.stringify(l.v)))){I[k]={v:x.v,t:x.t};ch=true}});
   var o=cfg.me==='a'?'b':'a';if(r.seen&&r.seen[o])otherSeen=r.seen[o];
-  if(ch){applyStartSetting();build();save()}return ch;
+  if(ch){applyStartSetting();build();save()}refreshChatBadge();return ch;
 }
 function ensureSharedStart(){if(cfg.id&&API&&!I['settings:start'])set('settings:start',cfg.start||'2026-09-29')}
 function sched(){clearTimeout(timer);timer=setTimeout(function(){timer=null;flush()},800)}
@@ -104,6 +104,7 @@ function flush(){
   var body={items:{}};ks.forEach(function(k){body.items[k]=I[k]});
   busy=true;status('در حال همگام‌سازی…');
   api('PUT',body).then(function(r){
+    notifyIncoming(r);
     ks.forEach(function(k){var s=r.items&&r.items[k];if(s&&s.t>=body.items[k].t&&I[k]===body.items[k])delete dirty[k]});
     if(merge(r)&&!editing())(R[P]||home)();ensureSharedStart();save();status();
   }).catch(function(e){
@@ -113,7 +114,7 @@ function flush(){
 }
 function poll(){
   if(document.hidden||!cfg.id||!API||busy||dead||Object.keys(dirty).length)return;
-  api('GET').then(function(r){if(merge(r)&&!editing())(R[P]||home)();ensureSharedStart();status()}).catch(function(e){if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1)}else status('ارتباط با سرور برقرار نیست',1)});
+  api('GET').then(function(r){notifyIncoming(r);if(merge(r)&&!editing()){if(P==='draw'&&typeof window.__ourhomeDrawRefresh==='function')window.__ourhomeDrawRefresh();else (R[P]||home)()}ensureSharedStart();status()}).catch(function(e){if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1)}else status('ارتباط با سرور برقرار نیست',1)});
 }
 function shareUrl(u,title,ok){
   if(navigator.share)navigator.share({title:title,url:u}).catch(function(){});
@@ -128,8 +129,8 @@ function link(){
 /* ---------- منو ---------- */
 var N=[['index','🏠','خانه'],['story','📖','داستان ما'],['letters','💌','نامه‌ها'],['wishes','✨','آرزوها'],['calendar','📅','تقویم'],['qa','💬','سؤال'],['pledge','📜','تعهدنامه'],['chat','💌','چت'],['games','🎮','بازی‌ها'],['draw','🎨','نقاشی زنده'],['challenges','🌟','چالش‌ها'],['achievements','🏆','دستاوردها'],['map','📍','نقشه'],['settings','⚙️','تنظیمات']];
 var nv=document.createElement('nav');nv.setAttribute('aria-label','منوی اصلی');
-nv.innerHTML=N.map(function(n){return '<a href="'+n[0]+'.html"'+(n[0]===P?' class="on" aria-current="page"':'')+'><b aria-hidden="true">'+n[1]+'</b>'+n[2]+'</a>'}).join('');
-document.body.appendChild(nv);
+nv.innerHTML=N.map(function(n){return '<a href="'+n[0]+'.html"'+(n[0]===P?' class="on" aria-current="page"':'')+'><b aria-hidden="true">'+n[1]+'</b>'+n[2]+(n[0]==='chat'?' <span id="chat-unread" class="chat-unread" hidden></span>':'')+'</a>'}).join('');
+document.body.appendChild(nv);refreshChatBadge();
 
 /* ---------- صفحه‌ها ---------- */
 function hero(num,lbl,rest){
@@ -161,9 +162,27 @@ function home(){
 function story(){
   var h='';
   D.story.slice().sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:a.id<b.id?-1:1}).forEach(function(s){
-    h+='<div class="card"><small>'+sh(s.d)+'</small><h3>'+E(s.t)+'</h3><p>'+E(s.x)+'</p><button class="x" data-del="story:'+E(s.id)+'" aria-label="حذف «'+E(s.t)+'»">حذف</button></div>'});
-  V.innerHTML='<h2>داستان ما</h2><div class="card"><input type="date" id="a" value="'+iso()+'" aria-label="تاریخ"><input id="b" maxlength="120" placeholder="عنوان لحظه" aria-label="عنوان لحظه"><textarea id="c" rows="2" maxlength="3000" placeholder="چه اتفاقی افتاد؟" aria-label="توضیح"></textarea><button id="ad">افزودن به داستان</button></div>'+h;
-  $('#ad').onclick=function(){var t=$('#b').value.trim();if(!t||!$('#a').value)return toast('تاریخ و عنوان لازم است');set('story:'+rid(),{d:$('#a').value,t:t,x:$('#c').value});story();focusB()};
+    h+='<div class="card memory-entry"><small>'+sh(s.d)+'</small><h3>'+E(s.t)+'</h3><p>'+E(s.x)+'</p>'+(s.img?'<img class="memory-photo" src="'+E(s.img)+'" alt="عکس خاطره: '+E(s.t)+'" loading="lazy">':'')+'<button class="x" data-del="story:'+E(s.id)+'" aria-label="حذف «'+E(s.t)+'»">حذف</button></div>'});
+  V.innerHTML='<h2>داستان ما 📸</h2><p class="muted">خاطره‌ها می‌توانند متن یا عکس داشته باشند. عکس پیش از ذخیره کوچک می‌شود تا همگام‌سازی سبک‌تر بماند.</p><div class="card"><label for="a">تاریخ خاطره</label><input type="date" id="a" value="'+iso()+'" aria-label="تاریخ"><label for="b">عنوان لحظه</label><input id="b" maxlength="120" placeholder="عنوان لحظه" aria-label="عنوان لحظه"><label for="c">توضیح خاطره</label><textarea id="c" rows="2" maxlength="3000" placeholder="چه اتفاقی افتاد؟" aria-label="توضیح"></textarea><label for="photo">عکس خاطره (اختیاری)</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp" aria-label="انتخاب عکس خاطره"><small>فرمت JPG، PNG یا WebP؛ حداکثر فایل اولیه ۱۲ مگابایت. عکس برای همگام‌سازی فشرده می‌شود.</small><button id="ad">ذخیره‌ی خاطره</button></div>'+(h||'<p class="muted">هنوز خاطره‌ای ثبت نشده؛ اولین خاطره‌تان را اضافه کنید.</p>');
+  $('#ad').onclick=function(){
+    var t=$('#b').value.trim(),date=$('#a').value,desc=$('#c').value,file=$('#photo').files[0];
+    if(!t||!date)return toast('تاریخ و عنوان لازم است');
+    function commit(img){set('story:'+rid(),{d:date,t:t,x:desc,img:img||''});story();toast('خاطره ذخیره شد.');}
+    if(!file){commit('');return}
+    if(!/^image\/(?:jpeg|png|webp)$/.test(file.type)||file.size>12*1024*1024)return toast('عکس باید JPG، PNG یا WebP و حداکثر ۱۲ مگابایت باشد.');
+    var url=URL.createObjectURL(file),image=new Image();
+    image.onload=function(){
+      URL.revokeObjectURL(url);
+      var scale=Math.min(1,1000/Math.max(image.naturalWidth,image.naturalHeight)),w=Math.max(1,Math.round(image.naturalWidth*scale)),hh=Math.max(1,Math.round(image.naturalHeight*scale)),canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+      canvas.width=w;canvas.height=hh;ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,hh);ctx.drawImage(image,0,0,w,hh);
+      var data='',quality=.76;
+      while(quality>=.4){data=canvas.toDataURL('image/jpeg',quality);if(data.length<=180000)break;quality-=.08}
+      if(data.length>180000)return toast('این عکس هنوز بزرگ است؛ عکس دیگری انتخاب کنید.');
+      commit(data);
+    };
+    image.onerror=function(){URL.revokeObjectURL(url);toast('خواندن عکس ممکن نشد؛ فایل دیگری انتخاب کنید.')};
+    image.src=url;
+  };
 }
 
 function letters(){
@@ -226,16 +245,38 @@ setInterval(updateLiveCounter,1000);
 function customItems(prefix){
   return Object.keys(I).filter(function(k){return k.indexOf(prefix+':')===0&&I[k]&&I[k].v!==null;}).map(function(k){return {id:k.slice(prefix.length+1),v:I[k].v,t:I[k].t};});
 }
+function refreshChatBadge(){
+  var badge=$('#chat-unread');if(!badge)return;
+  var role=cfg.me==='b'?'b':'a',readAt=Number(I['chat:read:'+role]&&I['chat:read:'+role].v)||0;
+  var unread=cfg.id?customItems('chat').filter(function(m){return m.v&&typeof m.v.text==='string'&&m.v.from!==role&&(m.v.at||m.t)>readAt}).length:0;
+  badge.textContent=unread?fa(unread):'';badge.hidden=!unread;badge.setAttribute('aria-label',unread?'پیام خوانده‌نشده: '+fa(unread):'پیام خوانده‌نشده‌ای نیست');
+}
+function notifyIncoming(r){
+  if(!r||!r.items||P==='chat'||document.hidden)return;
+  var role=cfg.me==='b'?'b':'a';
+  Object.keys(r.items).forEach(function(k){
+    if(k.indexOf('chat:')!==0||k.indexOf('chat:read:')===0)return;
+    var x=r.items[k],v=x&&x.v,at=v&&Number(v.at)||x&&x.t||0;
+    if(!v||typeof v.text!=='string'||v.from===role||at<=appBootAt||notifiedChat[k])return;
+    notifiedChat[k]=1;toast('💌 پیام تازه‌ای از پارتنرت داری.');
+  });
+}
 function chat(){
   var msgs=customItems('chat').filter(function(m){return m.v&&typeof m.v.text==='string';})
     .sort(function(a,b){return (a.v.at||a.t)-(b.v.at||b.t);});
-  var html='<h2>چت دونفره 💌</h2><div class="card"><small>'+(cfg.id?'پیام‌ها در فضای مشترک همگام می‌شوند؛ برای دیدن تغییرات طرف مقابل اتصال سرور لازم است.':'حالت محلی: پیام‌ها فقط در همین مرورگر ذخیره می‌شوند.')+'</small></div><section id="chatlog" aria-live="polite">';
+  var role=cfg.me==='b'?'b':'a',readKey='chat:read:'+role,readAt=Number(I[readKey]&&I[readKey].v)||0;
+  var latestAt=msgs.reduce(function(n,m){return Math.max(n,m.v.at||m.t||0)},0);
+  if(latestAt>readAt)set(readKey,latestAt);
+  var activity=otherSeen?' · آخرین فعالیت پارتنر: '+(Math.max(0,Math.round((Date.now()-otherSeen)/6e4))<1?'همین الان':fa(Math.max(0,Math.round((Date.now()-otherSeen)/6e4)))+' دقیقه پیش'):'';
+  var html='<h2>چت دونفره 💌</h2><div class="card"><small>'+(cfg.id?'پیام‌ها در فضای مشترک همگام می‌شوند؛ برای دیدن تغییرات طرف مقابل اتصال سرور لازم است.':'حالت محلی: پیام‌ها فقط در همین مرورگر ذخیره می‌شوند.')+E(activity)+'</small></div>';
+  if(cfg.id)html+='<div class="card chat-read-status"><small>پیام‌های خوانده‌نشده هنگام باز بودن این صفحه به‌عنوان خوانده‌شده ثبت می‌شوند.</small></div>';
+  html+='<section id="chatlog" aria-live="polite" aria-relevant="additions text">';
   msgs.forEach(function(m){
     var own=(!cfg.id)||m.v.from===(cfg.me||'a');
     html+='<div class="card chat-msg '+(own?'mine':'theirs')+'"><small>'+E(m.v.fromName||((m.v.from==='b')?D.names[1]:D.names[0]))+' · '+E(new Date(m.v.at||m.t).toLocaleString('fa-IR'))+'</small><p>'+E(m.v.text)+'</p><button class="x" data-del="'+E('chat:'+m.id)+'">حذف</button></div>';
   });
   html+='</section><form class="card" id="chatform"><label for="chattext">پیام شما</label><textarea id="chattext" rows="3" maxlength="3000" placeholder="یک پیام دوست‌داشتنی بنویس…" required></textarea><button type="submit">ارسال پیام</button></form>';
-  V.innerHTML=html;
+  V.innerHTML=html;refreshChatBadge();
   $('#chatform').onsubmit=function(e){e.preventDefault();var t=$('#chattext').value.trim();if(!t)return;
     set('chat:'+rid(),{text:t,from:cfg.me||'a',fromName:D.names[cfg.me==='b'?1:0],at:Date.now()});
     var all=customItems('chat').sort(function(a,b){return (a.v.at||a.t)-(b.v.at||b.t);});
@@ -260,18 +301,21 @@ function games(){
   mem.cards.forEach(function(c,i){var shown=mem.open.indexOf(i)>-1||mem.matched.indexOf(i)>-1;memory+='<button class="memory-card" data-memory="'+i+'" aria-label="کارت '+(i+1)+'" '+(shown?'disabled':'')+'>'+E(shown?c:'♥')+'</button>';});
   memory+='</div>';
   var cq=I['game:choice']&&I['game:choice'].v;
-  if(!cq||!cq.q)cq={q:0,answers:{}};
+  if(!cq||typeof cq.q!=='number')cq={q:0};
+  var choiceRound=cq.round||('q'+cq.q);
+  var choiceA=I['game:choice:a']&&I['game:choice:a'].v,choiceB=I['game:choice:b']&&I['game:choice:b'].v;
+  var ans={a:choiceA&&choiceA.q===cq.q&&choiceA.round===choiceRound?choiceA.answer:undefined,b:choiceB&&choiceB.q===cq.q&&choiceB.round===choiceRound?choiceB.answer:undefined};
   var choices=[
     ['قرار در خانه 🏡','قرار بیرون 🌃'],['سفر دونفره 🚗','شب فیلم 🎬'],['نامه عاشقانه 💌','هدیه غافلگیرکننده 🎁'],
     ['صبحانه باهم ☕','شام دونفره 🍝'],['تماشای ستاره‌ها ✨','قدم‌زدن زیر باران 🌧️'],['عکس یادگاری 📸','خاطره‌نویسی 📖']
   ];
-  var pair=choices[cq.q%choices.length],ans=cq.answers||{};
+  var pair=choices[cq.q%choices.length];
   var truthList=['کدام خاطره‌مان را همیشه به یاد می‌آوری؟','چه کاری باعث می‌شود بیشتر احساس دوست‌داشته‌شدن کنی؟','قرار رؤیایی تو چه شکلی است؟','چه چیزی را دوست داری با هم تجربه کنیم؟','اولین چیزی که در من توجهت را جلب کرد چه بود؟','چه چیزی همیشه لبخند روی لبت می‌آورد؟','اگر همین حالا سفر برویم، کجا را انتخاب می‌کنی؟'];
   var dareList=['یک پیام عاشقانه در سه جمله بگو.','یک آهنگ برای رابطه‌مان انتخاب کن.','سه ویژگی دوست‌داشتنی طرف مقابل را بگو.','یک قرار ساده برای این هفته پیشنهاد بده.','یک خاطره خنده‌دارمان را تعریف کن.','۳۰ ثانیه بدون خندیدن به چشم‌های هم نگاه کنید.','یک تعریف تازه و واقعی از پارتنرت بکن.','یک عکس دونفره با ژست بامزه بگیرید.'];
   var know=['غذای موردعلاقه من چیست؟','کدام مقصد را بیشتر دوست دارم؟','چه چیزی سریع حالم را بهتر می‌کند؟','کدام خاطره‌مان برایم خاص‌تر است؟','چه مهارتی را دوست دارم یاد بگیرم؟','وقتی ناراحتم بیشتر به چه چیزی نیاز دارم؟'];
-  var today=new Date().toISOString().slice(0,10),daily=I['challenge:'+today]&&I['challenge:'+today].v;
+  var nowDate=new Date(),today=nowDate.getFullYear()+'-'+pad(nowDate.getMonth()+1)+'-'+pad(nowDate.getDate()),daily=I['challenge:'+today]&&I['challenge:'+today].v;
   V.innerHTML='<h2>مرکز بازی‌های دونفره 🎮</h2><p class="muted">بازی کنید، همدیگر را بهتر بشناسید و خاطره بسازید.</p>'+
-  '<div class="card"><div class="game-heading"><h3>⭕ دوز عاشقانه</h3><span class="game-tag">دو نفره</span></div><p>'+(online?'اتاق مشترک فعال است؛ نوبت شما: '+(role==='a'?'X':'O'):'حالت محلی؛ دو نفر روی همین دستگاه بازی کنند.')+'</p>'+board+'<p class="game-status">'+(w?(w==='draw'?'بازی مساوی شد.':('برنده: '+(w==='a'?'X':'O'))):(g.status==='playing'?'نوبت: '+(g.turn==='a'?'X':'O'):'بازی تمام شده'))+'</p><button id="newgame">شروع دوباره</button></div>'+
+  '<div class="card"><div class="game-heading"><h3>⭕ دوز عاشقانه</h3><span class="game-tag">دو نفره</span></div><p>'+(online?'اتاق مشترک فعال است؛ نوبت شما: '+(role==='a'?'X':'O'):'حالت محلی؛ دو نفر روی همین دستگاه بازی کنند.')+'</p>'+board+'<p class="game-status">'+(w?(w==='draw'?'بازی مساوی شد.':('برنده: '+(w==='X'?'X':'O'))):(g.status==='playing'?'نوبت: '+(g.turn==='a'?'X':'O'):'بازی تمام شده'))+'</p><button id="newgame">شروع دوباره</button></div>'+
   '<div class="card"><div class="game-heading"><h3>🧠 حافظه‌ی عاشقانه</h3><span class="game-tag">۶ جفت کارت</span></div><p>کارت‌های مشابه را پیدا کنید. تعداد حرکت‌ها: <b>'+fa(mem.moves)+'</b> · جفت‌های پیدا شده: <b>'+fa(mem.matched.length/2)+'/۶</b></p>'+memory+'<button id="memory-reset" class="secondary">شروع دوباره</button></div>'+
   '<div class="card"><div class="game-heading"><h3>💞 این یا اون؟</h3><span class="game-tag">سلیقه‌شناسی</span></div><p>هر نفر انتخاب خودش را ثبت کند؛ بعد انتخاب‌ها را با هم مقایسه کنید.</p><p><b>'+pair[0]+'</b> <span class="muted">یا</span> <b>'+pair[1]+'</b></p><div class="choice-row"><button data-choice="0">'+pair[0]+'</button><button data-choice="1" class="secondary">'+pair[1]+'</button></div><p>انتخاب شما: '+E(ans[role]===0?pair[0]:ans[role]===1?pair[1]:'ثبت نشده')+'</p><p>انتخاب پارتنر: '+E(ans[role==='a'?'b':'a']===0?pair[0]:ans[role==='a'?'b':'a']===1?pair[1]:'تا الان ثبت نشده')+'</p><button id="choice-next" class="secondary">سؤال بعدی</button></div>'+
   '<div class="card"><div class="game-heading"><h3>💬 حقیقت یا جرئت</h3><span class="game-tag">بدون امتیاز</span></div><p id="tod">یک مورد انتخاب کنید و با هم انجام دهید.</p><button id="truth">حقیقت</button> <button id="dare">جرئت</button><button id="nexttod" class="secondary">تصادفی</button></div>'+
@@ -297,16 +341,17 @@ function games(){
   }});
   $('#newgame').onclick=function(){set('game:state',{board:['','','','','','','','',''],turn:'a',status:'playing',winner:'',updated:Date.now()});games();};
   $('#memory-reset').onclick=function(){set('game:memory',{cards:['💌','🌹','🐻','💖','🌙','🧸','💌','🌹','🐻','💖','🌙','🧸'].sort(function(){return Math.random()-.5}),open:[],matched:[],moves:0});games();};
-  V.querySelectorAll('[data-choice]').forEach(function(b){b.onclick=function(){var cur=JSON.parse(JSON.stringify((I['game:choice']&&I['game:choice'].v)||{q:0,answers:{}}));cur.answers=cur.answers||{};cur.answers[role]=+b.getAttribute('data-choice');set('game:choice',cur);games();};});
-  $('#choice-next').onclick=function(){var cur=JSON.parse(JSON.stringify((I['game:choice']&&I['game:choice'].v)||{q:0,answers:{}}));cur.q=(cur.q+1)%choices.length;cur.answers={};set('game:choice',cur);games();};
+  V.querySelectorAll('[data-choice]').forEach(function(b){b.onclick=function(){var cur=I['game:choice']&&I['game:choice'].v;if(!cur||typeof cur.q!=='number')cur={q:0};var round=cur.round||('q'+cur.q);set('game:choice:'+role,{q:cur.q,round:round,answer:+b.getAttribute('data-choice'),at:Date.now()});games();};});
+  $('#choice-next').onclick=function(){var cur=I['game:choice']&&I['game:choice'].v;if(!cur||typeof cur.q!=='number')cur={q:0};set('game:choice',{q:(cur.q+1)%choices.length,round:rid(),at:Date.now()});games();};
   function pick(a,id){$('#'+id).textContent=a[Math.floor(Math.random()*a.length)];}
   $('#truth').onclick=function(){pick(truthList,'tod')};$('#dare').onclick=function(){pick(dareList,'tod')};$('#nexttod').onclick=function(){pick(truthList.concat(dareList),'tod')};$('#nextknow').onclick=function(){pick(know,'knowq')};pick(know,'knowq');
   $('#daily-done').onclick=function(){set('challenge:'+today,{done:true,text:'امروز هر کدام سه ویژگی بگویید که در دیگری تحسین می‌کنید.',at:Date.now()});games();};
-  var lettersNF=['م','س','آ','ر','ن','ک','ب','د','ش','ف'],nf=I['game:namefamily']&&I['game:namefamily'].v;if(!nf)nf={letter:'م',answers:{}};
-  $('#nf-letter').textContent=nf.letter;var mine=nf.answers&&nf.answers[role]||{};['name','family','city','food','animal'].forEach(function(k){$('#nf-'+k).value=mine[k]||''});
-  var otherAns=nf.answers&&nf.answers[role==='a'?'b':'a'];$('#nf-status').textContent='وضعیت شما: '+(nf.answers&&nf.answers[role]?'ثبت شده':'ثبت نشده')+' · پارتنر: '+(otherAns?'ثبت کرده':'منتظر پاسخ');
-  $('#nf-save').onclick=function(){var cur=JSON.parse(JSON.stringify((I['game:namefamily']&&I['game:namefamily'].v)||nf));cur.answers=cur.answers||{};cur.answers[role]={name:$('#nf-name').value.trim(),family:$('#nf-family').value.trim(),city:$('#nf-city').value.trim(),food:$('#nf-food').value.trim(),animal:$('#nf-animal').value.trim()};set('game:namefamily',cur);games()};
-  $('#nf-next').onclick=function(){var cur={letter:lettersNF[Math.floor(Math.random()*lettersNF.length)],answers:{}};set('game:namefamily',cur);games()};
+  var lettersNF=['م','س','آ','ر','ن','ک','ب','د','ش','ف'],nf=I['game:namefamily']&&I['game:namefamily'].v;if(!nf)nf={letter:'م'};
+  var nfA=I['game:namefamily:a']&&I['game:namefamily:a'].v,nfB=I['game:namefamily:b']&&I['game:namefamily:b'].v;
+  $('#nf-letter').textContent=nf.letter;var mine=(role==='a'?nfA:nfB)||{};['name','family','city','food','animal'].forEach(function(k){$('#nf-'+k).value=mine[k]||''});
+  var otherAns=role==='a'?nfB:nfA;$('#nf-status').textContent='وضعیت شما: '+(mine.at?'ثبت شده':'ثبت نشده')+' · پارتنر: '+(otherAns&&otherAns.at?'ثبت کرده':'منتظر پاسخ');
+  $('#nf-save').onclick=function(){set('game:namefamily:'+role,{name:$('#nf-name').value.trim(),family:$('#nf-family').value.trim(),city:$('#nf-city').value.trim(),food:$('#nf-food').value.trim(),animal:$('#nf-animal').value.trim(),at:Date.now(),letter:nf.letter});games()};
+  $('#nf-next').onclick=function(){set('game:namefamily',{letter:lettersNF[Math.floor(Math.random()*lettersNF.length)],at:Date.now()});set('game:namefamily:a',null);set('game:namefamily:b',null);games()};
   var words=[{w:'باران',h:'از آسمان می‌بارد و زمین را خیس می‌کند.'},{w:'قهوه',h:'نوشیدنی گرم و محبوب صبح‌ها.'},{w:'ستاره',h:'شب‌ها در آسمان دیده می‌شود.'},{w:'آغوش',h:'گاهی بدون حرف زدن آرامت می‌کند.'},{w:'سفر',h:'با هم رفتنش می‌تواند خاطره‌ساز باشد.'},{w:'شکلات',h:'خوراکی شیرین که خیلی‌ها دوستش دارند.'}];
   var wi=I['game:word']&&I['game:word'].v;if(!wi||typeof wi.index!=='number')wi={index:0};var word=words[wi.index%words.length];$('#word-hint').textContent='سرنخ: '+word.h;
   $('#word-check').onclick=function(){var guess=$('#word-guess').value.replace(/\s/g,'').trim();$('#word-result').textContent=guess===word.w?'آفرین! درست حدس زدی 💗':'هنوز نه؛ دوباره فکر کن یا از سرنخ استفاده کن.'};
@@ -314,34 +359,112 @@ function games(){
 }
 
 function drawPage(){
-  var strokes=Object.keys(I).filter(function(k){return k.indexOf('draw:')===0&&k!=='draw:clear'&&I[k]&&I[k].v&&Array.isArray(I[k].v.points)}).map(function(k){return {id:k,v:I[k].v,t:I[k].t||0}}).filter(function(s){return s.t>((I['draw:clear']&&I['draw:clear'].t)||0)}).sort(function(a,b){return a.t-b.t});
   var palette=['#e84375','#6c4bd3','#1e9d83','#f39c12','#253047','#111111'];
-  V.innerHTML='<h2>🎨 بوم نقاشی دونفره</h2><p class="muted">هر دو نفر هم‌زمان نقاشی بکشید؛ خط‌ها به‌صورت جداگانه همگام می‌شوند. صفحه را باز نگه دارید تا تغییرات سریع‌تر برسند.</p><div class="card draw-tools"><label>رنگ <select id="draw-color">'+palette.map(function(c){return '<option value="'+c+'">'+c+'</option>'}).join('')+'</select></label><label>ضخامت <input id="draw-width" type="range" min="2" max="18" value="5"></label><button id="draw-undo" class="secondary">پاک‌کردن آخرین خط من</button><button id="draw-clear" class="secondary">پاک‌کردن کل بوم</button></div><div class="card draw-wrap"><canvas id="draw-canvas" aria-label="بوم نقاشی مشترک"></canvas></div><div class="card"><h3>💡 ایده‌های نقاشی</h3><p>چشم‌بسته یکدیگر را بکشید، خانه‌ی رؤیایی‌تان را طراحی کنید یا هر نفر نصف یک قلب را بکشد.</p><small id="draw-status">خطوط ذخیره‌شده: '+fa(strokes.length)+' · '+(API&&cfg.id?'همگام‌سازی مشترک فعال':'فقط روی این دستگاه؛ برای نقاشی از دو گوشی فضای مشترک را فعال کنید')+'</small></div>';
-  var canvas=$('#draw-canvas'),ctx=canvas.getContext('2d'),drawing=false,current=null,last=null;
-  function size(){var r=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.max(1,Math.round(r.width*dpr));canvas.height=Math.max(1,Math.round(360*dpr));canvas.style.height='360px';ctx.setTransform(dpr,0,0,dpr,0,0);paint()}
-  function paint(){var w=canvas.clientWidth,h=360;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fffdfd';ctx.fillRect(0,0,w,h);strokes.forEach(function(s){var p=s.v.points;if(!p.length)return;ctx.strokeStyle=s.v.color||'#e84375';ctx.lineWidth=s.v.width||5;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(p[0][0]*w,p[0][1]*h);for(var i=1;i<p.length;i++)ctx.lineTo(p[i][0]*w,p[i][1]*h);if(p.length===1){ctx.lineTo(p[0][0]*w+.01,p[0][1]*h+.01)}ctx.stroke()});if(current&&current.points.length){ctx.strokeStyle=current.color;ctx.lineWidth=current.width;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(current.points[0][0]*w,current.points[0][1]*h);for(var j=1;j<current.points.length;j++)ctx.lineTo(current.points[j][0]*w,current.points[j][1]*h);ctx.stroke()}}
-  function point(e){var r=canvas.getBoundingClientRect();return [Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))]}
-  canvas.addEventListener('pointerdown',function(e){drawing=true;canvas.setPointerCapture(e.pointerId);current={points:[point(e)],color:$('#draw-color').value,width:+$('#draw-width').value,by:cfg.me||'local',at:Date.now()};last=point(e);paint()});
-  canvas.addEventListener('pointermove',function(e){if(!drawing||!current)return;var p=point(e);if(!last||Math.hypot((p[0]-last[0])*canvas.clientWidth,(p[1]-last[1])*360)>1){current.points.push(p);last=p;paint()}});
-  function finish(){if(!drawing||!current)return;drawing=false;if(current.points.length){var sid='draw:'+rid(),stamp=Date.now();set(sid,current);strokes.push({id:sid,v:current,t:stamp});}current=null;last=null;paint();var s=$('#draw-status');if(s)s.textContent='خطوط ذخیره‌شده: '+fa(strokes.length)+' · '+(API&&cfg.id?'در حال همگام‌سازی':'ذخیره محلی')}
-  canvas.addEventListener('pointerup',finish);canvas.addEventListener('pointercancel',finish);window.addEventListener('resize',size);size();
-  $('#draw-undo').onclick=function(){var me=cfg.me||'local',mine=strokes.filter(function(s){return s.v.by===me});if(!mine.length)return toast('خطی از شما برای پاک‌کردن نیست.');var lastStroke=mine[mine.length-1];set(lastStroke.id,null);strokes=strokes.filter(function(s){return s.id!==lastStroke.id});paint()};
-  $('#draw-clear').onclick=function(){if(!confirm('کل نقاشی برای هر دو نفر پاک شود؟'))return;set('draw:clear',{at:Date.now(),by:cfg.me||'local'});strokes.forEach(function(s){set(s.id,null)});strokes=[];paint();toast('بوم پاک شد.')};
+  V.innerHTML='<h2>🎨 بوم نقاشی دونفره</h2><p class="muted">خطوط در حین کشیدن نیز همگام می‌شوند. برای تجربه‌ی بهتر هر دو نفر این صفحه را باز نگه دارید.</p><div class="card draw-tools"><label>رنگ <select id="draw-color">'+palette.map(function(c){return '<option value="'+c+'">'+c+'</option>'}).join('')+'</select></label><label>ضخامت <input id="draw-width" type="range" min="2" max="18" value="5"></label><button id="draw-undo" class="secondary">پاک‌کردن آخرین خط من</button><button id="draw-clear" class="secondary">پاک‌کردن کل بوم</button></div><div class="card draw-wrap"><canvas id="draw-canvas" aria-label="بوم نقاشی مشترک"></canvas></div><div class="card"><h3>💡 ایده‌های نقاشی</h3><p>چشم‌بسته یکدیگر را بکشید، خانه‌ی رؤیایی‌تان را طراحی کنید یا هر نفر نصف یک قلب را بکشد.</p><small id="draw-status" aria-live="polite"></small></div>';
+  var canvas=$('#draw-canvas'),ctx=canvas.getContext('2d'),drawing=false,current=null,last=null,liveTimer=null,lastLive=0,disposed=false;
+  var liveKey='draw:live:'+(cfg.me==='b'?'b':'a');
+  function getStrokes(){
+    var cleared=(I['draw:clear']&&I['draw:clear'].t)||0;
+    return Object.keys(I).filter(function(k){return k.indexOf('draw:')===0&&k!=='draw:clear'&&k.indexOf('draw:live:')!==0&&I[k]&&I[k].v&&Array.isArray(I[k].v.points)}).map(function(k){return {id:k,v:I[k].v,t:I[k].t||0}}).filter(function(s){return s.t>cleared}).sort(function(a,b){return a.t-b.t});
+  }
+  var strokes=getStrokes();
+  function liveStrokes(){
+    var now=Date.now(),out=[];
+    ['a','b'].forEach(function(role){var x=I['draw:live:'+role],v=x&&x.v;if(v&&Array.isArray(v.points)&&v.points.length&&now-(v.updated||v.at||0)<15000)out.push({id:'live-'+role,v:v,t:x.t||0})});
+    return out;
+  }
+  function updateStatus(){
+    var s=$('#draw-status');if(!s)return;
+    s.textContent='خطوط ذخیره‌شده: '+fa(strokes.length)+' · '+(API&&cfg.id?'همگام‌سازی مشترک '+(otherSeen?'فعال':'در انتظار اتصال'):'ذخیره فقط روی همین دستگاه؛ ورود به فضای مشترک برای دو گوشی لازم است');
+  }
+  function paint(){
+    if(disposed||!canvas.isConnected)return;
+    var w=canvas.clientWidth||canvas.getBoundingClientRect().width||300,h=360;
+    ctx.clearRect(0,0,w,h);ctx.fillStyle='#fffdfd';ctx.fillRect(0,0,w,h);
+    function line(v){
+      var p=v&&v.points;if(!p||!p.length)return;
+      ctx.strokeStyle=v.color||'#e84375';ctx.lineWidth=Number(v.width)||5;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(p[0][0]*w,p[0][1]*h);
+      for(var i=1;i<p.length;i++)ctx.lineTo(p[i][0]*w,p[i][1]*h);
+      if(p.length===1)ctx.lineTo(p[0][0]*w+.1,p[0][1]*h+.1);ctx.stroke();
+    }
+    strokes.forEach(function(s){line(s.v)});liveStrokes().forEach(function(s){line(s.v)});if(current)line(current);
+  }
+  function refresh(){strokes=getStrokes();paint();updateStatus()}
+  window.__ourhomeDrawRefresh=refresh;
+  function size(){if(disposed||!canvas.isConnected)return;var r=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.max(1,Math.round(r.width*dpr));canvas.height=Math.max(1,Math.round(360*dpr));canvas.style.height='360px';ctx.setTransform(dpr,0,0,dpr,0,0);paint()}
+  function point(e){var r=canvas.getBoundingClientRect();return [Math.max(0,Math.min(1,(e.clientX-r.left)/Math.max(1,r.width))),Math.max(0,Math.min(1,(e.clientY-r.top)/Math.max(1,r.height)))]}
+  function publishLive(force){
+    if(!current||!current.points.length)return;
+    var now=Date.now();if(!force&&now-lastLive<280)return;lastLive=now;
+    set(liveKey,{points:current.points.slice(),color:current.color,width:current.width,by:current.by,at:current.at,updated:now});
+  }
+  canvas.addEventListener('pointerdown',function(e){
+    e.preventDefault();drawing=true;try{canvas.setPointerCapture(e.pointerId)}catch(_){}
+    current={points:[point(e)],color:$('#draw-color').value,width:+$('#draw-width').value,by:cfg.me||'local',at:Date.now(),updated:Date.now()};last=current.points[0];publishLive(true);paint();
+  });
+  canvas.addEventListener('pointermove',function(e){
+    if(!drawing||!current)return;var p=point(e);
+    if(!last||Math.hypot((p[0]-last[0])*canvas.clientWidth,(p[1]-last[1])*360)>.8){current.points.push(p);last=p;paint();publishLive(false)}
+  });
+  function finish(){
+    if(!drawing||!current)return;drawing=false;var done=current;
+    if(done.points.length){var sid='draw:'+rid();set(sid,done);strokes.push({id:sid,v:done,t:(I[sid]&&I[sid].t)||Date.now()})}
+    current=null;last=null;set(liveKey,null);paint();updateStatus();
+  }
+  canvas.addEventListener('pointerup',finish);canvas.addEventListener('pointercancel',finish);canvas.addEventListener('lostpointercapture',finish);
+  window.addEventListener('resize',size);
+  // Refresh the live overlay periodically so a partner's unfinished line expires after a disconnect.
+  liveTimer=setInterval(function(){paint()},1000);
+  size();updateStatus();
+  $('#draw-undo').onclick=function(){
+    var me=cfg.me||'local',mine=strokes.filter(function(s){return s.v.by===me});
+    if(!mine.length)return toast('خطی از شما برای پاک‌کردن نیست.');
+    var lastStroke=mine[mine.length-1];set(lastStroke.id,null);strokes=strokes.filter(function(s){return s.id!==lastStroke.id});paint();updateStatus();
+  };
+  $('#draw-clear').onclick=function(){
+    if(!confirm('کل نقاشی برای هر دو نفر پاک شود؟'))return;
+    set('draw:clear',{at:Date.now(),by:cfg.me||'local'});strokes.forEach(function(s){set(s.id,null)});strokes=[];set('draw:live:a',null);set('draw:live:b',null);paint();updateStatus();toast('بوم پاک شد.');
+  };
+  // Avoid leaving the global callback bound to a canvas that was replaced by navigation.
+  var priorRoute=R[P]; // retained for the same page lifecycle
+  window.addEventListener('pagehide',function(){disposed=true;clearInterval(liveTimer);if(window.__ourhomeDrawRefresh===refresh)window.__ourhomeDrawRefresh=null},{once:true});
 }
-
 function challengesPage(){
   var prompts=['هر کدام سه ویژگی بگویید که در دیگری تحسین می‌کنید.','یک آهنگ انتخاب کنید که حال‌وهوای رابطه‌تان را توصیف کند.','یک قرار کم‌هزینه برای این هفته طراحی کنید.','هر کدام یک خاطره بگویید که هنوز لبخندتان می‌آورد.','ده دقیقه بدون گوشی با هم حرف بزنید.','یک چیز تازه درباره‌ی آرزوهای هم بپرسید.','برای یکدیگر یک پیام تشکر صادقانه بنویسید.'];
-  var today=new Date().toISOString().slice(0,10),key='challenge:'+today,st=I[key]&&I[key].v,idx=Math.floor(Date.now()/86400000)%prompts.length,txt=st&&st.text||prompts[idx];
-  V.innerHTML='<h2>چالش‌های دونفره 🌟</h2><p>فعالیت‌های کوچک برای نزدیک‌تر شدن؛ بدون اجبار و با احترام به مرزهای هر دو نفر.</p><div class="card"><small>چالش امروز · '+E(today)+'</small><h3>'+E(txt)+'</h3><p>'+(st&&st.done?'این چالش ثبت شده؛ آفرین به شما 💗':'با هم انجامش دهید و بعد ثبت کنید.')+'</p><button id="challenge-done" '+(st&&st.done?'disabled':'')+'>'+(st&&st.done?'انجام شده 💗':'ما انجامش دادیم')+'</button><button id="challenge-next" class="secondary">یک ایده‌ی دیگر</button></div><div class="card"><h3>ایده‌های قرار دونفره</h3><ul><li>شب فیلم با خوراکی خانگی</li><li>پیاده‌روی و گرفتن یک عکس یادگاری</li><li>درست‌کردن یک غذای جدید با هم</li><li>نوشتن نامه برای آینده‌ی رابطه</li><li>ساختن پلی‌لیست مشترک</li></ul></div>';
-  $('#challenge-done').onclick=function(){set(key,{done:true,text:txt,at:Date.now()});challengesPage();};
-  $('#challenge-next').onclick=function(){set(key,{done:false,text:prompts[Math.floor(Math.random()*prompts.length)],at:Date.now()});challengesPage();};
+  var today=iso(),key='challenge:'+today,st=I[key]&&I[key].v,idx=Math.floor(new Date(today+'T12:00:00').getTime()/86400000)%prompts.length,txt=st&&st.text||prompts[idx],role=cfg.me==='b'?'b':'a',doneKey=key+':'+role,done=!!(I[doneKey]&&I[doneKey].v),doneA=!!(I[key+':a']&&I[key+':a'].v),doneB=!!(I[key+':b']&&I[key+':b'].v);
+  V.innerHTML='<h2>چالش‌های دونفره 🌟</h2><p>فعالیت‌های کوچک برای نزدیک‌تر شدن؛ بدون اجبار و با احترام به مرزهای هر دو نفر.</p><div class="card"><small>چالش امروز · '+E(today)+'</small><h3>'+E(txt)+'</h3><p>'+(doneA&&doneB?'هر دوی شما انجام چالش را ثبت کرده‌اید؛ آفرین 💗':done?'ثبت تو انجام شد؛ منتظر ثبت پارتنرت هستیم.':(doneA||doneB?'یکی از شما انجام چالش را ثبت کرده است.':'بعد از انجام چالش، وضعیت خودت را ثبت کن.'))+'</p><p><small>وضعیت تو: '+(done?'انجام شده ✓':'هنوز ثبت نشده')+' · وضعیت پارتنر: '+((role==='a'?doneB:doneA)?'انجام شده ✓':'هنوز ثبت نشده')+'</small></p><button id="challenge-done" '+(done?'disabled':'')+'>'+(done?'ثبت شده 💗':'من انجامش دادم')+'</button><button id="challenge-next" class="secondary">یک ایده‌ی دیگر</button></div><div class="card"><h3>برنامه‌ریزی قرار دونفره 🗓️</h3><p>قرار را ثبت کنید تا در تقویم مشترک نمایش داده شود.</p><label for="date-title">عنوان قرار</label><input id="date-title" maxlength="120" placeholder="مثلاً پیک‌نیک دونفره"><label for="date-when">تاریخ قرار</label><input id="date-when" type="date" min="'+today+'" value="'+today+'"><button id="date-save">افزودن قرار به تقویم</button></div><div class="card"><h3>ایده‌های قرار</h3><ul><li>شب فیلم با خوراکی خانگی</li><li>پیاده‌روی و گرفتن یک عکس یادگاری</li><li>درست‌کردن یک غذای جدید با هم</li><li>نوشتن نامه برای آینده‌ی رابطه</li><li>ساختن پلی‌لیست مشترک</li></ul></div>';
+  $('#challenge-done').onclick=function(){set(doneKey,true);set('score:challenge-'+today+':'+role,{points:10,source:'challenge',date:today,role:role});challengesPage();};
+  $('#challenge-next').onclick=function(){var next=prompts[Math.floor(Math.random()*prompts.length)];set(key,{text:next,at:Date.now()});set(key+':a',false);set(key+':b',false);challengesPage();};
+  $('#date-save').onclick=function(){var title=$('#date-title').value.trim(),date=$('#date-when').value;if(!title||!date)return toast('عنوان و تاریخ قرار را وارد کن.');if(date<today)return toast('تاریخ قرار نمی‌تواند در گذشته باشد.');set('events:'+rid(),{d:date,t:title,r:false});toast('قرار به تقویم مشترک اضافه شد 💗');$('#date-title').value='';};
 }
 function achievementsPage(){
   var gamesPlayed=Object.keys(I).filter(function(k){return k.indexOf('game:')===0&&I[k]&&I[k].v;}).length;
   var stories=D.story.length,letters=D.letters.length,events=D.events.length,done=D.wishes.filter(function(w){return w.k}).length;
-  var days=day();
-  var badges=[{ok:stories>0,icon:'📸',title:'خاطره‌ساز',desc:'اولین خاطره را ثبت کنید.'},{ok:letters>0,icon:'💌',title:'نامه‌نویس',desc:'اولین نامه را بنویسید.'},{ok:done>0,icon:'✨',title:'آرزوپرداز',desc:'یک آرزو را انجام‌شده کنید.'},{ok:events>0,icon:'📅',title:'مناسبت‌شناس',desc:'یک مناسبت ثبت کنید.'},{ok:gamesPlayed>0,icon:'🎮',title:'اهل بازی',desc:'یکی از بازی‌ها را امتحان کنید.'},{ok:days>=30,icon:'💗',title:'یک ماه کنار هم',desc:'به روز سی‌ام رابطه برسید.'}];
-  V.innerHTML='<h2>دستاوردهای ما 🏆</h2><p>این صفحه برای جشن گرفتن قدم‌های کوچک رابطه است، نه رقابت با یکدیگر.</p><div class="stats-grid"><div class="stat-card"><b>'+fa(stories)+'</b><span>خاطره</span></div><div class="stat-card"><b>'+fa(letters)+'</b><span>نامه</span></div><div class="stat-card"><b>'+fa(done)+'</b><span>آرزوی انجام‌شده</span></div><div class="stat-card"><b>'+fa(days)+'</b><span>روز رابطه</span></div></div><div class="badge-grid">'+badges.map(function(b){return '<div class="card badge-card '+(b.ok?'unlocked':'locked')+'"><div class="badge-icon">'+b.icon+'</div><h3>'+E(b.title)+'</h3><p>'+E(b.desc)+'</p><small>'+(b.ok?'دریافت‌شده ✓':'هنوز قفل است')+'</small></div>';}).join('')+'</div><div class="card"><h3>قدم بعدی</h3><p>یک خاطره ثبت کنید، برای هم نامه بنویسید یا یک چالش دونفره انجام دهید.</p><div class="go"><a href="story.html">ثبت خاطره</a><a href="letters.html">نوشتن نامه</a><a href="challenges.html">چالش امروز</a></div></div>';
+  var days=day(),scores={a:0,b:0},scoreEvents=0;
+  Object.keys(I).forEach(function(k){
+    if(k.indexOf('score:')!==0||!I[k]||!I[k].v)return;
+    var v=I[k].v;if(!v||typeof v.points!=='number'||(v.role!=='a'&&v.role!=='b'))return;
+    scores[v.role]+=Math.max(0,Math.min(1000,Math.floor(v.points)));scoreEvents++;
+  });
+  function level(n){return n>=200?{n:5,t:'هم‌مسیر طلایی'}:n>=100?{n:4,t:'هم‌مسیر درخشان'}:n>=50?{n:3,t:'هم‌مسیر صمیمی'}:n>=20?{n:2,t:'هم‌مسیر مشتاق'}:{n:1,t:'شروع عاشقانه'};}
+  var mine=cfg.me==='b'?'b':'a',other=mine==='a'?'b':'a',myLevel=level(scores[mine]),otherLevel=level(scores[other]);
+  var badges=[
+    {ok:stories>0,icon:'📸',title:'خاطره‌ساز',desc:'اولین خاطره را ثبت کنید.'},
+    {ok:letters>0,icon:'💌',title:'نامه‌نویس',desc:'اولین نامه را بنویسید.'},
+    {ok:done>0,icon:'✨',title:'آرزوپرداز',desc:'یک آرزو را انجام‌شده کنید.'},
+    {ok:events>0,icon:'📅',title:'مناسبت‌شناس',desc:'یک مناسبت ثبت کنید.'},
+    {ok:gamesPlayed>0,icon:'🎮',title:'اهل بازی',desc:'یکی از بازی‌ها را امتحان کنید.'},
+    {ok:days>=30,icon:'💗',title:'یک ماه کنار هم',desc:'به روز سی‌ام رابطه برسید.'},
+    {ok:scores[mine]>=10,icon:'🌟',title:'اولین قدم',desc:'یک چالش روزانه را ثبت کنید.'},
+    {ok:scores[mine]>=50,icon:'🏅',title:'پای کار رابطه',desc:'۵۰ امتیاز شخصی به دست آورید.'},
+    {ok:scores[mine]>=100,icon:'👑',title:'صد قدم کوچک',desc:'۱۰۰ امتیاز شخصی به دست آورید.'}
+  ];
+  var pct=Math.min(100,Math.round((myLevel.n===5?200:scores[mine])/(myLevel.n===1?20:myLevel.n===2?50:myLevel.n===3?100:myLevel.n===4?200:200)*100));
+  V.innerHTML='<h2>دستاوردهای ما 🏆</h2><p>این صفحه برای جشن گرفتن قدم‌های کوچک رابطه است، نه رقابت با یکدیگر.</p>'+
+  '<div class="stats-grid"><div class="stat-card"><b>'+fa(stories)+'</b><span>خاطره</span></div><div class="stat-card"><b>'+fa(letters)+'</b><span>نامه</span></div><div class="stat-card"><b>'+fa(done)+'</b><span>آرزوی انجام‌شده</span></div><div class="stat-card"><b>'+fa(days)+'</b><span>روز رابطه</span></div></div>'+
+  '<div class="card"><h3>🌟 امتیاز و سطح تو</h3><div class="stats-grid"><div class="stat-card"><b>'+fa(scores[mine])+'</b><span>امتیاز تو</span></div><div class="stat-card"><b>'+fa(myLevel.n)+'</b><span>'+E(myLevel.t)+'</span></div><div class="stat-card"><b>'+fa(scores[other])+'</b><span>امتیاز پارتنر</span></div><div class="stat-card"><b>'+fa(otherLevel.n)+'</b><span>'+E(otherLevel.t)+'</span></div></div><p><progress max="100" value="'+pct+'" aria-label="پیشرفت سطح فعلی"></progress></p><small>هر چالش روزانه که از صفحهٔ چالش‌ها ثبت کنی ۱۰ امتیاز می‌دهد. هر تاریخ و هر نفر فقط یک بار امتیاز می‌گیرد؛ امتیازها در فضای مشترک ذخیره می‌شوند.</small></div>'+
+  '<div class="badge-grid">'+badges.map(function(b){return '<div class="card badge-card '+(b.ok?'unlocked':'locked')+'"><div class="badge-icon">'+b.icon+'</div><h3>'+E(b.title)+'</h3><p>'+E(b.desc)+'</p><small>'+(b.ok?'دریافت‌شده ✓':'هنوز قفل است')+'</small></div>';}).join('')+'</div>'+
+  '<div class="card"><h3>قدم بعدی</h3><p>یک خاطره ثبت کنید، برای هم نامه بنویسید یا چالش امروز را انجام دهید.</p><div class="go"><a href="story.html">ثبت خاطره</a><a href="letters.html">نوشتن نامه</a><a href="challenges.html">چالش امروز</a></div></div>';
 }
 var mapWatch=null,mapExpiry=null,lastLocAt=0;
 function mapPage(){
