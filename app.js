@@ -49,8 +49,8 @@ if(!loadLS()){var old=null;try{old=norm(JSON.parse(localStorage.getItem('hd1')))
 /* احراز هویت: شناسه و توکن فقط از نشست معتبر ورود دریافت می‌شوند. */
 var AUTH_SESSION=null;try{AUTH_SESSION=JSON.parse(localStorage.getItem('ourhome_session')||'null')}catch(e){}
 if(AUTH_SESSION&&AUTH_SESSION.id&&AUTH_SESSION.session){cfg=Object.assign({},cfg,{id:AUTH_SESSION.id,tok:AUTH_SESSION.session,me:AUTH_SESSION.me,username:AUTH_SESSION.username,accountName:AUTH_SESSION.name,other:'',viewer:''});if(!localStorage.getItem('ourhome_migrated_'+AUTH_SESSION.username)){Object.keys(I).forEach(function(k){dirty[k]=1});localStorage.setItem('ourhome_migrated_'+AUTH_SESSION.username,'1')}}else{cfg={start:cfg.start||'2026-09-29',theme:cfg.theme||''};dirty={}}
-if(cfg.start==='2026-09-30')cfg.start='2026-09-29';
-if(I['settings:start']&&I['settings:start'].v==='2026-09-30'){I['settings:start']={v:'2026-09-29',t:Date.now()};dirty['settings:start']=1;}
+if(cfg.start!=='2026-09-29')cfg.start='2026-09-29';
+if(I['settings:start']&&I['settings:start'].v!=='2026-09-29'){I['settings:start']={v:'2026-09-29',t:Date.now()};dirty['settings:start']=1;}
 applyStartSetting();
 if(cfg.theme==='dark'||cfg.theme==='light')document.documentElement.setAttribute('data-theme',cfg.theme);
 if(!I['story:start'])I['story:start']={v:{d:'2026-09-29',t:'شروع داستان ما',x:'روز اول؛ جایی که همه‌چیز شروع شد.'},t:0};
