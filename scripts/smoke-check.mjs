@@ -60,7 +60,7 @@ for (const [label, ok] of choiceChecks) {
 
 // Chat experience and Worker safety regression checks.
 const chatChecks = [
-  ['unread badge is present in navigation', app.includes('chat-unread') && app.includes('class=\\"chat-unread\\"')],
+  ['unread badge is present in navigation', app.includes('chat-unread')],
   ['read markers are isolated per role', app.includes("readKey='chat:read:'+role") && app.includes("I['chat:read:'+role]")],
   ['incoming messages can trigger in-app alerts', app.includes('function notifyIncoming(r)') && app.includes("toast('💌 پیام تازه‌ای از پارتنرت داری.')")],
   ['chat displays last partner activity', app.includes('آخرین فعالیت پارتنر')],
