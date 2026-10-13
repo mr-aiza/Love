@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 var API=(window.OURHOME_API||'').replace(/\/+$/,''),K='hd2',S=new Date(2026,8,29),MS=[30,50,100,200,365,500,1000],P=document.body.getAttribute('data-page'),ISO=/^\d{4}-\d{2}-\d{2}$/,tt;
-var I={},dirty={},cfg={},D,otherSeen=0,busy=false,dead=false,timer=null;
+var I={},dirty={},cfg={},D,otherSeen=0,busy=false,dead=false,timer=null,appBootAt=Date.now(),notifiedChat={};
 
 /* ---------- اعتبارسنجی ---------- */
 function str(v,n){return typeof v==='string'?v.slice(0,n):''}
@@ -36,7 +36,7 @@ function build(){
   D=d;
 }
 function applyStartSetting(){var v=I['settings:start']&&I['settings:start'].v;if(!ISO.test(v||''))v=cfg.start;if(!ISO.test(v||''))v='2026-09-29';if(v==='2026-09-30')v='2026-09-29';cfg.start=v;S=new Date(v+'T12:00:00')}
-function set(k,v){var prev=I[k]&&typeof I[k].t==='number'?I[k].t:0;I[k]={v:v,t:Math.max(Date.now(),prev+1)};dirty[k]=1;if(k==='settings:start')applyStartSetting();build();save();sched()}
+function set(k,v){var prev=I[k]&&typeof I[k].t==='number'?I[k].t:0;I[k]={v:v,t:Math.max(Date.now(),prev+1)};dirty[k]=1;if(k==='settings:start')applyStartSetting();build();save();refreshChatBadge();sched()}
 function imp(d){
   var n=Date.now();Object.keys(I).forEach(function(k){I[k]={v:null,t:n}});
   function put(k,v){I[k]={v:v,t:n+1}}
@@ -94,7 +94,7 @@ function api(m,b){return fetch(API+'/api/doc/'+cfg.id,{method:m,headers:{'conten
 function merge(r){
   var ch=false;Object.keys(r.items||{}).forEach(function(k){var x=r.items[k],l=I[k];if(x&&typeof x.t==='number'&&(!l||x.t>l.t||(x.t===l.t&&JSON.stringify(x.v)>JSON.stringify(l.v)))){I[k]={v:x.v,t:x.t};ch=true}});
   var o=cfg.me==='a'?'b':'a';if(r.seen&&r.seen[o])otherSeen=r.seen[o];
-  if(ch){applyStartSetting();build();save()}return ch;
+  if(ch){applyStartSetting();build();save()}refreshChatBadge();return ch;
 }
 function ensureSharedStart(){if(cfg.id&&API&&!I['settings:start'])set('settings:start',cfg.start||'2026-09-29')}
 function sched(){clearTimeout(timer);timer=setTimeout(function(){timer=null;flush()},800)}
@@ -104,6 +104,7 @@ function flush(){
   var body={items:{}};ks.forEach(function(k){body.items[k]=I[k]});
   busy=true;status('در حال همگام‌سازی…');
   api('PUT',body).then(function(r){
+    notifyIncoming(r);
     ks.forEach(function(k){var s=r.items&&r.items[k];if(s&&s.t>=body.items[k].t&&I[k]===body.items[k])delete dirty[k]});
     if(merge(r)&&!editing())(R[P]||home)();ensureSharedStart();save();status();
   }).catch(function(e){
@@ -113,7 +114,7 @@ function flush(){
 }
 function poll(){
   if(document.hidden||!cfg.id||!API||busy||dead||Object.keys(dirty).length)return;
-  api('GET').then(function(r){if(merge(r)&&!editing()){if(P==='draw'&&typeof window.__ourhomeDrawRefresh==='function')window.__ourhomeDrawRefresh();else (R[P]||home)()}ensureSharedStart();status()}).catch(function(e){if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1)}else status('ارتباط با سرور برقرار نیست',1)});
+  api('GET').then(function(r){notifyIncoming(r);if(merge(r)&&!editing()){if(P==='draw'&&typeof window.__ourhomeDrawRefresh==='function')window.__ourhomeDrawRefresh();else (R[P]||home)()}ensureSharedStart();status()}).catch(function(e){if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1)}else status('ارتباط با سرور برقرار نیست',1)});
 }
 function shareUrl(u,title,ok){
   if(navigator.share)navigator.share({title:title,url:u}).catch(function(){});
@@ -128,8 +129,8 @@ function link(){
 /* ---------- منو ---------- */
 var N=[['index','🏠','خانه'],['story','📖','داستان ما'],['letters','💌','نامه‌ها'],['wishes','✨','آرزوها'],['calendar','📅','تقویم'],['qa','💬','سؤال'],['pledge','📜','تعهدنامه'],['chat','💌','چت'],['games','🎮','بازی‌ها'],['draw','🎨','نقاشی زنده'],['challenges','🌟','چالش‌ها'],['achievements','🏆','دستاوردها'],['map','📍','نقشه'],['settings','⚙️','تنظیمات']];
 var nv=document.createElement('nav');nv.setAttribute('aria-label','منوی اصلی');
-nv.innerHTML=N.map(function(n){return '<a href="'+n[0]+'.html"'+(n[0]===P?' class="on" aria-current="page"':'')+'><b aria-hidden="true">'+n[1]+'</b>'+n[2]+'</a>'}).join('');
-document.body.appendChild(nv);
+nv.innerHTML=N.map(function(n){return '<a href="'+n[0]+'.html"'+(n[0]===P?' class="on" aria-current="page"':'')+'><b aria-hidden="true">'+n[1]+'</b>'+n[2]+(n[0]==='chat'?' <span id="chat-unread" class="chat-unread" hidden></span>':'')+'</a>'}).join('');
+document.body.appendChild(nv);refreshChatBadge();
 
 /* ---------- صفحه‌ها ---------- */
 function hero(num,lbl,rest){
@@ -244,16 +245,38 @@ setInterval(updateLiveCounter,1000);
 function customItems(prefix){
   return Object.keys(I).filter(function(k){return k.indexOf(prefix+':')===0&&I[k]&&I[k].v!==null;}).map(function(k){return {id:k.slice(prefix.length+1),v:I[k].v,t:I[k].t};});
 }
+function refreshChatBadge(){
+  var badge=$('#chat-unread');if(!badge)return;
+  var role=cfg.me==='b'?'b':'a',readAt=Number(I['chat:read:'+role]&&I['chat:read:'+role].v)||0;
+  var unread=cfg.id?customItems('chat').filter(function(m){return m.v&&typeof m.v.text==='string'&&m.v.from!==role&&(m.v.at||m.t)>readAt}).length:0;
+  badge.textContent=unread?fa(unread):'';badge.hidden=!unread;badge.setAttribute('aria-label',unread?'پیام خوانده‌نشده: '+fa(unread):'پیام خوانده‌نشده‌ای نیست');
+}
+function notifyIncoming(r){
+  if(!r||!r.items||P==='chat'||document.hidden)return;
+  var role=cfg.me==='b'?'b':'a';
+  Object.keys(r.items).forEach(function(k){
+    if(k.indexOf('chat:')!==0||k.indexOf('chat:read:')===0)return;
+    var x=r.items[k],v=x&&x.v,at=v&&Number(v.at)||x&&x.t||0;
+    if(!v||typeof v.text!=='string'||v.from===role||at<=appBootAt||notifiedChat[k])return;
+    notifiedChat[k]=1;toast('💌 پیام تازه‌ای از پارتنرت داری.');
+  });
+}
 function chat(){
   var msgs=customItems('chat').filter(function(m){return m.v&&typeof m.v.text==='string';})
     .sort(function(a,b){return (a.v.at||a.t)-(b.v.at||b.t);});
-  var html='<h2>چت دونفره 💌</h2><div class="card"><small>'+(cfg.id?'پیام‌ها در فضای مشترک همگام می‌شوند؛ برای دیدن تغییرات طرف مقابل اتصال سرور لازم است.':'حالت محلی: پیام‌ها فقط در همین مرورگر ذخیره می‌شوند.')+'</small></div><section id="chatlog" aria-live="polite">';
+  var role=cfg.me==='b'?'b':'a',readKey='chat:read:'+role,readAt=Number(I[readKey]&&I[readKey].v)||0;
+  var latestAt=msgs.reduce(function(n,m){return Math.max(n,m.v.at||m.t||0)},0);
+  if(latestAt>readAt)set(readKey,latestAt);
+  var activity=otherSeen?' · آخرین فعالیت پارتنر: '+(Math.max(0,Math.round((Date.now()-otherSeen)/6e4))<1?'همین الان':fa(Math.max(0,Math.round((Date.now()-otherSeen)/6e4)))+' دقیقه پیش'):'';
+  var html='<h2>چت دونفره 💌</h2><div class="card"><small>'+(cfg.id?'پیام‌ها در فضای مشترک همگام می‌شوند؛ برای دیدن تغییرات طرف مقابل اتصال سرور لازم است.':'حالت محلی: پیام‌ها فقط در همین مرورگر ذخیره می‌شوند.')+E(activity)+'</small></div>';
+  if(cfg.id)html+='<div class="card chat-read-status"><small>پیام‌های خوانده‌نشده هنگام باز بودن این صفحه به‌عنوان خوانده‌شده ثبت می‌شوند.</small></div>';
+  html+='<section id="chatlog" aria-live="polite" aria-relevant="additions text">';
   msgs.forEach(function(m){
     var own=(!cfg.id)||m.v.from===(cfg.me||'a');
     html+='<div class="card chat-msg '+(own?'mine':'theirs')+'"><small>'+E(m.v.fromName||((m.v.from==='b')?D.names[1]:D.names[0]))+' · '+E(new Date(m.v.at||m.t).toLocaleString('fa-IR'))+'</small><p>'+E(m.v.text)+'</p><button class="x" data-del="'+E('chat:'+m.id)+'">حذف</button></div>';
   });
   html+='</section><form class="card" id="chatform"><label for="chattext">پیام شما</label><textarea id="chattext" rows="3" maxlength="3000" placeholder="یک پیام دوست‌داشتنی بنویس…" required></textarea><button type="submit">ارسال پیام</button></form>';
-  V.innerHTML=html;
+  V.innerHTML=html;refreshChatBadge();
   $('#chatform').onsubmit=function(e){e.preventDefault();var t=$('#chattext').value.trim();if(!t)return;
     set('chat:'+rid(),{text:t,from:cfg.me||'a',fromName:D.names[cfg.me==='b'?1:0],at:Date.now()});
     var all=customItems('chat').sort(function(a,b){return (a.v.at||a.t)-(b.v.at||b.t);});
