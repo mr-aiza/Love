@@ -278,7 +278,9 @@ function games(){
   mem.cards.forEach(function(c,i){var shown=mem.open.indexOf(i)>-1||mem.matched.indexOf(i)>-1;memory+='<button class="memory-card" data-memory="'+i+'" aria-label="کارت '+(i+1)+'" '+(shown?'disabled':'')+'>'+E(shown?c:'♥')+'</button>';});
   memory+='</div>';
   var cq=I['game:choice']&&I['game:choice'].v;
-  if(!cq||!cq.q)cq={q:0,answers:{}};
+  if(!cq||typeof cq.q!=='number')cq={q:0};
+  var choiceA=I['game:choice:a']&&I['game:choice:a'].v,choiceB=I['game:choice:b']&&I['game:choice:b'].v;
+  var ans={a:choiceA&&choiceA.q===cq.q?choiceA.answer:undefined,b:choiceB&&choiceB.q===cq.q?choiceB.answer:undefined};
   var choices=[
     ['قرار در خانه 🏡','قرار بیرون 🌃'],['سفر دونفره 🚗','شب فیلم 🎬'],['نامه عاشقانه 💌','هدیه غافلگیرکننده 🎁'],
     ['صبحانه باهم ☕','شام دونفره 🍝'],['تماشای ستاره‌ها ✨','قدم‌زدن زیر باران 🌧️'],['عکس یادگاری 📸','خاطره‌نویسی 📖']
@@ -287,7 +289,7 @@ function games(){
   var truthList=['کدام خاطره‌مان را همیشه به یاد می‌آوری؟','چه کاری باعث می‌شود بیشتر احساس دوست‌داشته‌شدن کنی؟','قرار رؤیایی تو چه شکلی است؟','چه چیزی را دوست داری با هم تجربه کنیم؟','اولین چیزی که در من توجهت را جلب کرد چه بود؟','چه چیزی همیشه لبخند روی لبت می‌آورد؟','اگر همین حالا سفر برویم، کجا را انتخاب می‌کنی؟'];
   var dareList=['یک پیام عاشقانه در سه جمله بگو.','یک آهنگ برای رابطه‌مان انتخاب کن.','سه ویژگی دوست‌داشتنی طرف مقابل را بگو.','یک قرار ساده برای این هفته پیشنهاد بده.','یک خاطره خنده‌دارمان را تعریف کن.','۳۰ ثانیه بدون خندیدن به چشم‌های هم نگاه کنید.','یک تعریف تازه و واقعی از پارتنرت بکن.','یک عکس دونفره با ژست بامزه بگیرید.'];
   var know=['غذای موردعلاقه من چیست؟','کدام مقصد را بیشتر دوست دارم؟','چه چیزی سریع حالم را بهتر می‌کند؟','کدام خاطره‌مان برایم خاص‌تر است؟','چه مهارتی را دوست دارم یاد بگیرم؟','وقتی ناراحتم بیشتر به چه چیزی نیاز دارم؟'];
-  var today=new Date().toISOString().slice(0,10),daily=I['challenge:'+today]&&I['challenge:'+today].v;
+  var nowDate=new Date(),today=nowDate.getFullYear()+'-'+pad(nowDate.getMonth()+1)+'-'+pad(nowDate.getDate()),daily=I['challenge:'+today]&&I['challenge:'+today].v;
   V.innerHTML='<h2>مرکز بازی‌های دونفره 🎮</h2><p class="muted">بازی کنید، همدیگر را بهتر بشناسید و خاطره بسازید.</p>'+
   '<div class="card"><div class="game-heading"><h3>⭕ دوز عاشقانه</h3><span class="game-tag">دو نفره</span></div><p>'+(online?'اتاق مشترک فعال است؛ نوبت شما: '+(role==='a'?'X':'O'):'حالت محلی؛ دو نفر روی همین دستگاه بازی کنند.')+'</p>'+board+'<p class="game-status">'+(w?(w==='draw'?'بازی مساوی شد.':('برنده: '+(w==='a'?'X':'O'))):(g.status==='playing'?'نوبت: '+(g.turn==='a'?'X':'O'):'بازی تمام شده'))+'</p><button id="newgame">شروع دوباره</button></div>'+
   '<div class="card"><div class="game-heading"><h3>🧠 حافظه‌ی عاشقانه</h3><span class="game-tag">۶ جفت کارت</span></div><p>کارت‌های مشابه را پیدا کنید. تعداد حرکت‌ها: <b>'+fa(mem.moves)+'</b> · جفت‌های پیدا شده: <b>'+fa(mem.matched.length/2)+'/۶</b></p>'+memory+'<button id="memory-reset" class="secondary">شروع دوباره</button></div>'+
@@ -315,16 +317,17 @@ function games(){
   }});
   $('#newgame').onclick=function(){set('game:state',{board:['','','','','','','','',''],turn:'a',status:'playing',winner:'',updated:Date.now()});games();};
   $('#memory-reset').onclick=function(){set('game:memory',{cards:['💌','🌹','🐻','💖','🌙','🧸','💌','🌹','🐻','💖','🌙','🧸'].sort(function(){return Math.random()-.5}),open:[],matched:[],moves:0});games();};
-  V.querySelectorAll('[data-choice]').forEach(function(b){b.onclick=function(){var cur=JSON.parse(JSON.stringify((I['game:choice']&&I['game:choice'].v)||{q:0,answers:{}}));cur.answers=cur.answers||{};cur.answers[role]=+b.getAttribute('data-choice');set('game:choice',cur);games();};});
-  $('#choice-next').onclick=function(){var cur=JSON.parse(JSON.stringify((I['game:choice']&&I['game:choice'].v)||{q:0,answers:{}}));cur.q=(cur.q+1)%choices.length;cur.answers={};set('game:choice',cur);games();};
+  V.querySelectorAll('[data-choice]').forEach(function(b){b.onclick=function(){var cur=I['game:choice']&&I['game:choice'].v;if(!cur||typeof cur.q!=='number')cur={q:0};set('game:choice:'+role,{q:cur.q,answer:+b.getAttribute('data-choice'),at:Date.now()});games();};});
+  $('#choice-next').onclick=function(){var cur=I['game:choice']&&I['game:choice'].v;if(!cur||typeof cur.q!=='number')cur={q:0};set('game:choice',{q:(cur.q+1)%choices.length,at:Date.now()});games();};
   function pick(a,id){$('#'+id).textContent=a[Math.floor(Math.random()*a.length)];}
   $('#truth').onclick=function(){pick(truthList,'tod')};$('#dare').onclick=function(){pick(dareList,'tod')};$('#nexttod').onclick=function(){pick(truthList.concat(dareList),'tod')};$('#nextknow').onclick=function(){pick(know,'knowq')};pick(know,'knowq');
   $('#daily-done').onclick=function(){set('challenge:'+today,{done:true,text:'امروز هر کدام سه ویژگی بگویید که در دیگری تحسین می‌کنید.',at:Date.now()});games();};
-  var lettersNF=['م','س','آ','ر','ن','ک','ب','د','ش','ف'],nf=I['game:namefamily']&&I['game:namefamily'].v;if(!nf)nf={letter:'م',answers:{}};
-  $('#nf-letter').textContent=nf.letter;var mine=nf.answers&&nf.answers[role]||{};['name','family','city','food','animal'].forEach(function(k){$('#nf-'+k).value=mine[k]||''});
-  var otherAns=nf.answers&&nf.answers[role==='a'?'b':'a'];$('#nf-status').textContent='وضعیت شما: '+(nf.answers&&nf.answers[role]?'ثبت شده':'ثبت نشده')+' · پارتنر: '+(otherAns?'ثبت کرده':'منتظر پاسخ');
-  $('#nf-save').onclick=function(){var cur=JSON.parse(JSON.stringify((I['game:namefamily']&&I['game:namefamily'].v)||nf));cur.answers=cur.answers||{};cur.answers[role]={name:$('#nf-name').value.trim(),family:$('#nf-family').value.trim(),city:$('#nf-city').value.trim(),food:$('#nf-food').value.trim(),animal:$('#nf-animal').value.trim()};set('game:namefamily',cur);games()};
-  $('#nf-next').onclick=function(){var cur={letter:lettersNF[Math.floor(Math.random()*lettersNF.length)],answers:{}};set('game:namefamily',cur);games()};
+  var lettersNF=['م','س','آ','ر','ن','ک','ب','د','ش','ف'],nf=I['game:namefamily']&&I['game:namefamily'].v;if(!nf)nf={letter:'م'};
+  var nfA=I['game:namefamily:a']&&I['game:namefamily:a'].v,nfB=I['game:namefamily:b']&&I['game:namefamily:b'].v;
+  $('#nf-letter').textContent=nf.letter;var mine=(role==='a'?nfA:nfB)||{};['name','family','city','food','animal'].forEach(function(k){$('#nf-'+k).value=mine[k]||''});
+  var otherAns=role==='a'?nfB:nfA;$('#nf-status').textContent='وضعیت شما: '+(mine.at?'ثبت شده':'ثبت نشده')+' · پارتنر: '+(otherAns&&otherAns.at?'ثبت کرده':'منتظر پاسخ');
+  $('#nf-save').onclick=function(){set('game:namefamily:'+role,{name:$('#nf-name').value.trim(),family:$('#nf-family').value.trim(),city:$('#nf-city').value.trim(),food:$('#nf-food').value.trim(),animal:$('#nf-animal').value.trim(),at:Date.now(),letter:nf.letter});games()};
+  $('#nf-next').onclick=function(){set('game:namefamily',{letter:lettersNF[Math.floor(Math.random()*lettersNF.length)],at:Date.now()});set('game:namefamily:a',null);set('game:namefamily:b',null);games()};
   var words=[{w:'باران',h:'از آسمان می‌بارد و زمین را خیس می‌کند.'},{w:'قهوه',h:'نوشیدنی گرم و محبوب صبح‌ها.'},{w:'ستاره',h:'شب‌ها در آسمان دیده می‌شود.'},{w:'آغوش',h:'گاهی بدون حرف زدن آرامت می‌کند.'},{w:'سفر',h:'با هم رفتنش می‌تواند خاطره‌ساز باشد.'},{w:'شکلات',h:'خوراکی شیرین که خیلی‌ها دوستش دارند.'}];
   var wi=I['game:word']&&I['game:word'].v;if(!wi||typeof wi.index!=='number')wi={index:0};var word=words[wi.index%words.length];$('#word-hint').textContent='سرنخ: '+word.h;
   $('#word-check').onclick=function(){var guess=$('#word-guess').value.replace(/\s/g,'').trim();$('#word-result').textContent=guess===word.w?'آفرین! درست حدس زدی 💗':'هنوز نه؛ دوباره فکر کن یا از سرنخ استفاده کن.'};
