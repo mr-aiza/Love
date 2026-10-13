@@ -23,6 +23,7 @@ if (existsSync(join(root,'worker.js'))) {
 }
 
 const app = readFileSync(join(root,'app.js'),'utf8');
+const worker = readFileSync(join(root,'worker.js'),'utf8');
 const routeMatch = app.match(/var R\s*=\s*\{([\s\S]*?)\};/);
 if (!routeMatch) fail.push('Could not locate page router R in app.js');
 else {
@@ -54,6 +55,30 @@ const choiceChecks = [
 for (const [label, ok] of choiceChecks) {
   if (ok) pass(label);
   else fail.push('Regression check failed: ' + label);
+}
+
+
+// Chat experience and Worker safety regression checks.
+const chatChecks = [
+  ['unread badge is present in navigation', app.includes('id="chat-unread"') && app.includes('class="chat-unread"')],
+  ['read markers are isolated per role', app.includes("readKey='chat:read:'+role") && app.includes("I['chat:read:'+role]")],
+  ['incoming messages can trigger in-app alerts', app.includes('function notifyIncoming(r)') && app.includes("toast('💌 پیام تازه‌ای از پارتنرت داری.')")],
+  ['chat displays last partner activity', app.includes('آخرین فعالیت پارتنر')],
+  ['poll checks new messages before merging', /api\('GET'\)\.then\(function\(r\)\{notifyIncoming\(r\);if\(merge\(r\)/.test(app)]
+];
+for (const [label, ok] of chatChecks) {
+  if (ok) pass(label);
+  else fail.push('Regression check failed: ' + label);
+}
+const workerChecks = [
+  ['Worker requires an authorized role for shared documents', worker.includes("if(!role)return J({error:'برای دیدن این فضا باید وارد حساب خود شوید'},401);")],
+  ['Worker limits item, document and key counts', worker.includes('MAX_ITEM=300000, MAX_DOC=4500000, MAX_KEYS=5000') && worker.includes('JSON.stringify(v).length>MAX_ITEM') && worker.includes('Object.keys(doc.items).length>MAX_KEYS') && worker.includes('out.length>MAX_DOC')],
+  ['Worker caps changes per request', worker.includes('ks.length>300')],
+  ['Worker caps request body size', worker.includes('txt.length>2e6')]
+];
+for (const [label, ok] of workerChecks) {
+  if (ok) pass(label);
+  else fail.push('Security regression check failed: ' + label);
 }
 
 if (fail.length) {
