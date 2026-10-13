@@ -58,6 +58,18 @@ for (const [label, ok] of choiceChecks) {
 }
 
 
+// Mobile input continuity, browser notification opt-in and memory-game flow.
+const uxChecks = [
+  ['input focus and selection preservation are implemented', app.includes('Keep mobile input focus') && app.includes('setSelectionRange')],
+  ['live relationship counter is present', app.includes('function updateLiveCounter()') && app.includes("setInterval(updateLiveCounter,1000)")],
+  ['browser notifications require explicit permission', app.includes('Notification.requestPermission()') && app.includes("Notification.permission==='granted'")],
+  ['memory mismatches auto-hide after a short delay', app.includes('memoryFlipTimer=setTimeout') && app.includes('latest.open=[]')]
+];
+for (const [label, ok] of uxChecks) {
+  if (ok) pass(label);
+  else fail.push('UX regression check failed: ' + label);
+}
+
 // Chat experience and Worker safety regression checks.
 const chatChecks = [
   ['unread badge is present in navigation', app.includes('chat-unread')],
