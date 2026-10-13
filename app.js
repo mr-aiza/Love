@@ -162,8 +162,10 @@ function flush(){
   if(!cfg.id||!API||busy||dead)return status();
   var ks=Object.keys(dirty).slice(0,200);if(!ks.length)return status();
   var body={items:{}};ks.forEach(function(k){body.items[k]=I[k]});
+  var succeeded=false;
   busy=true;status('در حال همگام‌سازی…');
   api('PUT',body).then(function(r){
+    succeeded=true;
     lastSyncAt=Date.now();
     notifyIncoming(r);
     ks.forEach(function(k){var s=r.items&&r.items[k];if(s&&s.t>=body.items[k].t&&I[k]===body.items[k])delete dirty[k]});
@@ -171,7 +173,7 @@ function flush(){
   }).catch(function(e){
     if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1);return}
     status((e&&e.error)||'ارتباط با سرور برقرار نیست؛ دوباره تلاش می‌شود',1);
-  }).then(function(){busy=false;if(!dead&&Object.keys(dirty).length&&!timer)timer=setTimeout(function(){timer=null;flush()},4000)});
+  }).then(function(){busy=false;if(!dead&&Object.keys(dirty).length&&!timer)timer=setTimeout(function(){timer=null;flush()},4000);if(succeeded&&!dead)status()});
 }
 function poll(){
   if(document.hidden||!cfg.id||!API||busy||dead||Object.keys(dirty).length)return;
