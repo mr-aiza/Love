@@ -43,8 +43,16 @@ button:hover{filter:brightness(1.1)}
 #toast{position:fixed;inset:auto 16px calc(92px + env(safe-area-inset-bottom,0px));max-width:480px;margin:0 auto;background:var(--hero);color:#fff;padding:10px 16px;border-radius:12px;font-size:.9rem;line-height:1.7;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .2s,transform .2s;z-index:20}
 #toast.show{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){#toast{transition:none}html{scroll-behavior:auto}}
-.sync{text-align:center;color:var(--mute);font-size:.8rem;margin:0 0 8px;min-height:1.2em}
-.sync.err{color:#c0392b}
+#sync.sync{position:sticky;top:0;z-index:8;display:flex;align-items:center;gap:10px;margin:0;padding:10px 14px;background:var(--card);color:var(--ink);border-bottom:1px solid var(--line);text-align:right;font-size:.85rem;line-height:1.5;box-shadow:0 3px 12px #0000000a}
+.sync-dot{width:10px;height:10px;flex:0 0 10px;border-radius:50%;background:var(--mute);box-shadow:0 0 0 3px color-mix(in srgb,var(--mute) 15%,transparent)}
+.sync-copy{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sync-label{font-size:.85rem;font-weight:700}
+.sync-detail{color:var(--mute);font-size:.72rem;overflow-wrap:anywhere}
+.sync.state-connected .sync-dot{background:#239b67;box-shadow:0 0 0 3px #239b6724}
+.sync.state-syncing .sync-dot,.sync.state-checking .sync-dot{background:#c78a24;box-shadow:0 0 0 3px #c78a2424}
+.sync.state-error .sync-dot,.sync.state-offline .sync-dot,.sync.state-config .sync-dot{background:#c0392b;box-shadow:0 0 0 3px #c0392b20}
+.sync.state-local .sync-dot{background:#7b61a8;box-shadow:0 0 0 3px #7b61a824}
+@media(min-width:760px){#sync.sync{padding-inline:max(18px,calc((100vw - 780px)/2));}}
 
 /* افزونه‌های پلتفرم */
 :root[data-theme="light"]{color-scheme:light;--bg:#faf6f9;--card:#fff;--ink:#2f2234;--mute:#6d5d70;--line:#e8dde6;--wine:#7d2248;--btn:#7d2248;--gold:#a9803a;--hero:#2a1830;--dot:#5a3d62}
