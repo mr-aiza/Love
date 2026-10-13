@@ -43,6 +43,19 @@ for (const file of htmlFiles) {
     if (!existsSync(join(root,ref))) fail.push(file + ' references missing asset ' + ref);
   }
 }
+
+// Regression checks for the independent "This or That" rounds.
+const choiceChecks = [
+  ['choice round identifier is generated', /var choiceRound=cq\.round\|\|\('q'\+cq\.q\)/.test(app)],
+  ['answers are matched to the active question and round', /choiceA&&choiceA\.q===cq\.q&&choiceA\.round===choiceRound/.test(app) && /choiceB&&choiceB\.q===cq\.q&&choiceB\.round===choiceRound/.test(app)],
+  ['answer records retain their round identifier', /set\('game:choice:'\+role,\{q:cur\.q,round:round,answer:/.test(app)],
+  ['next question starts a distinct round', /set\('game:choice',\{q:\(cur\.q\+1\)%choices\.length,round:rid\(\),at:Date\.now\(\)\}\)/.test(app)]
+];
+for (const [label, ok] of choiceChecks) {
+  if (ok) pass(label);
+  else fail.push('Regression check failed: ' + label);
+}
+
 if (fail.length) {
   console.error('\nSMOKE TEST FAILED\n- ' + fail.join('\n- '));
   process.exit(1);
