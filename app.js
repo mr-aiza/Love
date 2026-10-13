@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 var API=(window.OURHOME_API||'').replace(/\/+$/,''),K='hd2',S=new Date(2026,8,29),MS=[30,50,100,200,365,500,1000],P=document.body.getAttribute('data-page'),ISO=/^\d{4}-\d{2}-\d{2}$/,tt;
-var I={},dirty={},cfg={},D,otherSeen=0,busy=false,dead=false,timer=null,appBootAt=Date.now(),notifiedChat={},memoryFlipTimer=null;
+var I={},dirty={},cfg={},D,otherSeen=0,busy=false,dead=false,timer=null,appBootAt=Date.now(),notifiedChat={},memoryFlipTimer=null,lastSyncAt=0;
 
 /* ---------- اعتبارسنجی ---------- */
 function str(v,n){return typeof v==='string'?v.slice(0,n):''}
@@ -102,9 +102,51 @@ function editing(){var a=document.activeElement;return !!(a&&(/^(INPUT|TEXTAREA|
 function toast(m){var t=$('#toast');if(!t){t=document.createElement('div');t.id='toast';t.setAttribute('role','status');document.body.appendChild(t)}t.textContent=m;t.className='show';clearTimeout(tt);tt=setTimeout(function(){t.className=''},4000)}
 function focusB(){var b=$('#b');if(b&&b.focus)b.focus()}
 function status(t,err){
-  var s=$('#sync');if(!s){s=document.createElement('p');s.id='sync';s.setAttribute('role','status');document.body.appendChild(s)}
-  if(!t){if(!API)t='';else if(!cfg.id)t='ذخیره‌ی محلی؛ فضای مشترک ساخته نشده';else{t='همگام ✓ · شما: '+(cfg.accountName|| (cfg.me==='a'?'نفر اول':'نفر دوم'));if(otherSeen){var m=Math.max(0,Math.round((Date.now()-otherSeen)/6e4));t+=' · پارتنر: '+(m<1?'همین الان':fa(m)+' دقیقه پیش')}}}
-  s.textContent=t;s.className=err?'sync err':'sync';
+  var state='checking',detail='',now=Date.now();
+  if(!t){
+    if(!API){t='آدرس سرور تنظیم نشده';state='config';detail='اطلاعات فقط روی همین دستگاه ذخیره می‌شود.'}
+    else if(!navigator.onLine){t='اینترنت دستگاه قطع است';state='offline';detail='پس از اتصال دوباره، همگام‌سازی تلاش می‌شود.'}
+    else if(!cfg.id){t='فضای مشترک ساخته نشده';state='local';detail='فعلاً اطلاعات فقط روی همین دستگاه است.'}
+    else if(dead){t='دسترسی به فضای مشترک معتبر نیست';state='error';detail='نشست یا توکن را بررسی کنید.'}
+    else if(busy){t='در حال همگام‌سازی…';state='syncing';detail='تغییرات در حال ارسال یا دریافت هستند.'}
+    else if(lastSyncAt){t='متصل و همگام';state='connected';detail='آخرین همگام‌سازی: '+new Date(lastSyncAt).toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}
+    else {t='در حال بررسی اتصال به سرور…';state='checking';detail='هنوز پاسخ موفقی از فضای مشترک دریافت نشده است.'}
+  } else if(err){state='error';detail='برای جزئیات بیشتر، اتصال یا تنظیمات فضای مشترک را بررسی کنید.'}
+  else if(/همگام‌سازی/.test(t)){state='syncing';detail='لطفاً تا پایان ارسال اطلاعات صبر کنید.'}
+  else if(/اینترنت وصل شد/.test(t)){state='checking';detail='در حال بررسی پاسخ سرور…'}
+  else {state='info'}
+  if(err&&!navigator.onLine){state='offline';detail='پس از اتصال دوباره، همگام‌سازی تلاش می‌شود.'}
+  var s=$('#sync');
+  if(!s){
+    s=document.createElement('div');
+    s.id='sync';
+    s.setAttribute('role','status');
+    s.setAttribute('aria-live','polite');
+    var main=document.querySelector('main');
+    if(main&&main.parentNode)main.parentNode.insertBefore(s,main);
+    else document.body.insertBefore(s,document.body.firstChild);
+  }
+  s.className='sync state-'+state;
+  s.replaceChildren();
+  var dot=document.createElement('span');
+  dot.className='sync-dot';
+  dot.setAttribute('aria-hidden','true');
+  var copy=document.createElement('span');
+  copy.className='sync-copy';
+  var label=document.createElement('strong');
+  label.className='sync-label';
+  label.textContent=t;
+  copy.appendChild(label);
+  if(detail){var sub=document.createElement('small');sub.className='sync-detail';sub.textContent=detail;copy.appendChild(sub)}
+  if(cfg.id&&state==='connected'){
+    var meta=[];
+    var pending=Object.keys(dirty).length;
+    if(pending)meta.push(fa(pending)+' تغییر در انتظار ارسال');
+    if(otherSeen){var minutes=Math.max(0,Math.round((now-otherSeen)/60000));meta.push('آخرین فعالیت پارتنر: '+(minutes<1?'همین الان':fa(minutes)+' دقیقه پیش'))}
+    if(meta.length){var extra=document.createElement('small');extra.className='sync-detail';extra.textContent=meta.join(' · ');copy.appendChild(extra)}
+  }
+  s.appendChild(dot);
+  s.appendChild(copy);
 }
 
 /* ---------- همگام‌سازی با Worker ---------- */
@@ -120,19 +162,22 @@ function flush(){
   if(!cfg.id||!API||busy||dead)return status();
   var ks=Object.keys(dirty).slice(0,200);if(!ks.length)return status();
   var body={items:{}};ks.forEach(function(k){body.items[k]=I[k]});
+  var succeeded=false;
   busy=true;status('در حال همگام‌سازی…');
   api('PUT',body).then(function(r){
+    succeeded=true;
+    lastSyncAt=Date.now();
     notifyIncoming(r);
     ks.forEach(function(k){var s=r.items&&r.items[k];if(s&&s.t>=body.items[k].t&&I[k]===body.items[k])delete dirty[k]});
     if(merge(r)&&!editing())(R[P]||home)();ensureSharedStart();save();status();
   }).catch(function(e){
     if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1);return}
     status((e&&e.error)||'ارتباط با سرور برقرار نیست؛ دوباره تلاش می‌شود',1);
-  }).then(function(){busy=false;if(!dead&&Object.keys(dirty).length&&!timer)timer=setTimeout(function(){timer=null;flush()},4000)});
+  }).then(function(){busy=false;if(!dead&&Object.keys(dirty).length&&!timer)timer=setTimeout(function(){timer=null;flush()},4000);if(succeeded&&!dead)status()});
 }
 function poll(){
   if(document.hidden||!cfg.id||!API||busy||dead||Object.keys(dirty).length)return;
-  api('GET').then(function(r){notifyIncoming(r);if(merge(r)&&!editing()){if(P==='draw'&&typeof window.__ourhomeDrawRefresh==='function')window.__ourhomeDrawRefresh();else (R[P]||home)()}ensureSharedStart();status()}).catch(function(e){if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1)}else status('ارتباط با سرور برقرار نیست',1)});
+  api('GET').then(function(r){lastSyncAt=Date.now();notifyIncoming(r);if(merge(r)&&!editing()){if(P==='draw'&&typeof window.__ourhomeDrawRefresh==='function')window.__ourhomeDrawRefresh();else (R[P]||home)()}ensureSharedStart();status()}).catch(function(e){if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1)}else status('ارتباط با سرور برقرار نیست',1)});
 }
 function shareUrl(u,title,ok){
   if(navigator.share)navigator.share({title:title,url:u}).catch(function(){});
@@ -578,6 +623,8 @@ V.addEventListener('focusout',function(e){
 var ld=day();
 function tick(){var d=day();if(d!==ld&&!editing()){ld=d;R[P]()}}
 setInterval(tick,30000);setInterval(poll,3000);
+window.addEventListener('offline',function(){status('اینترنت دستگاه قطع است',1)});
+window.addEventListener('online',function(){status('اینترنت وصل شد؛ در حال بررسی سرور…');poll()});
 document.addEventListener('visibilitychange',function(){if(!document.hidden){tick();poll()}});
 window.addEventListener('ourhome:localchange',function(){var liveCfg=Object.assign({},cfg);if(loadLS()){cfg=Object.assign({},cfg,liveCfg);applyStartSetting();build();if(Object.keys(dirty).length)sched();if(!editing())(R[P]||home)();}});
 window.addEventListener('storage',function(e){if(e.key===K&&!editing()){loadLS();build();R[P]()}});
