@@ -202,9 +202,9 @@ rainbow:shadow+'<path d="M18 69A42 42 0 0 1 102 69" fill="none" stroke="#e77e9e"
 castle:shadow+'<path d="M26 72V34H38V23H50V34H70V23H82V34H94V72Z" fill="#d8b0cb" stroke="#9c7199" stroke-width="3"/><path d="M20 35V19H37V35M47 35V12H64V35M77 35V19H100V35" fill="#f1d2e6" stroke="#9c7199" stroke-width="3"/><path d="M51 72V52Q60 39 69 52V72" fill="#875b87"/><rect x="36" y="43" width="9" height="11" rx="2" fill="#f9e5f1"/><rect x="75" y="43" width="9" height="11" rx="2" fill="#f9e5f1"/>',
 balconychair:shadow+'<path d="M38 28Q38 20 46 20H74Q82 20 82 28V47H38Z" fill="#e1e8e4" stroke="#849f94" stroke-width="3"/><rect x="32" y="44" width="56" height="13" rx="5" fill="#b6cfc3"/><path d="M39 57L35 76M81 57L85 76" stroke="#718b80" stroke-width="5"/>',
 planter:shadow+'<path d="M35 48H85L78 75H42Z" fill="#c77f65"/><path d="M60 49V20M60 40Q36 36 40 17Q56 19 60 40M61 33Q82 28 79 10Q64 15 61 33M59 28Q48 7 60 4Q72 14 59 28" fill="#4b9869" stroke="#397d58" stroke-width="2"/>',
-default:shadow+'<circle cx="60" cy="40" r="25" fill="#d9a8bf"/><circle cx="52" cy="36" r="3" fill="#fff"/><circle cx="68" cy="36" r="3" fill="#fff"/><path d="M50 47Q60 57 70 47" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>'
+default:shadow+'<path d="M25 39L60 27 95 39 60 51Z" fill="#c49a76" stroke="#8d654b" stroke-width="2"/><path d="M34 44V71M86 44V71" stroke="#8d654b" stroke-width="5"/><path d="M28 39L60 30 92 39" fill="none" stroke="#f0d4b5" stroke-width="3"'
 };
-const aliases={balconychair:'balconychair',planter:'planter'};return svg(drawings[aliases[id]||id]||drawings.default)
+const aliases={balconychair:'chair',planter:'plant'};return svg(drawings[aliases[id]||id]||drawings.default)
 }
 function uniqueUnlocked(){return state.unlocked.length}
 function reward(id,stars){if(state.doneActivities.includes(id))return false;state.doneActivities.push(id);state.stars+=stars;state.level=1+Math.floor(state.stars/8);unlockAvailable();return true}
