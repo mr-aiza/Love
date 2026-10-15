@@ -249,3 +249,6 @@ body>nav[aria-label="منوی اصلی"] .chat-unread{position:absolute;top:2px;
   .album-lightbox-head{align-items:stretch}
 }
 @media(prefers-reduced-motion:reduce){.album-lightbox[open]{animation:none}}
+
+/* Chat polish: message actions, reactions and saved drafts. */
+.chat-msg-actions{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;margin-top:.6rem}.chat-react{border-radius:999px;padding:.35rem .8rem}.chat-reaction-summary{opacity:.85}.chat-msg-actions .x{margin-inline-start:auto}#chatDraftStatus{display:block;margin:.4rem 0}
