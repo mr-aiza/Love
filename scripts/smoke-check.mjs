@@ -215,6 +215,7 @@ const workerChecks = [
   [
     'Worker limits item, document and key counts',
     worker.includes('MAX_ITEM=300000, MAX_DOC=4500000, MAX_KEYS=5000') &&
+    worker.includes('(:[A-Za-z0-9_-]{1,40}){1,3}') &&
     worker.includes('JSON.stringify(v).length>MAX_ITEM') &&
     worker.includes('Object.keys(doc.items).length>MAX_KEYS') &&
     worker.includes('out.length>MAX_DOC')
