@@ -133,3 +133,48 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .photo-album-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .photo-album-grid .album-photo-card{padding:10px}
 @media(min-width:640px){.photo-album-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* UX/UI quality pass — unified controls, feedback, accessibility and mobile ergonomics */
+:root{
+  --focus-ring: color-mix(in srgb,var(--wine) 72%,white);
+  --surface-raised: color-mix(in srgb,var(--card) 94%,var(--wine) 6%);
+  --shadow-soft: 0 8px 24px rgba(26,8,28,.08);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+body{min-width:320px;-webkit-text-size-adjust:100%;text-rendering:optimizeLegibility}
+img{max-width:100%;height:auto}
+button,input,textarea,select{font:inherit}
+button,a,input,textarea,select,[tabindex]:not([tabindex="-1"]){-webkit-tap-highlight-color:transparent}
+button,a{touch-action:manipulation}
+button{min-height:42px;cursor:pointer;transition:background-color .16s ease,border-color .16s ease,transform .16s ease,box-shadow .16s ease}
+button:active{transform:translateY(1px)}
+:where(a,button,input,textarea,select,[tabindex]:not([tabindex="-1"])):focus-visible{outline:3px solid var(--focus-ring);outline-offset:3px}
+input,textarea,select{min-height:44px;border-radius:12px;color:var(--ink);background:var(--card);max-width:100%}
+textarea{resize:vertical;min-height:104px}
+input::placeholder,textarea::placeholder{color:var(--mute);opacity:.86}
+a{overflow-wrap:anywhere}
+.card,.memory-entry,.album-upload,.album-photo-card,.photo-album-item{box-shadow:var(--shadow-soft)}
+.card{padding:clamp(14px,3.5vw,20px);border-radius:18px}
+:where(.card,form) :where(label){display:block;font-weight:600;margin-top:10px}
+:where(.card,form) :where(button[type="submit"],.primary){font-weight:700}
+button:disabled{cursor:not-allowed;transform:none}
+[aria-busy="true"]{cursor:progress}
+[hidden]{display:none!important}
+.photo-album-grid{align-items:start}
+.photo-album-item,.album-photo-card{transition:border-color .18s ease,box-shadow .18s ease}
+.photo-album-item:focus-visible,.photo-album-item:hover{border-color:var(--wine);box-shadow:var(--shadow-soft)}
+.memory-photo,.album-photo-card>img{background:var(--surface-raised)}
+@media(max-width:380px){
+  body{font-size:15px}
+  main{padding-inline:12px}
+  .card{padding:12px}
+  .photo-album-grid{gap:8px}
+}
+@media(hover:hover){
+  button:not(:disabled):hover{filter:brightness(1.04)}
+  .card:hover{border-color:color-mix(in srgb,var(--wine) 24%,var(--line))}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
