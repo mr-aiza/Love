@@ -264,6 +264,27 @@ for (const [label, ok] of deploymentChecks) {
   else fail.push('Deployment boundary check failed: ' + label);
 }
 
+// Chat draft and reaction regression checks.
+const chatChecks = [
+  [
+    'chat drafts are saved locally and restored for the current space and role',
+    app.includes('ourhome-chat-draft:') && app.includes('localStorage.setItem(draftKey') && app.includes('localStorage.getItem(draftKey')
+  ],
+  [
+    'chat messages support independent heart reactions from both partners',
+    app.includes('chat:reaction:'+"'+m.id+':a'") && app.includes('chat:reaction:'+"'+m.id+':b'") && app.includes('data-chat-react')
+  ],
+  [
+    'chat draft is cleared after successful local send action',
+    app.includes('localStorage.removeItem(draftKey)')
+  ]
+];
+
+for (const [label, ok] of chatChecks) {
+  if (ok) pass(label);
+  else fail.push('Chat regression check failed: ' + label);
+}
+
 // Album capacity diagnostics regression checks.
 const albumCapacityChecks = [
   [
