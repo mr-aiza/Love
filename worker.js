@@ -3,7 +3,7 @@
  * Variables/Secrets: ORIGIN=https://mr-aiza.github.io ; USER_424_PASSWORD ; USER_626_PASSWORD
  */
 const MAX_ITEM=300000, MAX_DOC=4500000, MAX_KEYS=5000;
-const KEY=/^[a-z]{1,12}(:[A-Za-z0-9_-]{1,40}){1,2}$/;
+const KEY=/^[a-z]{1,12}(:[A-Za-z0-9_-]{1,40}){1,3}$/;
 const hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
 const rnd=n=>hex(crypto.getRandomValues(new Uint8Array(n)));
 const enc=s=>new TextEncoder().encode(s);
