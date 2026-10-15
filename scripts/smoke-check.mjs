@@ -265,6 +265,13 @@ for (const [label, ok] of deploymentChecks) {
   else fail.push('Deployment boundary check failed: ' + label);
 }
 
+// Chat search regression checks.
+const chatSearchChecks = [
+  ['chat has an accessible message search input', app.includes('id="chat-search-input"') && app.includes('for="chat-search-input"')],
+  ['chat search filters visible messages and reports the result count', app.includes('function filterChat()') && app.includes('card.hidden=!match') && app.includes('chatSearchStatus')]
+];
+for (const [label, ok] of chatSearchChecks) { if (ok) pass(label); else fail.push('Chat search regression check failed: ' + label); }
+
 // Chat draft and reaction regression checks.
 const chatChecks = [
   [
