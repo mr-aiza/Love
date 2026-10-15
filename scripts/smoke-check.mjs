@@ -264,6 +264,27 @@ for (const [label, ok] of deploymentChecks) {
   else fail.push('Deployment boundary check failed: ' + label);
 }
 
+// Album capacity diagnostics regression checks.
+const albumCapacityChecks = [
+  [
+    'album shows an estimated storage status and progress indicator',
+    app.includes('id="albumStorageStatus"') && app.includes('id="albumStorageProgress"')
+  ],
+  [
+    'album estimates embedded image data and warns before approaching the shared-document limit',
+    app.includes('imageChars+=I[k].v.img.length') && app.includes('chars>3500000') && app.includes('chars/4500000*100')
+  ],
+  [
+    'album clearly discloses local-only storage when shared space is not configured',
+    app.includes('فضای مشترک فعال نیست؛ این عکس‌ها فقط روی همین دستگاه‌اند')
+  ]
+];
+
+for (const [label, ok] of albumCapacityChecks) {
+  if (ok) pass(label);
+  else fail.push('Album capacity regression check failed: ' + label);
+}
+
 // Sync health and local-storage diagnostics regression checks.
 const syncHealthChecks = [
   [
