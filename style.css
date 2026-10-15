@@ -184,3 +184,42 @@ button:disabled{cursor:not-allowed;transform:none}
 .album-preview-wrap button{margin-top:8px}
 .album-upload button{margin-top:10px}
 .album-upload button:disabled{opacity:.7}
+
+
+/* Unified mobile-first bottom navigation */
+body{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+body>nav[aria-label="منوی اصلی"]{
+  position:fixed;z-index:1000;inset:auto 0 0;display:flex;align-items:stretch;gap:4px;
+  width:100%;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));
+  overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;
+  background:color-mix(in srgb,var(--card) 90%,transparent);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  border-top:1px solid var(--line);box-shadow:0 -8px 28px rgba(20,8,24,.10);
+}
+body>nav[aria-label="منوی اصلی"]::-webkit-scrollbar{display:none}
+body>nav[aria-label="منوی اصلی"]>a{
+  flex:0 0 auto;min-width:64px;min-height:54px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;padding:6px 9px;border:1px solid transparent;
+  border-radius:14px;color:var(--mute);text-decoration:none;font-size:.72rem;line-height:1.25;
+  white-space:nowrap;position:relative;
+}
+body>nav[aria-label="منوی اصلی"]>a>b{font-size:1.12rem;line-height:1.2}
+body>nav[aria-label="منوی اصلی"]>a.on{
+  color:var(--wine);background:color-mix(in srgb,var(--wine) 10%,var(--card));
+  border-color:color-mix(in srgb,var(--wine) 20%,var(--line));font-weight:700;
+}
+body>nav[aria-label="منوی اصلی"]>a:focus-visible{outline-offset:-2px}
+body>nav[aria-label="منوی اصلی"] .chat-unread{position:absolute;top:2px;inset-inline-end:10px}
+@media(min-width:760px){
+  body{padding-bottom:24px}
+  body>nav[aria-label="منوی اصلی"]{
+    position:sticky;inset:auto;z-index:20;max-width:1120px;margin:14px auto 0;
+    justify-content:center;flex-wrap:wrap;overflow:visible;border:1px solid var(--line);
+    border-radius:18px;padding:8px;box-shadow:var(--shadow-soft);
+  }
+  body>nav[aria-label="منوی اصلی"]>a{flex:1 1 82px;max-width:130px}
+}
+@media(max-width:360px){
+  body>nav[aria-label="منوی اصلی"]{gap:2px;padding-inline:5px}
+  body>nav[aria-label="منوی اصلی"]>a{min-width:58px;padding-inline:6px;font-size:.68rem}
+}
