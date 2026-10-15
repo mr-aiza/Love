@@ -190,7 +190,7 @@ function link(){
   shareUrl(u,'دعوت به خانه‌ی ما','لینک ویرایش پارتنر آماده‌ی ارسال است.');
 }
 /* ---------- منو ---------- */
-var N=[['index','🏠','خانه'],['story','📖','داستان ما'],['letters','💌','نامه‌ها'],['wishes','✨','آرزوها'],['calendar','📅','تقویم'],['qa','💬','سؤال'],['pledge','📜','تعهدنامه'],['chat','💌','چت'],['games','🎮','بازی‌ها'],['draw','🎨','نقاشی زنده'],['challenges','🌟','چالش‌ها'],['achievements','🏆','دستاوردها'],['map','📍','نقشه'],['settings','⚙️','تنظیمات']];
+var N=[['index','🏠','خانه'],['story','📖','داستان ما'],['album','🖼️','آلبوم'],['letters','💌','نامه‌ها'],['wishes','✨','آرزوها'],['calendar','📅','تقویم'],['qa','💬','سؤال'],['pledge','📜','تعهدنامه'],['chat','💌','چت'],['games','🎮','بازی‌ها'],['draw','🎨','نقاشی زنده'],['challenges','🌟','چالش‌ها'],['achievements','🏆','دستاوردها'],['map','📍','نقشه'],['settings','⚙️','تنظیمات']];
 var nv=document.createElement('nav');nv.setAttribute('aria-label','منوی اصلی');
 nv.innerHTML=N.map(function(n){return '<a href="'+n[0]+'.html"'+(n[0]===P?' class="on" aria-current="page"':'')+'><b aria-hidden="true">'+n[1]+'</b>'+n[2]+(n[0]==='chat'?' <span id="chat-unread" class="chat-unread" hidden></span>':'')+'</a>'}).join('');
 document.body.appendChild(nv);refreshChatBadge();
@@ -247,6 +247,31 @@ function story(showAlbum){
       commit(data);
     };
     image.onerror=function(){URL.revokeObjectURL(url);toast('خواندن عکس ممکن نشد؛ فایل دیگری انتخاب کنید.')};
+    image.src=url;
+  };
+}
+
+
+function albumPage(){
+  var photos=D.story.filter(function(s){return !!s.img}).slice().sort(function(a,b){return a.d<b.d?1:a.d>b.d?-1:a.id<b.id?1:-1});
+  var cards=photos.map(function(s){return '<article class="card album-photo-card"><img src="'+E(s.img)+'" alt="'+E(s.t)+'" loading="lazy"><h3>'+E(s.t)+'</h3><small>'+sh(s.d)+'</small>'+(s.x?'<p>'+E(s.x)+'</p>':'')+'<button class="x" data-del="story:'+E(s.id)+'">حذف عکس و خاطره</button></article>'}).join('');
+  V.innerHTML='<h2>آلبوم عکس‌های ما 🖼️</h2><p class="muted">لحظه‌های دونفره‌تان را اینجا نگه دارید؛ عکس‌ها در خاطرات مشترک ذخیره می‌شوند و روی آلبوم هم نمایش داده می‌شوند.</p><div class="card album-upload"><label for="albumDate">تاریخ عکس</label><input id="albumDate" type="date" value="'+iso()+'"><label for="albumTitle">عنوان عکس</label><input id="albumTitle" maxlength="120" placeholder="مثلاً اولین سفر دونفره"><label for="albumDesc">توضیح کوتاه (اختیاری)</label><textarea id="albumDesc" rows="2" maxlength="3000" placeholder="این لحظه را چرا دوست دارید؟"></textarea><label for="albumFile">انتخاب عکس</label><input id="albumFile" type="file" accept="image/jpeg,image/png,image/webp"><small>JPG، PNG یا WebP؛ حداکثر ۱۲ مگابایت. عکس فشرده می‌شود تا همگام‌سازی سبک‌تر باشد.</small><button id="saveAlbumPhoto">+ افزودن به آلبوم</button></div><h3>عکس‌های ذخیره‌شده ('+fa(photos.length)+')</h3>'+(cards?'<div class="photo-album-grid">'+cards+'</div>':'<div class="card muted">هنوز عکسی در آلبوم نیست. اولین عکس‌تان را اضافه کنید ❤️</div>');
+  $('#saveAlbumPhoto').onclick=function(){
+    var date=$('#albumDate').value,t=$('#albumTitle').value.trim(),desc=$('#albumDesc').value.trim(),file=$('#albumFile').files[0];
+    if(!date||!t)return toast('تاریخ و عنوان عکس را وارد کن');
+    if(!file)return toast('اول یک عکس انتخاب کن');
+    if(!/^image\/(?:jpeg|png|webp)$/.test(file.type)||file.size>12*1024*1024)return toast('عکس باید JPG، PNG یا WebP و حداکثر ۱۲ مگابایت باشد.');
+    var url=URL.createObjectURL(file),image=new Image();
+    image.onload=function(){
+      URL.revokeObjectURL(url);
+      var scale=Math.min(1,1000/Math.max(image.naturalWidth,image.naturalHeight)),w=Math.max(1,Math.round(image.naturalWidth*scale)),hh=Math.max(1,Math.round(image.naturalHeight*scale)),canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+      canvas.width=w;canvas.height=hh;ctx.fillStyle='#fff';ctx.fillRect(0,0,w,hh);ctx.drawImage(image,0,0,w,hh);
+      var data='',quality=.76;
+      while(quality>=.4){data=canvas.toDataURL('image/jpeg',quality);if(data.length<=180000)break;quality-=.08}
+      if(data.length>180000)return toast('حجم عکس بعد از فشرده‌سازی زیاد است؛ عکس دیگری انتخاب کن.');
+      set('story:'+rid(),{d:date,t:t,x:desc,img:data});R.album();toast('عکس به آلبوم اضافه شد ❤️');
+    };
+    image.onerror=function(){URL.revokeObjectURL(url);toast('خواندن عکس ممکن نشد؛ فایل دیگری انتخاب کن.')};
     image.src=url;
   };
 }
@@ -602,7 +627,7 @@ function settings(){
   $('#clearlocal').onclick=function(){if(!confirm('همه داده‌های محلی این مرورگر پاک شود؟ قبل از ادامه پشتیبان بگیرید.'))return;localStorage.removeItem(K);location.reload();};
 }
 
-var R={index:home,story:story,letters:letters,wishes:wishes,calendar:cal,qa:qa,chat:chat,games:games,draw:drawPage,challenges:challengesPage,achievements:achievementsPage,map:mapPage,settings:settings};
+var R={album:albumPage,index:home,story:story,letters:letters,wishes:wishes,calendar:cal,qa:qa,chat:chat,games:games,draw:drawPage,challenges:challengesPage,achievements:achievementsPage,map:mapPage,settings:settings};
 V.addEventListener('click',function(e){
   var d=e.target.getAttribute&&e.target.getAttribute('data-del');
   if(d&&I[d]&&confirm('حذف شود؟')){set(d,null);R[P]()}
