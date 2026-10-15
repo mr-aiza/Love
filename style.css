@@ -223,3 +223,29 @@ body>nav[aria-label="منوی اصلی"] .chat-unread{position:absolute;top:2px;
   body>nav[aria-label="منوی اصلی"]{gap:2px;padding-inline:5px}
   body>nav[aria-label="منوی اصلی"]>a{min-width:58px;padding-inline:6px;font-size:.68rem}
 }
+
+
+/* Album search, favorites and full-screen photo viewer */
+.album-tools{margin:16px 0}
+.album-tools .row{align-items:end;gap:12px;flex-wrap:wrap}
+.album-fav-filter{display:flex!important;align-items:center;gap:8px;margin:0 0 8px!important}
+.album-fav-filter input{min-height:22px;width:22px}
+.album-photo-open{display:block;width:100%;padding:0;border:0;background:transparent;border-radius:12px;overflow:hidden}
+.album-photo-open img{display:block;width:100%;max-height:420px;object-fit:cover}
+.album-card-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.album-card-actions button,.album-lightbox button{border:1px solid var(--line);border-radius:11px;background:var(--card);color:var(--ink);padding:9px 12px;font-size:.88rem}
+.album-lightbox{width:min(94vw,860px);max-width:860px;max-height:90dvh;overflow:auto;border:1px solid var(--line);border-radius:20px;padding:clamp(12px,3vw,22px);background:var(--card);color:var(--ink);box-shadow:0 24px 90px rgba(0,0,0,.35)}
+.album-lightbox::backdrop{background:rgba(18,8,22,.78);backdrop-filter:blur(5px)}
+.album-lightbox[open]{animation:album-dialog-in .16s ease-out}
+.album-lightbox>img{display:block;width:100%;max-height:62dvh;object-fit:contain;border-radius:14px;background:var(--bg);margin:12px 0}
+.album-lightbox-head,.album-lightbox-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.album-lightbox-head .row{gap:6px}
+.album-lightbox h3{margin:8px 0}
+.album-lightbox p{white-space:pre-wrap;overflow-wrap:anywhere}
+.album-lightbox-actions{justify-content:flex-start;margin-top:14px}
+@keyframes album-dialog-in{from{opacity:.7;transform:translateY(6px) scale(.99)}to{opacity:1;transform:none}}
+@media(max-width:420px){
+  .album-card-actions button{flex:1 1 auto}
+  .album-lightbox-head{align-items:stretch}
+}
+@media(prefers-reduced-motion:reduce){.album-lightbox[open]{animation:none}}
