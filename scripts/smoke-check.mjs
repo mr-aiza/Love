@@ -264,6 +264,27 @@ for (const [label, ok] of deploymentChecks) {
   else fail.push('Deployment boundary check failed: ' + label);
 }
 
+// Sync health and local-storage diagnostics regression checks.
+const syncHealthChecks = [
+  [
+    'settings provides a manual sync retry action',
+    app.includes('id="retry-sync"') && app.includes('flush();refreshHealth()')
+  ],
+  [
+    'settings explains queued changes and offline state',
+    app.includes('تغییر در انتظار ارسال است') && app.includes('آفلاین؛')
+  ],
+  [
+    'storage diagnostics use the browser Storage estimate API when available',
+    app.includes('navigator.storage.estimate') && app.includes('id="storage-health"')
+  ]
+];
+
+for (const [label, ok] of syncHealthChecks) {
+  if (ok) pass(label);
+  else fail.push('Sync health regression check failed: ' + label);
+}
+
 // Backup restore regression checks: bounded, validated and merge-only.
 const backupChecks = [
   [
