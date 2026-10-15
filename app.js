@@ -222,15 +222,18 @@ function home(){
   if($('#sl'))$('#sl').onclick=link;
 }
 
-function story(){
-  var h='';
+function story(showAlbum){
+  var h='',photos=D.story.filter(function(s){return !!s.img}).slice().sort(function(a,b){return a.d<b.d?1:a.d>b.d?-1:a.id<b.id?1:-1});
   D.story.slice().sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:a.id<b.id?-1:1}).forEach(function(s){
     h+='<div class="card memory-entry"><small>'+sh(s.d)+'</small><h3>'+E(s.t)+'</h3><p>'+E(s.x)+'</p>'+(s.img?'<img class="memory-photo" src="'+E(s.img)+'" alt="عکس خاطره: '+E(s.t)+'" loading="lazy">':'')+'<button class="x" data-del="story:'+E(s.id)+'" aria-label="حذف «'+E(s.t)+'»">حذف</button></div>'});
-  V.innerHTML='<h2>داستان ما 📸</h2><p class="muted">خاطره‌ها می‌توانند متن یا عکس داشته باشند. عکس پیش از ذخیره کوچک می‌شود تا همگام‌سازی سبک‌تر بماند.</p><div class="card"><label for="a">تاریخ خاطره</label><input type="date" id="a" value="'+iso()+'" aria-label="تاریخ"><label for="b">عنوان لحظه</label><input id="b" maxlength="120" placeholder="عنوان لحظه" aria-label="عنوان لحظه"><label for="c">توضیح خاطره</label><textarea id="c" rows="2" maxlength="3000" placeholder="چه اتفاقی افتاد؟" aria-label="توضیح"></textarea><label for="photo">عکس خاطره (اختیاری)</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp" aria-label="انتخاب عکس خاطره"><small>فرمت JPG، PNG یا WebP؛ حداکثر فایل اولیه ۱۲ مگابایت. عکس برای همگام‌سازی فشرده می‌شود.</small><button id="ad">ذخیره‌ی خاطره</button></div>'+(h||'<p class="muted">هنوز خاطره‌ای ثبت نشده؛ اولین خاطره‌تان را اضافه کنید.</p>');
+  var gallery='<div class="photo-album-grid">'+photos.map(function(s){return '<button type="button" class="photo-album-item" data-album-photo="'+E(s.id)+'" aria-label="نمایش عکس '+E(s.t)+'"><img src="'+E(s.img)+'" alt="'+E(s.t)+'" loading="lazy"><span>'+E(s.t)+'</span><small>'+sh(s.d)+'</small></button>'}).join('')+'</div>';
+  V.innerHTML='<h2>داستان ما 📸</h2><p class="muted">عکس‌های هر خاطره پس از ذخیره در فضای مشترک ثبت می‌شوند و خودکار به آلبوم عکس‌ها هم اضافه خواهند شد.</p><div class="album-toolbar"><button type="button" id="storyViewBtn">'+(showAlbum?'← بازگشت به داستان ما':'🖼️ آلبوم عکس‌ها ('+fa(photos.length)+')')+'</button></div>'+(showAlbum?('<h3>آلبوم عکس‌های مشترک</h3><p class="muted">عکس‌ها از خاطرات ذخیره‌شده جمع می‌شوند؛ برای دیدن عکس و شرح خاطره روی آن بزن.</p>'+(photos.length?gallery:'<div class="card muted">هنوز عکسی ثبت نشده. از بخش داستان ما یک خاطره همراه عکس ذخیره کن.</div>')):'<div class="card"><label for="a">تاریخ خاطره</label><input type="date" id="a" value="'+iso()+'" aria-label="تاریخ"><label for="b">عنوان لحظه</label><input id="b" maxlength="120" placeholder="عنوان لحظه" aria-label="عنوان لحظه"><label for="c">توضیح خاطره</label><textarea id="c" rows="2" maxlength="3000" placeholder="چه اتفاقی افتاد؟" aria-label="توضیح"></textarea><label for="photo">عکس خاطره (اختیاری)</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp" aria-label="انتخاب عکس خاطره"><small>فرمت JPG، PNG یا WebP؛ حداکثر فایل اولیه ۱۲ مگابایت. عکس فشرده و همراه خاطره در فضای مشترک ذخیره می‌شود.</small><button id="ad">ذخیره‌ی خاطره</button></div>'+(h||'<p class="muted">هنوز خاطره‌ای ثبت نشده؛ اولین خاطره‌تان را اضافه کنید.</p>'));
+  $('#storyViewBtn').onclick=function(){story(!showAlbum)};
+  if(showAlbum){V.querySelectorAll('[data-album-photo]').forEach(function(b){b.onclick=function(){var id=b.getAttribute('data-album-photo'),s=D.story.find(function(x){return x.id===id});story(false);setTimeout(function(){var el=V.querySelector('[data-del="story:'+id+'"]');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},30);if(s)toast(s.t+' · '+sh(s.d));}});return}
   $('#ad').onclick=function(){
     var t=$('#b').value.trim(),date=$('#a').value,desc=$('#c').value,file=$('#photo').files[0];
     if(!t||!date)return toast('تاریخ و عنوان لازم است');
-    function commit(img){set('story:'+rid(),{d:date,t:t,x:desc,img:img||''});story();toast('خاطره ذخیره شد.');}
+    function commit(img){set('story:'+rid(),{d:date,t:t,x:desc,img:img||''});story(false);toast(img?'خاطره و عکس در فضای مشترک ذخیره شد و به آلبوم رفت.':'خاطره ذخیره شد.');}
     if(!file){commit('');return}
     if(!/^image\/(?:jpeg|png|webp)$/.test(file.type)||file.size>12*1024*1024)return toast('عکس باید JPG، PNG یا WebP و حداکثر ۱۲ مگابایت باشد.');
     var url=URL.createObjectURL(file),image=new Image();
