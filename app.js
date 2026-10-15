@@ -451,12 +451,19 @@ function chat(){
   html+='<section id="chatlog" aria-live="polite" aria-relevant="additions text">';
   msgs.forEach(function(m){
     var own=(!cfg.id)||m.v.from===(cfg.me||'a');
-    html+='<div class="card chat-msg '+(own?'mine':'theirs')+'"><small>'+E(m.v.fromName||((m.v.from==='b')?D.names[1]:D.names[0]))+' · '+E(new Date(m.v.at||m.t).toLocaleString('fa-IR'))+'</small><p>'+E(m.v.text)+'</p><button class="x" data-del="'+E('chat:'+m.id)+'">حذف</button></div>';
+    var reactionA=I['chat:reaction:'+m.id+':a']&&I['chat:reaction:'+m.id+':a'].v,reactionB=I['chat:reaction:'+m.id+':b']&&I['chat:reaction:'+m.id+':b'].v;
+    html+='<div class="card chat-msg '+(own?'mine':'theirs')+'"><small>'+E(m.v.fromName||((m.v.from==='b')?D.names[1]:D.names[0]))+' · '+E(new Date(m.v.at||m.t).toLocaleString('fa-IR'))+'</small><p>'+E(m.v.text)+'</p><div class="chat-msg-actions"><button type="button" class="secondary chat-react" data-chat-react="'+E(m.id)+'" aria-pressed="'+(!!(role==='a'?reactionA:reactionB))+'">'+((role==='a'?reactionA:reactionB)?'❤️ ثبت شد':'♡ قلب')+'</button>'+(reactionA||reactionB?'<small class="chat-reaction-summary">'+(reactionA?'❤️ '+E(D.names[0])+' ':'')+(reactionB?'❤️ '+E(D.names[1]):'')+'</small>':'')+'<button type="button" class="x" data-del="'+E('chat:'+m.id)+'">حذف</button></div></div>';
   });
-  html+='</section><form class="card" id="chatform"><label for="chattext">پیام شما</label><textarea id="chattext" rows="3" maxlength="3000" placeholder="یک پیام دوست‌داشتنی بنویس…" required></textarea><button type="submit">ارسال پیام</button></form>';
+  html+='</section><form class="card" id="chatform"><label for="chattext">پیام شما</label><textarea id="chattext" rows="3" maxlength="3000" placeholder="یک پیام دوست‌داشتنی بنویس…" required></textarea><small id="chatDraftStatus" class="muted" aria-live="polite">پیش‌نویس روی همین دستگاه ذخیره می‌شود.</small><button type="submit">ارسال پیام</button></form>';
   V.innerHTML=html;refreshChatBadge();
+  var draftKey='ourhome-chat-draft:'+((cfg.id||'local')+':'+role),draft='';
+  try{draft=localStorage.getItem(draftKey)||''}catch(_){}
+  $('#chattext').value=draft;
+  $('#chattext').addEventListener('input',function(){try{if(this.value)localStorage.setItem(draftKey,this.value);else localStorage.removeItem(draftKey);$('#chatDraftStatus').textContent=this.value?'پیش‌نویس ذخیره شد؛ هنوز ارسال نشده.':'پیش‌نویس خالی است.'}catch(_){$('#chatDraftStatus').textContent='ذخیره‌ی پیش‌نویس در این مرورگر در دسترس نیست.'}});
+  $('#chatlog').addEventListener('click',function(e){var b=e.target.closest('[data-chat-react]');if(!b)return;var key='chat:reaction:'+b.getAttribute('data-chat-react')+':'+role,active=I[key]&&I[key].v;set(key,active?null:{emoji:'❤️',at:Date.now(),by:role});chat();});
   $('#chatform').onsubmit=function(e){e.preventDefault();var t=$('#chattext').value.trim();if(!t)return;
     set('chat:'+rid(),{text:t,from:cfg.me||'a',fromName:D.names[cfg.me==='b'?1:0],at:Date.now()});
+    try{localStorage.removeItem(draftKey)}catch(_){}
     var all=customItems('chat').sort(function(a,b){return (a.v.at||a.t)-(b.v.at||b.t);});
     while(all.length>300){var old=all.shift();set('chat:'+old.id,null);}
     chat();var log=$('#chatlog');if(log)log.scrollTop=log.scrollHeight;};
