@@ -264,6 +264,31 @@ for (const [label, ok] of deploymentChecks) {
   else fail.push('Deployment boundary check failed: ' + label);
 }
 
+// Backup restore regression checks: bounded, validated and merge-only.
+const backupChecks = [
+  [
+    'backup restore UI is available in settings',
+    app.includes('id="import-backup-file"') && app.includes('id="import-backup"')
+  ],
+  [
+    'backup restore validates format and version before applying data',
+    app.includes("payload.format!=='ourhome-backup'") && app.includes('payload.version!==1')
+  ],
+  [
+    'backup restore enforces file, entry-count and item-size limits',
+    app.includes('file.size>5*1024*1024') && app.includes('entries.length>5000') && app.includes('JSON.stringify(item).length<=300000')
+  ],
+  [
+    'backup restore merges data and queues shared sync instead of clearing current data',
+    app.includes('اطلاعات فعلی حذف نمی‌شود') && app.includes('dirty[k]=1') && app.includes('sched()')
+  ]
+];
+
+for (const [label, ok] of backupChecks) {
+  if (ok) pass(label);
+  else fail.push('Backup regression check failed: ' + label);
+}
+
 // Final result.
 if (fail.length) {
   console.error('\nSMOKE TEST FAILED\n- ' + fail.join('\n- '));
