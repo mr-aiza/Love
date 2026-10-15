@@ -112,3 +112,14 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .chat-unread{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 4px;margin-inline-start:3px;border-radius:999px;background:var(--wine);color:#fff;font-size:.68rem;line-height:1.2;font-weight:700;vertical-align:middle}
 .chat-unread[hidden]{display:none}
 .chat-read-status{border-style:dashed}
+
+/* Shared photo album */
+.album-toolbar{display:flex;justify-content:flex-start;margin:12px 0 18px}
+.album-toolbar button{border:1px solid var(--line);border-radius:12px;padding:11px 16px;background:var(--card);color:var(--ink);font-weight:700}
+.photo-album-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.photo-album-item{min-width:0;text-align:right;padding:7px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);overflow:hidden}
+.photo-album-item img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:9px;background:var(--bg)}
+.photo-album-item span,.photo-album-item small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:6px 2px 0}
+.photo-album-item span{font-weight:700}
+.photo-album-item small{color:var(--mute)}
+@media(min-width:540px){.photo-album-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
