@@ -227,7 +227,7 @@ function story(showAlbum){
   D.story.slice().sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:a.id<b.id?-1:1}).forEach(function(s){
     h+='<div class="card memory-entry"><small>'+sh(s.d)+'</small><h3>'+E(s.t)+'</h3><p>'+E(s.x)+'</p>'+(s.img?'<img class="memory-photo" src="'+E(s.img)+'" alt="عکس خاطره: '+E(s.t)+'" loading="lazy">':'')+'<button class="x" data-del="story:'+E(s.id)+'" aria-label="حذف «'+E(s.t)+'»">حذف</button></div>'});
   var gallery='<div class="photo-album-grid">'+photos.map(function(s){return '<button type="button" class="photo-album-item" data-album-photo="'+E(s.id)+'" aria-label="نمایش عکس '+E(s.t)+'"><img src="'+E(s.img)+'" alt="'+E(s.t)+'" loading="lazy"><span>'+E(s.t)+'</span><small>'+sh(s.d)+'</small></button>'}).join('')+'</div>';
-  V.innerHTML='<h2>داستان ما 📸</h2><p class="muted">عکس‌های هر خاطره پس از ذخیره در فضای مشترک ثبت می‌شوند و خودکار به آلبوم عکس‌ها هم اضافه خواهند شد.</p><div class="album-toolbar"><button type="button" id="storyViewBtn">'+(showAlbum?'← بازگشت به داستان ما':'🖼️ آلبوم عکس‌ها ('+fa(photos.length)+')')+'</button></div>'+(showAlbum?('<h3>آلبوم عکس‌های مشترک</h3><p class="muted">عکس‌ها از خاطرات ذخیره‌شده جمع می‌شوند؛ برای دیدن عکس و شرح خاطره روی آن بزن.</p>'+(photos.length?gallery:'<div class="card muted">هنوز عکسی ثبت نشده. از بخش داستان ما یک خاطره همراه عکس ذخیره کن.</div>')):'<div class="card"><label for="a">تاریخ خاطره</label><input type="date" id="a" value="'+iso()+'" aria-label="تاریخ"><label for="b">عنوان لحظه</label><input id="b" maxlength="120" placeholder="عنوان لحظه" aria-label="عنوان لحظه"><label for="c">توضیح خاطره</label><textarea id="c" rows="2" maxlength="3000" placeholder="چه اتفاقی افتاد؟" aria-label="توضیح"></textarea><label for="photo">عکس خاطره (اختیاری)</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp" aria-label="انتخاب عکس خاطره"><small>فرمت JPG، PNG یا WebP؛ حداکثر فایل اولیه ۱۲ مگابایت. عکس فشرده و همراه خاطره در فضای مشترک ذخیره می‌شود.</small><button id="ad">ذخیره‌ی خاطره</button></div>'+(h||'<p class="muted">هنوز خاطره‌ای ثبت نشده؛ اولین خاطره‌تان را اضافه کنید.</p>'));
+  V.innerHTML='<h2>داستان ما 📸</h2><p class="muted">عکس‌های هر خاطره پس از ذخیره در فضای مشترک ثبت می‌شوند و خودکار به آلبوم عکس‌ها هم اضافه خواهند شد.</p><div class="album-toolbar"><button type="button" id="storyViewBtn">'+(showAlbum?'← بازگشت به داستان ما':'🖼️ آلبوم عکس‌ها ('+fa(photos.length)+')')+'</button></div>'+(showAlbum?('<h3>آلبوم عکس‌های مشترک</h3><p class="muted">عکس‌ها از خاطرات ذخیره‌شده جمع می‌شوند؛ برای دیدن عکس و شرح خاطره روی آن بزن.</p>'+(photos.length?gallery:'<div class="card muted">هنوز عکسی ثبت نشده. از بخش داستان ما یک خاطره همراه عکس ذخیره کن.</div>')):'<div class="card"><label for="a">تاریخ خاطره</label><input type="date" id="a" value="'+iso()+'" aria-label="تاریخ"><label for="b">عنوان لحظه</label><input id="b" maxlength="120" placeholder="عنوان لحظه" aria-label="عنوان لحظه"><label for="c">توضیح خاطره</label><textarea id="c" rows="2" maxlength="3000" placeholder="چه اتفاقی افتاد؟" aria-label="توضیح"></textarea><label for="photo">عکس خاطره (اختیاری)</label><input id="photo" type="file" accept="image/*,.jpg,.jpeg,.png,.webp,.avif" aria-label="انتخاب عکس خاطره"><small>فرمت JPG، PNG یا WebP؛ حداکثر فایل اولیه ۱۲ مگابایت. عکس فشرده و همراه خاطره در فضای مشترک ذخیره می‌شود.</small><button id="ad">ذخیره‌ی خاطره</button></div>'+(h||'<p class="muted">هنوز خاطره‌ای ثبت نشده؛ اولین خاطره‌تان را اضافه کنید.</p>'));
   $('#storyViewBtn').onclick=function(){story(!showAlbum)};
   if(showAlbum){V.querySelectorAll('[data-album-photo]').forEach(function(b){b.onclick=function(){var id=b.getAttribute('data-album-photo'),s=D.story.find(function(x){return x.id===id});story(false);setTimeout(function(){var el=V.querySelector('[data-del="story:'+id+'"]');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},30);if(s)toast(s.t+' · '+sh(s.d));}});return}
   $('#ad').onclick=function(){
@@ -255,24 +255,31 @@ function story(showAlbum){
 function albumPage(){
   var photos=D.story.filter(function(s){return !!s.img}).slice().sort(function(a,b){return a.d<b.d?1:a.d>b.d?-1:a.id<b.id?1:-1});
   var cards=photos.map(function(s){return '<article class="card album-photo-card"><img src="'+E(s.img)+'" alt="'+E(s.t)+'" loading="lazy"><h3>'+E(s.t)+'</h3><small>'+sh(s.d)+'</small>'+(s.x?'<p>'+E(s.x)+'</p>':'')+'<button class="x" data-del="story:'+E(s.id)+'">حذف عکس و خاطره</button></article>'}).join('');
-  V.innerHTML='<h2>آلبوم عکس‌های ما 🖼️</h2><p class="muted">لحظه‌های دونفره‌تان را اینجا نگه دارید؛ عکس‌ها در خاطرات مشترک ذخیره می‌شوند و روی آلبوم هم نمایش داده می‌شوند.</p><div class="card album-upload"><label for="albumDate">تاریخ عکس</label><input id="albumDate" type="date" value="'+iso()+'"><label for="albumTitle">عنوان عکس</label><input id="albumTitle" maxlength="120" placeholder="مثلاً اولین سفر دونفره"><label for="albumDesc">توضیح کوتاه (اختیاری)</label><textarea id="albumDesc" rows="2" maxlength="3000" placeholder="این لحظه را چرا دوست دارید؟"></textarea><label for="albumFile">انتخاب عکس</label><input id="albumFile" type="file" accept="image/jpeg,image/png,image/webp"><small>JPG، PNG یا WebP؛ حداکثر ۱۲ مگابایت. عکس فشرده می‌شود تا همگام‌سازی سبک‌تر باشد.</small><button id="saveAlbumPhoto">+ افزودن به آلبوم</button></div><h3>عکس‌های ذخیره‌شده ('+fa(photos.length)+')</h3>'+(cards?'<div class="photo-album-grid">'+cards+'</div>':'<div class="card muted">هنوز عکسی در آلبوم نیست. اولین عکس‌تان را اضافه کنید ❤️</div>');
+  V.innerHTML='<h2>آلبوم عکس‌های ما 🖼️</h2><p class="muted">لحظه‌های دونفره‌تان را اینجا نگه دارید؛ عکس‌ها در خاطرات مشترک ذخیره می‌شوند و روی آلبوم هم نمایش داده می‌شوند.</p><div class="card album-upload"><label for="albumDate">تاریخ عکس</label><input id="albumDate" type="date" value="'+iso()+'"><label for="albumTitle">عنوان عکس</label><input id="albumTitle" maxlength="120" placeholder="مثلاً اولین سفر دونفره"><label for="albumDesc">توضیح کوتاه (اختیاری)</label><textarea id="albumDesc" rows="2" maxlength="3000" placeholder="این لحظه را چرا دوست دارید؟"></textarea><label for="albumFile">انتخاب عکس</label><input id="albumFile" type="file" accept="image/jpeg,image/png,image/webp"><small>عکس‌های JPG، PNG، WebP و AVIF؛ حداکثر ۱۲ مگابایت. عکس برای همگام‌سازی فشرده می‌شود.</small><button id="saveAlbumPhoto">+ افزودن به آلبوم</button></div><h3>عکس‌های ذخیره‌شده ('+fa(photos.length)+')</h3>'+(cards?'<div class="photo-album-grid">'+cards+'</div>':'<div class="card muted">هنوز عکسی در آلبوم نیست. اولین عکس‌تان را اضافه کنید ❤️</div>');
   $('#saveAlbumPhoto').onclick=function(){
     var date=$('#albumDate').value,t=$('#albumTitle').value.trim(),desc=$('#albumDesc').value.trim(),file=$('#albumFile').files[0];
     if(!date||!t)return toast('تاریخ و عنوان عکس را وارد کن');
     if(!file)return toast('اول یک عکس انتخاب کن');
-    if(!/^image\/(?:jpeg|png|webp)$/.test(file.type)||file.size>12*1024*1024)return toast('عکس باید JPG، PNG یا WebP و حداکثر ۱۲ مگابایت باشد.');
-    var url=URL.createObjectURL(file),image=new Image();
-    image.onload=function(){
-      URL.revokeObjectURL(url);
-      var scale=Math.min(1,1000/Math.max(image.naturalWidth,image.naturalHeight)),w=Math.max(1,Math.round(image.naturalWidth*scale)),hh=Math.max(1,Math.round(image.naturalHeight*scale)),canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
-      canvas.width=w;canvas.height=hh;ctx.fillStyle='#fff';ctx.fillRect(0,0,w,hh);ctx.drawImage(image,0,0,w,hh);
-      var data='',quality=.76;
-      while(quality>=.4){data=canvas.toDataURL('image/jpeg',quality);if(data.length<=180000)break;quality-=.08}
-      if(data.length>180000)return toast('حجم عکس بعد از فشرده‌سازی زیاد است؛ عکس دیگری انتخاب کن.');
-      set('story:'+rid(),{d:date,t:t,x:desc,img:data});R.album();toast('عکس به آلبوم اضافه شد ❤️');
-    };
-    image.onerror=function(){URL.revokeObjectURL(url);toast('خواندن عکس ممکن نشد؛ فایل دیگری انتخاب کن.')};
-    image.src=url;
+    if(file.size>12*1024*1024)return toast('حجم عکس باید حداکثر ۱۲ مگابایت باشد.');
+    function saveBitmap(bitmap){
+      try{
+        var scale=Math.min(1,1000/Math.max(bitmap.width,bitmap.height)),w=Math.max(1,Math.round(bitmap.width*scale)),hh=Math.max(1,Math.round(bitmap.height*scale)),canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+        canvas.width=w;canvas.height=hh;ctx.fillStyle='#fff';ctx.fillRect(0,0,w,hh);ctx.drawImage(bitmap,0,0,w,hh);
+        if(bitmap.close)bitmap.close();
+        var data='',quality=.76;
+        while(quality>=.32){data=canvas.toDataURL('image/jpeg',quality);if(data.length<=180000)break;quality-=.07}
+        if(data.length>180000)return toast('حجم عکس برای ذخیره‌ی مشترک زیاد است؛ یک عکس کوچک‌تر انتخاب کن.');
+        set('story:'+rid(),{d:date,t:t,x:desc,img:data});R.album();toast('عکس به آلبوم اضافه شد ❤️');
+      }catch(err){toast('پردازش عکس انجام نشد؛ لطفاً عکس را به JPG تبدیل و دوباره انتخاب کن.')}
+    }
+    function readWithImage(f){
+      var url=URL.createObjectURL(f),image=new Image();
+      image.onload=function(){URL.revokeObjectURL(url);saveBitmap({width:image.naturalWidth,height:image.naturalHeight,close:function(){}});};
+      image.onerror=function(){URL.revokeObjectURL(url);toast('این فرمت در مرورگر گوشی قابل خواندن نیست؛ عکس را به JPG تبدیل کن و دوباره انتخاب کن.');};
+      image.src=url;
+    }
+    if('createImageBitmap' in window)createImageBitmap(file).then(saveBitmap).catch(function(){readWithImage(file)});
+    else readWithImage(file);
   };
 }
 
