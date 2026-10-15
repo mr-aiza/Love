@@ -178,3 +178,9 @@ button:disabled{cursor:not-allowed;transform:none}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+.album-preview-wrap{margin:12px 0;padding:10px;border:1px solid var(--line);border-radius:16px;background:var(--surface-raised)}
+.album-preview-wrap img{display:block;width:100%;max-height:300px;object-fit:contain;border-radius:10px;background:var(--bg)}
+.album-preview-wrap button{margin-top:8px}
+.album-upload button{margin-top:10px}
+.album-upload button:disabled{opacity:.7}
