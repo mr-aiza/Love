@@ -254,13 +254,63 @@ function story(showAlbum){
 
 function albumPage(){
   var photos=D.story.filter(function(s){return !!s.img}).slice().sort(function(a,b){return a.d<b.d?1:a.d>b.d?-1:a.id<b.id?1:-1});
-  var cards=photos.map(function(s){return '<article class="card album-photo-card"><img src="'+E(s.img)+'" alt="'+E(s.t)+'" loading="lazy"><h3>'+E(s.t)+'</h3><small>'+sh(s.d)+'</small>'+(s.x?'<p>'+E(s.x)+'</p>':'')+'<button class="x" data-del="story:'+E(s.id)+'">حذف عکس و خاطره</button></article>'}).join('');
-  V.innerHTML='<h2>آلبوم عکس‌های ما 🖼️</h2><p class="muted">لحظه‌های دونفره‌تان را اینجا نگه دارید؛ عکس‌ها در خاطرات مشترک ذخیره می‌شوند و روی آلبوم هم نمایش داده می‌شوند.</p><div class="card album-upload"><label for="albumDate">تاریخ عکس</label><input id="albumDate" type="date" value="'+iso()+'"><label for="albumTitle">عنوان عکس</label><input id="albumTitle" maxlength="120" placeholder="مثلاً اولین سفر دونفره"><label for="albumDesc">توضیح کوتاه (اختیاری)</label><textarea id="albumDesc" rows="2" maxlength="3000" placeholder="این لحظه را چرا دوست دارید؟"></textarea><label for="albumFile">انتخاب عکس</label><input id="albumFile" type="file" accept="image/*,.jpg,.jpeg,.png,.webp,.avif"><small>JPG، PNG، WebP و فرمت‌های پشتیبانی‌شده‌ی گوشی؛ حداکثر ۱۲ مگابایت. پیش‌نمایش را بررسی کن؛ عکس برای ذخیره‌ی مشترک فشرده می‌شود.</small><div id="albumPreviewWrap" class="album-preview-wrap" hidden><img id="albumPreview" alt="پیش‌نمایش عکس انتخاب‌شده"><button type="button" id="clearAlbumPhoto" class="secondary">حذف انتخاب</button></div><p id="albumUploadStatus" class="muted" role="status" aria-live="polite"></p><button id="saveAlbumPhoto">+ افزودن به آلبوم</button></div><h3>عکس‌های ذخیره‌شده ('+fa(photos.length)+')</h3>'+(cards?'<div class="photo-album-grid">'+cards+'</div>':'<div class="card muted">هنوز عکسی در آلبوم نیست. اولین عکس‌تان را اضافه کنید ❤️</div>');
+  var query='',sort='new',favoritesOnly=false,activePhoto=null;
+  function filtered(){
+    var list=photos.filter(function(p){
+      var q=query.toLocaleLowerCase();
+      var match=!q||(String(p.t||'')+' '+String(p.x||'')+' '+String(p.d||'')).toLocaleLowerCase().indexOf(q)>-1;
+      return match&&(!favoritesOnly||(I['album:fav:'+p.id]&&I['album:fav:'+p.id].v===true));
+    });
+    if(sort==='old')list.reverse();
+    if(sort==='title')list.sort(function(a,b){return String(a.t||'').localeCompare(String(b.t||''),'fa')});
+    return list;
+  }
+  function renderCards(){
+    var list=filtered();
+    var cards=list.map(function(p){
+      var fav=!!(I['album:fav:'+p.id]&&I['album:fav:'+p.id].v===true);
+      return '<article class="card album-photo-card"><button type="button" class="album-photo-open" data-album-view="'+E(p.id)+'" aria-label="نمایش تمام‌صفحه '+E(p.t)+'"><img src="'+E(p.img)+'" alt="'+E(p.t)+'" loading="lazy"></button><h3>'+E(p.t)+'</h3><small>'+sh(p.d)+'</small>'+(p.x?'<p>'+E(p.x)+'</p>':'')+'<div class="album-card-actions"><button type="button" data-album-fav="'+E(p.id)+'" aria-pressed="'+fav+'">'+(fav?'♥ موردعلاقه':'♡ افزودن به علاقه‌مندی‌ها')+'</button><button type="button" data-album-edit="'+E(p.id)+'">ویرایش</button><button type="button" class="x" data-del="story:'+E(p.id)+'">حذف عکس و خاطره</button></div></article>';
+    }).join('');
+    var grid=$('#albumPhotoGrid'),count=$('#albumResultCount');
+    if(grid)grid.innerHTML=cards||'<div class="card muted">عکسی با این جست‌وجو پیدا نشد. عبارت دیگری امتحان کن یا فیلتر علاقه‌مندی را خاموش کن.</div>';
+    if(count)count.textContent='نمایش '+fa(list.length)+' عکس از '+fa(photos.length);
+  }
+  V.innerHTML='<h2>آلبوم عکس‌های ما</h2><p class="muted">عکس‌ها در خاطرات ذخیره می‌شوند و در آلبوم هم دیده می‌شوند. برای همگام‌سازی بین دو نفر باید فضای مشترک فعال باشد.</p><div class="card album-upload"><label for="albumDate">تاریخ عکس</label><input id="albumDate" type="date" value="'+iso()+'"><label for="albumTitle">عنوان عکس</label><input id="albumTitle" maxlength="120" placeholder="مثلاً اولین سفر دونفره"><label for="albumDesc">توضیح کوتاه (اختیاری)</label><textarea id="albumDesc" rows="2" maxlength="3000" placeholder="این لحظه را چرا دوست دارید؟"></textarea><label for="albumFile">انتخاب عکس</label><input id="albumFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif"><small>فرمت‌های JPG، PNG، WebP یا AVIF؛ حداکثر ۱۲ مگابایت. عکس پیش از ذخیره فشرده می‌شود.</small><div id="albumPreviewWrap" class="album-preview-wrap" hidden><img id="albumPreview" alt="پیش‌نمایش عکس انتخاب‌شده"><button type="button" id="clearAlbumPhoto" class="secondary">حذف انتخاب</button></div><p id="albumUploadStatus" class="muted" role="status" aria-live="polite"></p><button id="saveAlbumPhoto">+ افزودن به آلبوم</button></div><section class="album-tools card"><label for="albumSearch">جست‌وجوی عکس‌ها</label><input id="albumSearch" type="search" placeholder="عنوان، توضیح یا تاریخ…"><div class="row"><div class="grow"><label for="albumSort">مرتب‌سازی</label><select id="albumSort"><option value="new">جدیدترین</option><option value="old">قدیمی‌ترین</option><option value="title">عنوان</option></select></div><label class="album-fav-filter"><input id="albumFavoritesOnly" type="checkbox"> فقط علاقه‌مندی‌ها</label></div><small id="albumResultCount" class="muted"></small></section><div id="albumPhotoGrid" class="photo-album-grid"></div><dialog id="albumLightbox" class="album-lightbox" aria-label="نمایش عکس"><div class="album-lightbox-head"><button type="button" id="albumLightboxClose" aria-label="بستن نمایشگر">✕ بستن</button><div class="row"><button type="button" id="albumPrev" aria-label="عکس قبلی">← قبلی</button><button type="button" id="albumNext" aria-label="عکس بعدی">بعدی →</button></div></div><img id="albumLightboxImg" alt=""><h3 id="albumLightboxTitle"></h3><p id="albumLightboxDesc"></p><small id="albumLightboxDate"></small><div class="album-lightbox-actions"><button type="button" id="albumLightboxEdit">ویرایش عنوان و توضیح</button><button type="button" id="albumLightboxDelete" class="x">حذف عکس</button></div></dialog>';
   var albumPreviewUrl='';
+  function openPhoto(id){
+    activePhoto=photos.find(function(p){return p.id===id})||null;if(!activePhoto)return;
+    var dlg=$('#albumLightbox');$('#albumLightboxImg').src=activePhoto.img;$('#albumLightboxImg').alt=activePhoto.t||'عکس آلبوم';$('#albumLightboxTitle').textContent=activePhoto.t||'';$('#albumLightboxDesc').textContent=activePhoto.x||'بدون توضیح';$('#albumLightboxDate').textContent=sh(activePhoto.d);
+    if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');
+  }
+  function editPhoto(p){
+    if(!p)return;
+    var title=prompt('عنوان عکس:',p.t||'');if(title===null)return;title=title.trim();if(!title)return toast('عنوان عکس نمی‌تواند خالی باشد.');
+    var desc=prompt('توضیح عکس:',p.x||'');if(desc===null)return;
+    set('story:'+p.id,{d:p.d,t:title,x:desc.trim(),img:p.img});toast('تغییرات عکس ذخیره شد.');albumPage();
+  }
+  function movePhoto(step){
+    var list=filtered();if(!list.length)return;
+    var i=list.findIndex(function(p){return activePhoto&&p.id===activePhoto.id});i=(i+step+list.length)%list.length;openPhoto(list[i].id);
+  }
+  $('#albumSearch').oninput=function(){query=this.value;renderCards()};
+  $('#albumSort').onchange=function(){sort=this.value;renderCards()};
+  $('#albumFavoritesOnly').onchange=function(){favoritesOnly=this.checked;renderCards()};
+  $('#albumPhotoGrid').addEventListener('click',function(e){
+    var b=e.target.closest('button');if(!b)return;
+    if(b.hasAttribute('data-album-view'))openPhoto(b.getAttribute('data-album-view'));
+    else if(b.hasAttribute('data-album-fav')){var id=b.getAttribute('data-album-fav'),key='album:fav:'+id,yes=!(I[key]&&I[key].v===true);set(key,yes);renderCards()}
+    else if(b.hasAttribute('data-album-edit')){var p=photos.find(function(x){return x.id===b.getAttribute('data-album-edit')});editPhoto(p)}
+  });
+  $('#albumLightboxClose').onclick=function(){var d=$('#albumLightbox');if(d.close)d.close();else d.removeAttribute('open')};
+  $('#albumPrev').onclick=function(){movePhoto(-1)};
+  $('#albumNext').onclick=function(){movePhoto(1)};
+  $('#albumLightboxEdit').onclick=function(){editPhoto(activePhoto)};
+  $('#albumLightboxDelete').onclick=function(){if(!activePhoto)return;if(confirm('این عکس و خاطره‌ی مرتبط با آن حذف شود؟')){set('story:'+activePhoto.id,null);var d=$('#albumLightbox');if(d.close)d.close();else d.removeAttribute('open');albumPage();toast('عکس حذف شد.')}};
   $('#albumFile').onchange=function(){
     var file=this.files&&this.files[0],wrap=$('#albumPreviewWrap'),img=$('#albumPreview'),status=$('#albumUploadStatus');
     if(albumPreviewUrl){URL.revokeObjectURL(albumPreviewUrl);albumPreviewUrl=''}
     if(!file){wrap.hidden=true;img.removeAttribute('src');status.textContent='';return}
+    if(!/^image\/(jpeg|png|webp|avif)$/.test(file.type)){this.value='';wrap.hidden=true;status.textContent='';toast('این فرمت پشتیبانی نمی‌شود؛ JPG، PNG، WebP یا AVIF انتخاب کن.');return}
     if(file.size>12*1024*1024){this.value='';wrap.hidden=true;status.textContent='';toast('حجم عکس باید حداکثر ۱۲ مگابایت باشد.');return}
     albumPreviewUrl=URL.createObjectURL(file);img.src=albumPreviewUrl;wrap.hidden=false;status.textContent='پیش‌نمایش آماده است؛ برای ذخیره دکمه را بزن.';
   };
@@ -269,29 +319,33 @@ function albumPage(){
     var date=$('#albumDate').value,t=$('#albumTitle').value.trim(),desc=$('#albumDesc').value.trim(),file=$('#albumFile').files[0];
     if(!date||!t)return toast('تاریخ و عنوان عکس را وارد کن');
     if(!file)return toast('اول یک عکس انتخاب کن');
+    if(!/^image\/(jpeg|png|webp|avif)$/.test(file.type))return toast('فرمت عکس پشتیبانی نمی‌شود؛ JPG، PNG، WebP یا AVIF انتخاب کن.');
     if(file.size>12*1024*1024)return toast('حجم عکس باید حداکثر ۱۲ مگابایت باشد.');
     var saveButton=$('#saveAlbumPhoto'),uploadStatus=$('#albumUploadStatus');saveButton.disabled=true;saveButton.textContent='در حال آماده‌سازی عکس…';uploadStatus.textContent='در حال خواندن و فشرده‌سازی عکس؛ صفحه را نبند.';
     function finishUpload(){saveButton.disabled=false;saveButton.textContent='+ افزودن به آلبوم';}
     function saveBitmap(bitmap){
       try{
         var scale=Math.min(1,1000/Math.max(bitmap.width,bitmap.height)),w=Math.max(1,Math.round(bitmap.width*scale)),hh=Math.max(1,Math.round(bitmap.height*scale)),canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
-        canvas.width=w;canvas.height=hh;ctx.fillStyle='#fff';ctx.fillRect(0,0,w,hh);ctx.drawImage(bitmap,0,0,w,hh);
-        if(bitmap.close)bitmap.close();
+        canvas.width=w;canvas.height=hh;ctx.fillStyle='#fff';ctx.fillRect(0,0,w,hh);ctx.drawImage(bitmap,0,0,w,hh);if(bitmap.close)bitmap.close();
         var data='',quality=.76;
         while(quality>=.32){data=canvas.toDataURL('image/jpeg',quality);if(data.length<=180000)break;quality-=.07}
-        if(data.length>180000){finishUpload();uploadStatus.textContent='عکس پس از فشرده‌سازی هنوز بزرگ است.';return toast('حجم عکس برای ذخیره‌ی مشترک زیاد است؛ یک عکس کوچک‌تر انتخاب کن.');}
-        set('story:'+rid(),{d:date,t:t,x:desc,img:data});if(albumPreviewUrl){URL.revokeObjectURL(albumPreviewUrl);albumPreviewUrl=''}R.album();toast('عکس به آلبوم اضافه شد ❤️');
+        if(data.length>180000){finishUpload();uploadStatus.textContent='عکس پس از فشرده‌سازی هنوز بزرگ است.';return toast('حجم عکس برای ذخیره‌ی مشترک زیاد است؛ یک عکس کوچک‌تر انتخاب کن.')}
+        set('story:'+rid(),{d:date,t:t,x:desc,img:data});
+        if(albumPreviewUrl){URL.revokeObjectURL(albumPreviewUrl);albumPreviewUrl=''}
+        uploadStatus.textContent=cfg.id?'عکس ثبت شد؛ همگام‌سازی با فضای مشترک در حال انجام است.':'عکس فقط در همین مرورگر ذخیره شد؛ برای اشتراک، فضای مشترک بساز.';
+        finishUpload();toast(cfg.id?'عکس به آلبوم اضافه شد و برای همگام‌سازی ارسال شد ❤️':'عکس در آلبوم همین دستگاه ذخیره شد ❤️');albumPage();
       }catch(err){finishUpload();uploadStatus.textContent='ذخیره‌ی عکس انجام نشد.';toast('پردازش عکس انجام نشد؛ لطفاً عکس را به JPG تبدیل و دوباره انتخاب کن.')}
     }
     function readWithImage(f){
       var url=URL.createObjectURL(f),image=new Image();
-      image.onload=function(){URL.revokeObjectURL(url);saveBitmap({width:image.naturalWidth,height:image.naturalHeight,close:function(){}});};
-      image.onerror=function(){URL.revokeObjectURL(url);finishUpload();uploadStatus.textContent='این فرمت در مرورگر گوشی خوانده نشد.';toast('این فرمت در مرورگر گوشی قابل خواندن نیست؛ عکس را به JPG تبدیل کن و دوباره انتخاب کن.');};
+      image.onload=function(){URL.revokeObjectURL(url);saveBitmap({width:image.naturalWidth,height:image.naturalHeight,close:function(){}})};
+      image.onerror=function(){URL.revokeObjectURL(url);finishUpload();uploadStatus.textContent='این فرمت در مرورگر گوشی خوانده نشد.';toast('این فرمت در مرورگر گوشی قابل خواندن نیست؛ عکس را به JPG تبدیل کن و دوباره انتخاب کن.')};
       image.src=url;
     }
     if('createImageBitmap' in window)createImageBitmap(file).then(saveBitmap).catch(function(){readWithImage(file)});
     else readWithImage(file);
   };
+  renderCards();
 }
 
 function letters(){
