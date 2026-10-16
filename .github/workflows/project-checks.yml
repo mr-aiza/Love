@@ -1,7 +1,7 @@
 name: Project checks
 on:
   push:
-    branches: [feature/home-v2-dashboard]
+    branches: [main, feature/home-v2-dashboard]
   pull_request:
     branches: [feature/home-v2-dashboard]
   workflow_dispatch:
