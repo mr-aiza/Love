@@ -468,7 +468,7 @@ for (const [label, ok] of visualChecks) {
 const timelineChecks = [
   ['timeline page is included in the app route and navigation', app.includes("timeline:timelinePage") && app.includes("['timeline','🕰️','خط زمانی']")],
   ['timeline aggregates real memories, calendar events and letters', app.includes('D.story.forEach') && app.includes('D.events.forEach') && app.includes('D.letters.forEach')],
-  ['affection quick actions are stored as shared events and incoming affection is detected', app.includes("set('affection:'+rid()") && app.includes("k.indexOf('affection:')===0")],
+  ['affection quick actions are stored as shared events and incoming affection is detected', app.includes("key='affection:'+rid()") && app.includes("set(key,{kind:kind,text:text,from:role,at:at})") && app.includes("k.indexOf('affection:')===0")],
   ['timeline subscribes through authenticated Web Push endpoint', app.includes("API+'/api/push/public-key'") && app.includes("API+'/api/push/subscribe'") && app.includes('pushManager.subscribe')],
   ['Worker exposes public key and authenticated subscription endpoints', worker.includes("u.pathname==='/api/push/public-key'") && worker.includes("u.pathname==='/api/push/subscribe'")],
   ['Worker encrypts push payload and signs VAPID authorization', worker.includes('async function encryptPush') && worker.includes('async function vapidAuth') && worker.includes('Content-Encoding: aes128gcm')],
