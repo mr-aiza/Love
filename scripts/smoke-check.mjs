@@ -343,6 +343,22 @@ for (const [label, ok] of albumCapacityChecks) {
   else fail.push('Album capacity regression check failed: ' + label);
 }
 
+// Photo compression regression checks.
+const photoCompressionChecks = [
+  [
+    'photo compression progressively reduces quality then dimensions to fit the shared limit',
+    app.includes('var maxSide=1200') && app.includes('while(attempt<12)') && app.includes("Math.round(w*.82)") && app.includes('data.length<=180000')
+  ],
+  [
+    'photo compression keeps a clear fallback error if the image cannot fit',
+    app.includes('فشرده‌سازی عکس انجام نشد؛ لطفاً عکس دیگری انتخاب کنید.')
+  ]
+];
+for (const [label, ok] of photoCompressionChecks) {
+  if (ok) pass(label);
+  else fail.push('Photo compression regression check failed: ' + label);
+}
+
 // Story photo storage messaging regression checks.
 const storyPhotoChecks = [
   [
