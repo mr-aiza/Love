@@ -360,6 +360,17 @@ for (const [label, ok] of backupChecks) {
   else fail.push('Backup regression check failed: ' + label);
 }
 
+// Global responsive and accessibility visual regression checks.
+const visualChecks = [
+  ['global styles prevent horizontal overflow and improve mobile form targets', style.includes('overflow-x:clip') && style.includes('min-height:44px') && style.includes('@media(max-width:420px)')],
+  ['navigation unread badge remains hidden until populated', style.includes('.chat-unread[hidden]{display:none!important}')],
+  ['reduced-motion preference is respected', style.includes('prefers-reduced-motion:reduce')]
+];
+for (const [label, ok] of visualChecks) {
+  if (ok) pass(label);
+  else fail.push('Visual regression check failed: ' + label);
+}
+
 // Final result.
 if (fail.length) {
   console.error('\nSMOKE TEST FAILED\n- ' + fail.join('\n- '));
