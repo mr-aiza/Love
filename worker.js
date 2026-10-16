@@ -33,11 +33,11 @@ async function encryptPush(sub,payload){
  const serverPub=new Uint8Array(await crypto.subtle.exportKey('raw',server.publicKey));
  const clientKey=await crypto.subtle.importKey('raw',clientPub,{name:'ECDH',namedCurve:'P-256'},false,[]);
  const shared=new Uint8Array(await crypto.subtle.deriveBits({name:'ECDH',public:clientKey},server.privateKey,256));
- const info=concat(enc('WebPush: info\\0'),clientPub,serverPub);
+ const info=concat(enc('WebPush: info\0'),clientPub,serverPub);
  const ikm=await hkdf(shared,auth,info,32);
  const salt=crypto.getRandomValues(new Uint8Array(16));
- const cek=await hkdf(ikm,salt,'Content-Encoding: aes128gcm\\0',16);
- const nonce=await hkdf(ikm,salt,'Content-Encoding: nonce\\0',12);
+ const cek=await hkdf(ikm,salt,'Content-Encoding: aes128gcm\0',16);
+ const nonce=await hkdf(ikm,salt,'Content-Encoding: nonce\0',12);
  const plain=concat(enc(JSON.stringify(payload)),new Uint8Array([2]));
  const aes=await crypto.subtle.importKey('raw',cek,{name:'AES-GCM'},false,['encrypt']);
  const cipher=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv:nonce,tagLength:128},aes,plain));
@@ -53,7 +53,7 @@ function accountKey(username){return 'u:'+username}
 export default {
  async fetch(req,env){
   const origin=req.headers.get('Origin')||'';
-  const cors={'access-control-allow-origin':env.ORIGIN||origin||'null','access-control-allow-headers':'content-type,x-token','access-control-allow-methods':'GET,PUT,POST,OPTIONS','access-control-max-age':'86400','vary':'Origin'};
+  const cors={'access-control-allow-origin':env.ORIGIN||origin||'null','access-control-allow-headers':'content-type,x-token','access-control-allow-methods':'GET,PUT,POST,DELETE,OPTIONS','access-control-max-age':'86400','vary':'Origin'};
   const J=(x,s=200)=>new Response(JSON.stringify(x),{status:s,headers:{...cors,'content-type':'application/json;charset=utf-8','cache-control':'no-store'}});
   if(!env.ORIGIN)return J({error:'متغیر ORIGIN را در تنظیمات Worker تعریف کنید'},503);
   if(req.method==='OPTIONS'){if(origin!==env.ORIGIN)return J({error:'دامنه مجاز نیست'},403);return new Response(null,{status:204,headers:cors})}
