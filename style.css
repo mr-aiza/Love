@@ -308,3 +308,12 @@ input:disabled,textarea:disabled,select:disabled,button:disabled{opacity:.58;cur
 
 /* Searchable archive of completed daily couple questions */
 .qa-archive{margin-top:1.25rem}.qa-archive-item{margin:.65rem 0;padding:1rem}.qa-archive-item summary{cursor:pointer;line-height:1.9}.qa-archive-item summary::marker{color:var(--wine)}.qa-archive-item[hidden]{display:none!important}.qa-archive-answer{border-top:1px solid var(--line);margin-top:.8rem;padding-top:.65rem}.qa-archive-answer p{white-space:pre-wrap;overflow-wrap:anywhere;margin:.35rem 0 1rem}.qa-archive #qa-search{width:100%;margin:.5rem 0 1rem}
+
+/* Timeline and affection actions */
+.affection-panel{background:linear-gradient(135deg,rgba(125,34,72,.08),rgba(169,128,58,.08));}
+.affection-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0;}
+.affection-button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:92px;padding:10px 6px;border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink);}
+.affection-button span{font-size:1.8rem;line-height:1.4}.affection-button small{text-align:center;line-height:1.5}.affection-button:active{transform:scale(.98)}
+.timeline-list{position:relative;display:grid;gap:12px}.timeline-list:before{content:"";position:absolute;right:21px;top:10px;bottom:10px;width:2px;background:var(--line)}
+.timeline-item{position:relative;display:flex;align-items:flex-start;gap:12px;padding:16px 14px}.timeline-marker{position:relative;z-index:1;display:grid;place-items:center;flex:0 0 42px;height:42px;border-radius:50%;background:var(--bg);border:1px solid var(--line);font-size:1.25rem}.timeline-copy{min-width:0;flex:1}.timeline-copy h3{margin:3px 0}.timeline-copy p{margin:4px 0;white-space:pre-wrap;overflow-wrap:anywhere}.affection-history{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:8px 0}.affection-history small{margin-right:auto;color:var(--mute)}
+@media(max-width:420px){.affection-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.timeline-item{padding:12px 10px;gap:8px}.timeline-marker{flex-basis:36px;height:36px}}
