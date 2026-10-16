@@ -235,7 +235,7 @@ function story(showAlbum){
     if(!t||!date)return toast('تاریخ و عنوان لازم است');
     function commit(img){set('story:'+rid(),{d:date,t:t,x:desc,img:img||''});story(false);toast(img?'خاطره و عکس در فضای مشترک ذخیره شد و به آلبوم رفت.':'خاطره ذخیره شد.');}
     if(!file){commit('');return}
-    if(!/^image\/(?:jpeg|png|webp)$/.test(file.type)||file.size>12*1024*1024)return toast('عکس باید JPG، PNG یا WebP و حداکثر ۱۲ مگابایت باشد.');
+    if(!/^image\/(?:jpeg|png|webp|avif)$/.test(file.type)||file.size>12*1024*1024)return toast('عکس باید JPG، PNG، WebP یا AVIF و حداکثر ۱۲ مگابایت باشد.');
     var url=URL.createObjectURL(file),image=new Image();
     image.onload=function(){
       URL.revokeObjectURL(url);
