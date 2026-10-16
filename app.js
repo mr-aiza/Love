@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 var API=(window.OURHOME_API||'').replace(/\/+$/,''),K='hd2',S=new Date(2026,8,29),MS=[30,50,100,200,365,500,1000],P=document.body.getAttribute('data-page'),ISO=/^\d{4}-\d{2}-\d{2}$/,tt;
-var I={},dirty={},cfg={},D,otherSeen=0,busy=false,dead=false,timer=null,appBootAt=Date.now(),notifiedChat={},memoryFlipTimer=null,lastSyncAt=0;
+var I={},dirty={},cfg={},D,otherSeen=0,busy=false,dead=false,timer=null,appBootAt=Date.now(),notifiedChat={},memoryFlipTimer=null,lastSyncAt=0,syncBlocked='';
 
 /* ---------- اعتبارسنجی ---------- */
 function str(v,n){return typeof v==='string'?v.slice(0,n):''}
@@ -108,6 +108,7 @@ function status(t,err){
     else if(!navigator.onLine){t='اینترنت دستگاه قطع است';state='offline';detail='پس از اتصال دوباره، همگام‌سازی تلاش می‌شود.'}
     else if(!cfg.id){t='فضای مشترک ساخته نشده';state='local';detail='فعلاً اطلاعات فقط روی همین دستگاه است.'}
     else if(dead){t='دسترسی به فضای مشترک معتبر نیست';state='error';detail='نشست یا توکن را بررسی کنید.'}
+    else if(syncBlocked){t=syncBlocked;state='error';detail='تغییرات محلی در صف باقی مانده‌اند؛ فایل پشتیبان بگیر، بخشی از عکس‌ها را حذف کن یا حجم داده را کاهش بده، سپس تلاش دوباره را بزن.'}
     else if(busy){t='در حال همگام‌سازی…';state='syncing';detail='تغییرات در حال ارسال یا دریافت هستند.'}
     else if(lastSyncAt){t='متصل و همگام';state='connected';detail='آخرین همگام‌سازی: '+new Date(lastSyncAt).toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}
     else {t='در حال بررسی اتصال به سرور…';state='checking';detail='هنوز پاسخ موفقی از فضای مشترک دریافت نشده است.'}
@@ -159,7 +160,7 @@ function merge(r){
 function ensureSharedStart(){if(cfg.id&&API&&!I['settings:start'])set('settings:start',cfg.start||'2026-09-29')}
 function sched(){clearTimeout(timer);timer=setTimeout(function(){timer=null;flush()},800)}
 function flush(){
-  if(!cfg.id||!API||busy||dead)return status();
+  if(!cfg.id||!API||busy||dead||syncBlocked)return status();
   var ks=Object.keys(dirty).slice(0,200);if(!ks.length)return status();
   var body={items:{}};ks.forEach(function(k){var item=I[k];if(!item||typeof item!=='object')item={v:null,t:Date.now()};if(typeof item.t!=='number'||!isFinite(item.t)){item=I[k]={v:item.v===undefined?null:item.v,t:Date.now()};}body.items[k]=item;});
   var succeeded=false;
@@ -172,8 +173,9 @@ function flush(){
     if(merge(r)&&!editing())(R[P]||home)();ensureSharedStart();save();status();
   }).catch(function(e){
     if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1);return}
+    if(e&&e.status===413){syncBlocked=(e.error&&/فضای مشترک|سند بیش از حد بزرگ|حجم درخواست|بیش از حد بزرگ/.test(e.error))?'فضای مشترک به سقف ظرفیت رسیده؛ تغییرات ارسال نشدند.':'درخواست برای سرور بیش از حد بزرگ است؛ تغییرات ارسال نشدند.';status(syncBlocked,1);return}
     status((e&&e.error)||'ارتباط با سرور برقرار نیست؛ دوباره تلاش می‌شود',1);
-  }).then(function(){busy=false;if(!dead&&Object.keys(dirty).length&&!timer)timer=setTimeout(function(){timer=null;flush()},4000);if(succeeded&&!dead)status()});
+  }).then(function(){busy=false;if(!dead&&!syncBlocked&&Object.keys(dirty).length&&!timer)timer=setTimeout(function(){timer=null;flush()},4000);if(succeeded&&!dead)status()});
 }
 function poll(){
   if(document.hidden||!cfg.id||!API||busy||dead||Object.keys(dirty).length)return;
@@ -727,7 +729,7 @@ function settings(){
   V.innerHTML='<h2>تنظیمات خانه‌ی ما ⚙️</h2><div class="card"><h3>ظاهر سایت</h3><label for="theme">پوسته</label><select id="theme"><option value="light" '+(cfg.theme==='light'?'selected':'')+'>روشن</option><option value="dark" '+(cfg.theme==='dark'?'selected':'')+'>تیره</option><option value="auto" '+(!cfg.theme?'selected':'')+'>مطابق دستگاه</option></select><button id="savetheme">ذخیره پوسته</button></div><div class="card"><h3>تنظیمات رابطه</h3><label for="startdate">تاریخ شروع رابطه</label><input type="date" id="startdate" value="'+start+'"><p><small>تغییر این تاریخ فقط روزشمار را تنظیم می‌کند و خاطرات ثبت‌شده حذف نمی‌شوند.</small></p><button id="savestart">ذخیره تاریخ</button></div><div class="card"><h3>نام‌ها</h3><label for="name0">نام نفر اول</label><input id="name0" maxlength="24" value="'+E(D.names[0])+'"><label for="name1">نام نفر دوم</label><input id="name1" maxlength="24" value="'+E(D.names[1])+'"><button id="savenames">ذخیره نام‌ها</button></div><div class="card"><h3>پشتیبان‌گیری و بازیابی 🛟</h3><p><small>فایل پشتیبان شامل خاطرات، نامه‌ها، آرزوها، پاسخ‌ها و داده‌های ذخیره‌شده‌ی این دستگاه است. آن را فقط در جای امن نگه دارید؛ ممکن است اطلاعات خصوصی رابطه داخلش باشد. این فایل به‌تنهایی داده‌ها را به دستگاه دیگر همگام نمی‌کند.</small></p><button id="export-backup">دانلود فایل پشتیبان JSON</button><label for="import-backup-file">بازیابی از فایل پشتیبان</label><input id="import-backup-file" type="file" accept="application/json,.json"><button id="import-backup" class="secondary" type="button">بررسی و بازیابی پشتیبان</button><p id="backup-status" class="muted" aria-live="polite">بازیابی به‌صورت ادغام انجام می‌شود؛ داده‌های فعلی پاک نمی‌شوند. پیش از شروع، یک نسخه پشتیبان از وضعیت فعلی بگیر.</p></div><div class="card"><h3>اعلان پیام‌ها 🔔</h3><p><small>با اجازه‌ی مرورگر، هنگام بازبودن برنامه اعلان سیستمی پیام تازه هم نمایش داده می‌شود. این گزینه اعلان پوش یا اعلان پس‌زمینه نیست.</small></p><p id="notification-status">'+(!('Notification' in window)?'این مرورگر اعلان سیستمی را پشتیبانی نمی‌کند.':Notification.permission==='granted'?'اجازه‌ی اعلان فعال است.':Notification.permission==='denied'?'اجازه‌ی اعلان در تنظیمات مرورگر مسدود شده است.':'برای فعال‌سازی باید اجازه بدهید.')+'</p><button id="enable-notifications" '+(!('Notification' in window)||Notification.permission==='granted'||Notification.permission==='denied'?'disabled':'')+'>فعال‌کردن اعلان‌ها</button></div><div class="card"><h3>وضعیت اتصال و همگام‌سازی</h3><p>'+(API?'آدرس API تنظیم شده است.':'آدرس API هنوز در config.js تنظیم نشده است.')+'</p><p>'+(cfg.id?'فضای مشترک: فعال':'فضای مشترک: تنظیم نشده')+'</p><p id="sync-health" role="status" aria-live="polite">در حال بررسی صف همگام‌سازی…</p><button id="retry-sync" type="button" '+(!cfg.id||!API?'disabled':'')+'>تلاش دوباره برای همگام‌سازی</button><p><small>تلاش دوباره، تغییرات ذخیره‌شده در صف را ارسال می‌کند. تا زمان اتصال موفق، داده‌های محلی را پاک نکن.</small></p></div><div class="card"><h3>سلامت حافظه‌ی دستگاه</h3><p id="storage-health" role="status" aria-live="polite">در حال بررسی فضای ذخیره‌سازی…</p><button id="refresh-storage" type="button" class="secondary">بررسی دوباره</button><p><small>این برآورد مربوط به فضای ذخیره‌سازی مرورگر است؛ جایگزین پشتیبان‌گیری نیست و فضای سرور را اندازه نمی‌گیرد.</small></p></div>';
   function refreshHealth(){
     var sh=$('#sync-health');
-    if(sh){var pending=Object.keys(dirty).length;sh.textContent=!cfg.id?'فضای مشترک تنظیم نشده؛ داده‌ها فقط محلی هستند.':!navigator.onLine?'آفلاین؛ '+fa(pending)+' تغییر در انتظار ارسال است.':dead?'نشست نامعتبر است؛ دوباره وارد حساب شوید.':busy?'همگام‌سازی در حال انجام است؛ '+fa(pending)+' تغییر در صف است.':pending?fa(pending)+' تغییر در انتظار ارسال است.':'در حال حاضر تغییری در صف ارسال نیست.';}
+    if(sh){var pending=Object.keys(dirty).length;sh.textContent=!cfg.id?'فضای مشترک تنظیم نشده؛ داده‌ها فقط محلی هستند.':!navigator.onLine?'آفلاین؛ '+fa(pending)+' تغییر در انتظار ارسال است.':dead?'نشست نامعتبر است؛ دوباره وارد حساب شوید.':syncBlocked?syncBlocked+' تغییرات محلی حفظ شده‌اند؛ پشتیبان بگیر و پس از کاهش حجم، تلاش دوباره را بزن.':busy?'همگام‌سازی در حال انجام است؛ '+fa(pending)+' تغییر در صف است.':pending?fa(pending)+' تغییر در انتظار ارسال است.':'در حال حاضر تغییری در صف ارسال نیست.';}
     var st=$('#storage-health');if(!st)return;
     try{
       var used=JSON.stringify({I:I,cfg:cfg,dirty:dirty}).length*2;
@@ -740,7 +742,7 @@ function settings(){
       }).catch(function(){});
     }catch(_){st.textContent='خواندن برآورد فضای ذخیره‌سازی ممکن نشد.';}
   }
-  var retry=$('#retry-sync');if(retry)retry.onclick=function(){if(!cfg.id||!API)return toast('ابتدا فضای مشترک را تنظیم کن.');if(!navigator.onLine)return toast('اینترنت وصل نیست؛ پس از اتصال دوباره تلاش کن.');if(dead)return toast('نشست معتبر نیست؛ دوباره وارد حساب شو.');if(busy)return toast('همگام‌سازی در حال انجام است.');flush();refreshHealth();toast('تلاش برای همگام‌سازی شروع شد.');};
+  var retry=$('#retry-sync');if(retry)retry.onclick=function(){if(!cfg.id||!API)return toast('ابتدا فضای مشترک را تنظیم کن.');if(!navigator.onLine)return toast('اینترنت وصل نیست؛ پس از اتصال دوباره تلاش کن.');if(dead)return toast('نشست معتبر نیست؛ دوباره وارد حساب شو.');if(busy)return toast('همگام‌سازی در حال انجام است.');syncBlocked='';flush();refreshHealth();toast('تلاش برای همگام‌سازی شروع شد.');};
   var refreshStorage=$('#refresh-storage');if(refreshStorage)refreshStorage.onclick=refreshHealth;
   refreshHealth();
   var ex=$('#export-backup');if(ex)ex.onclick=function(){try{var safeCfg=Object.assign({},cfg);['id','tok','other','viewer','session','password'].forEach(function(k){delete safeCfg[k]});var payload={format:'ourhome-backup',version:1,exportedAt:new Date().toISOString(),data:{items:I,settings:safeCfg}};var blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='khane-ye-ma-backup-'+iso()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},1000);var bs=$('#backup-status');if(bs)bs.textContent='فایل پشتیبان ساخته شد. آن را در محل امن نگه دارید.';toast('فایل پشتیبان آماده شد.');}catch(err){var bs=$('#backup-status');if(bs)bs.textContent='ساخت پشتیبان ناموفق بود؛ فضای ذخیره‌سازی یا اجازه‌ی مرورگر را بررسی کنید.';toast('ساخت فایل پشتیبان ناموفق بود.');}};
