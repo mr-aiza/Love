@@ -343,6 +343,22 @@ for (const [label, ok] of albumCapacityChecks) {
   else fail.push('Album capacity regression check failed: ' + label);
 }
 
+// Story photo storage messaging regression checks.
+const storyPhotoChecks = [
+  [
+    'story photo copy does not claim shared persistence before sync confirmation',
+    app.includes('همگام‌سازی در صف ارسال است') && !app.includes('خاطره و عکس در فضای مشترک ذخیره شد و به آلبوم رفت.')
+  ],
+  [
+    'story page explains that album photos come from saved memories',
+    app.includes('عکس هر خاطره همراه خودش در آلبوم هم نمایش داده می‌شود')
+  ]
+];
+for (const [label, ok] of storyPhotoChecks) {
+  if (ok) pass(label);
+  else fail.push('Story photo regression check failed: ' + label);
+}
+
 // Sync health and local-storage diagnostics regression checks.
 const syncHealthChecks = [
   [
