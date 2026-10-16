@@ -161,7 +161,7 @@ function sched(){clearTimeout(timer);timer=setTimeout(function(){timer=null;flus
 function flush(){
   if(!cfg.id||!API||busy||dead)return status();
   var ks=Object.keys(dirty).slice(0,200);if(!ks.length)return status();
-  var body={items:{}};ks.forEach(function(k){body.items[k]=I[k]});
+  var body={items:{}};ks.forEach(function(k){var item=I[k];if(!item||typeof item!=='object')item={v:null,t:Date.now()};if(typeof item.t!=='number'||!isFinite(item.t)){item=I[k]={v:item.v===undefined?null:item.v,t:Date.now()};}body.items[k]=item;});
   var succeeded=false;
   busy=true;status('در حال همگام‌سازی…');
   api('PUT',body).then(function(r){
