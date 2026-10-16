@@ -44,7 +44,7 @@ for (const p of [
 }
 
 // JavaScript syntax checks.
-for (const p of ['app.js', 'auth.js', 'v2-enhance.js', 'sw.js']) {
+for (const p of ['app.js', 'auth.js', 'v2-enhance.js', 'sw.js', 'scripts/generate-vapid.mjs']) {
   if (!existsSync(join(root, p))) continue;
 
   try {
