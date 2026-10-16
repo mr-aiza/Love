@@ -1,6 +1,7 @@
 /* Cloudflare Worker: خانه‌ی ما — حساب کاربری + همگام‌سازی امن
  * Bindings: KV namespace DB
- * Variables/Secrets: ORIGIN=https://mr-aiza.github.io ; USER_424_PASSWORD ; USER_626_PASSWORD
+ * Variables/Secrets: ORIGIN=<exact site origin>; USER_424_PASSWORD; USER_626_PASSWORD;
+ * VAPID_PUBLIC_KEY; VAPID_PRIVATE_KEY (Secret); VAPID_SUBJECT
  */
 const MAX_ITEM=300000, MAX_DOC=4500000, MAX_KEYS=5000;
 const KEY=/^[a-z]{1,12}(:[A-Za-z0-9_-]{1,40}){1,3}$/;
