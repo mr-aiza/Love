@@ -159,3 +159,12 @@
 - `sw.js`: handler نمایش Push و کلیک اعلان اضافه شد؛ این فقط سمت Service Worker است و به‌تنهایی اعلان بسته‌بودن سایت را فعال نمی‌کند.
 - **محدودیت مهم اعلان بسته:** Worker فعلی هنوز subscription را ثبت/نگه‌داری نمی‌کند و درخواست Web Push امضاشده به سرویس Push نمی‌فرستد. برای اعلان واقعی وقتی سایت بسته است، باید VAPID public/private key و endpoint ثبت subscription و ارسال Push در Cloudflare Worker اضافه و Secrets/Variables آن تنظیم شوند. تا آن زمان، اشاره‌ی عاطفی از همگام‌سازی در سایت باز دریافت می‌شود و اعلان سیستم در حالت باز فقط با مجوز مرورگر کار می‌کند.
 - تست‌های ساختاری برای route، منبع خط زمانی، تشخیص اعلان عاطفی و handlerهای Service Worker افزوده شد؛ تست واقعی دو گوشی و Push پس‌زمینه هنوز تأیید نشده است.
+
+
+### Web Push server setup — code added, Cloudflare configuration required
+- `worker.js` now exposes `GET /api/push/public-key`, authenticated `POST /api/push/subscribe` and `DELETE /api/push/subscribe`; stores per-account subscriptions in the existing `DB` KV namespace; encrypts payloads using Web Push `aes128gcm`; signs VAPID authorization; sends a push when one account writes a new `affection:` event and removes expired 404/410 subscriptions.
+- `app.js` now asks permission, subscribes the current browser with PushManager, and registers the subscription with the Worker. The partner must repeat activation on their own device/browser.
+- `sw.js` displays push notifications while the app is not visible and opens `/timeline.html` when tapped.
+- Generate a key pair locally with `node scripts/generate-vapid.mjs`. Add `VAPID_PUBLIC_KEY` as a Worker variable, `VAPID_PRIVATE_KEY` as a Worker Secret, and `VAPID_SUBJECT` as a contact URI such as `mailto:you@example.com`. Never commit the private key.
+- Verify the existing Worker `ORIGIN` equals the actual site origin exactly (for the custom domain, `https://love.bytelabpro.xyz` if that is the domain being used), and that the existing KV binding is named `DB`. These settings are not available to change from this repository, so closed-site delivery is not confirmed until the Worker is redeployed with these values and both devices have subscribed.
+- `scripts/smoke-check.mjs` now includes structural tests for the Web Push routes, subscription flow, VAPID/encryption helpers and affection trigger. Actual delivery must still be tested with two subscribed devices.
