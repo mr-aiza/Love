@@ -201,7 +201,7 @@ const chatChecks = [
   ],
   [
     'poll checks new messages before merging',
-    /api\('GET'\)\.then\(function\(r\)\{notifyIncoming\(r\);if\(merge\(r\)/.test(app)
+    /api\('GET'\)\.then\(function\(r\)\{lastSyncAt=Date\.now\(\);notifyIncoming\(r\);if\(merge\(r\)/.test(app)
   ]
 ];
 
