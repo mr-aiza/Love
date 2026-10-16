@@ -470,6 +470,7 @@ const timelineChecks = [
   ['timeline aggregates real memories, calendar events and letters', app.includes('D.story.forEach') && app.includes('D.events.forEach') && app.includes('D.letters.forEach')],
   ['affection quick actions are stored as shared events and incoming affection is detected', app.includes("key='affection:'+rid()") && app.includes("set(key,{kind:kind,text:text,from:role,at:at})") && app.includes("k.indexOf('affection:')===0")],
   ['timeline subscribes through authenticated Web Push endpoint', app.includes("API+'/api/push/public-key'") && app.includes("API+'/api/push/subscribe'") && app.includes('pushManager.subscribe')],
+  ['push subscription refreshes when the configured VAPID public key changes', app.includes('var appKey=decodeKey(publicKey)') && app.includes('sub.options&&sub.options.applicationServerKey') && app.includes('sub.unsubscribe()') && app.includes('applicationServerKey:appKey')],
   ['Worker exposes public key and authenticated subscription endpoints', worker.includes("u.pathname==='/api/push/public-key'") && worker.includes("u.pathname==='/api/push/subscribe'")],
   ['Worker encrypts push payload and signs VAPID authorization', worker.includes('async function encryptPush') && worker.includes('async function vapidAuth') && worker.includes('Content-Encoding: aes128gcm')],
   ['new affection events trigger push to the other account', worker.includes("k.indexOf('affection:')===0") && worker.includes("type:'affection'") && worker.includes("targetRole=role==='a'?'b':'a'") && worker.includes('sendWebPush(sub,payload,env)')],
