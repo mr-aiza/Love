@@ -380,6 +380,26 @@ for (const [label, ok] of syncHealthChecks) {
   else fail.push('Sync health regression check failed: ' + label);
 }
 
+// Shared-document capacity failures must preserve the local queue without retry storms.
+const capacitySyncChecks = [
+  [
+    'HTTP 413 sync failures enter an explicit capacity-blocked state',
+    app.includes("e.status===413") && app.includes("syncBlocked=(e.error")
+  ],
+  [
+    'capacity-blocked sync keeps local changes queued and stops automatic retries',
+    app.includes("!syncBlocked&&Object.keys(dirty).length") && app.includes("if(!cfg.id||!API||busy||dead||syncBlocked)return status()")
+  ],
+  [
+    'settings exposes a manual retry after capacity is reduced',
+    app.includes("syncBlocked='';flush();refreshHealth()") && app.includes('تغییرات محلی حفظ شده‌اند')
+  ]
+];
+for (const [label, ok] of capacitySyncChecks) {
+  if (ok) pass(label);
+  else fail.push('Capacity sync regression check failed: ' + label);
+}
+
 // Backup restore regression checks: bounded, validated and merge-only.
 const backupChecks = [
   [
