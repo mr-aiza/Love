@@ -241,11 +241,17 @@ function story(showAlbum){
     var url=URL.createObjectURL(file),image=new Image();
     image.onload=function(){
       URL.revokeObjectURL(url);
-      var scale=Math.min(1,1000/Math.max(image.naturalWidth,image.naturalHeight)),w=Math.max(1,Math.round(image.naturalWidth*scale)),hh=Math.max(1,Math.round(image.naturalHeight*scale)),canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
-      canvas.width=w;canvas.height=hh;ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,hh);ctx.drawImage(image,0,0,w,hh);
-      var data='',quality=.76;
-      while(quality>=.4){data=canvas.toDataURL('image/jpeg',quality);if(data.length<=180000)break;quality-=.08}
-      if(data.length>180000)return toast('این عکس هنوز بزرگ است؛ عکس دیگری انتخاب کنید.');
+      var maxSide=1200,scale=Math.min(1,maxSide/Math.max(image.naturalWidth,image.naturalHeight)),w=Math.max(1,Math.round(image.naturalWidth*scale)),hh=Math.max(1,Math.round(image.naturalHeight*scale)),canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+      var data='',quality=.78,attempt=0;
+      while(attempt<12){
+        canvas.width=w;canvas.height=hh;ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,hh);ctx.drawImage(image,0,0,w,hh);
+        data=canvas.toDataURL('image/jpeg',quality);
+        if(data.length<=180000)break;
+        if(quality>.48)quality=Math.max(.44,quality-.1);
+        else{w=Math.max(1,Math.round(w*.82));hh=Math.max(1,Math.round(hh*.82));quality=.7}
+        attempt++;
+      }
+      if(!data||data.length>180000)return toast('فشرده‌سازی عکس انجام نشد؛ لطفاً عکس دیگری انتخاب کنید.');
       commit(data);
     };
     image.onerror=function(){URL.revokeObjectURL(url);toast('خواندن عکس ممکن نشد؛ فایل دیگری انتخاب کنید.')};
