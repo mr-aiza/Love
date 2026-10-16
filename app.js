@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 var API=(window.OURHOME_API||'').replace(/\/+$/,''),K='hd2',S=new Date(2026,8,29),MS=[30,50,100,200,365,500,1000],P=document.body.getAttribute('data-page'),ISO=/^\d{4}-\d{2}-\d{2}$/,tt;
-var I={},dirty={},cfg={},D,otherSeen=0,busy=false,dead=false,timer=null,appBootAt=Date.now(),notifiedChat={},memoryFlipTimer=null,lastSyncAt=0,syncBlocked='';
+var I={},dirty={},cfg={},D,otherSeen=0,busy=false,dead=false,timer=null,appBootAt=Date.now(),notifiedChat={},notifiedAffection={},memoryFlipTimer=null,lastSyncAt=0,syncBlocked='';
 
 /* ---------- اعتبارسنجی ---------- */
 function str(v,n){return typeof v==='string'?v.slice(0,n):''}
@@ -192,7 +192,7 @@ function link(){
   shareUrl(u,'دعوت به خانه‌ی ما','لینک ویرایش پارتنر آماده‌ی ارسال است.');
 }
 /* ---------- منو ---------- */
-var N=[['index','🏠','خانه'],['story','📖','داستان ما'],['album','🖼️','آلبوم'],['letters','💌','نامه‌ها'],['wishes','✨','آرزوها'],['calendar','📅','تقویم'],['qa','💬','سؤال'],['pledge','📜','تعهدنامه'],['chat','💌','چت'],['games','🎮','بازی‌ها'],['draw','🎨','نقاشی زنده'],['challenges','🌟','چالش‌ها'],['achievements','🏆','دستاوردها'],['map','📍','نقشه'],['list','🛒','فهرست'],['settings','⚙️','تنظیمات']];
+var N=[['index','🏠','خانه'],['timeline','🕰️','خط زمانی'],['story','📖','داستان ما'],['album','🖼️','آلبوم'],['letters','💌','نامه‌ها'],['wishes','✨','آرزوها'],['calendar','📅','تقویم'],['qa','💬','سؤال'],['pledge','📜','تعهدنامه'],['chat','💌','چت'],['games','🎮','بازی‌ها'],['draw','🎨','نقاشی زنده'],['challenges','🌟','چالش‌ها'],['achievements','🏆','دستاوردها'],['map','📍','نقشه'],['list','🛒','فهرست'],['settings','⚙️','تنظیمات']];
 var nv=document.createElement('nav');nv.setAttribute('aria-label','منوی اصلی');
 nv.innerHTML=N.map(function(n){return '<a href="'+n[0]+'.html"'+(n[0]===P?' class="on" aria-current="page"':'')+'><b aria-hidden="true">'+n[1]+'</b>'+n[2]+(n[0]==='chat'?' <span id="chat-unread" class="chat-unread" hidden></span>':'')+'</a>'}).join('');
 document.body.appendChild(nv);refreshChatBadge();
@@ -213,7 +213,7 @@ function home(){
   }
   var sy=!API?'':(!cfg.id?'<button id="sc">ساخت فضای مشترک دو نفره</button> ':(cfg.other?'<button id="sl">لینک ویرایش پارتنر</button> ':''));
   b += '<div class="card live-counter-card" style="text-align:center"><h3>⏱️ روزشمار لحظه‌ای رابطه</h3><div id="live-counter" data-start="'+new Date(S.getFullYear(),S.getMonth(),S.getDate()).getTime()+'" style="font-size:1.35rem;font-weight:700;line-height:2;direction:rtl" aria-live="off">در حال محاسبه…</div><small>روز · ساعت · دقیقه · ثانیه</small></div>';
-  V.innerHTML=b+'<div class="go"><a href="story.html">📖 ثبت لحظه‌ی تازه</a><a href="letters.html">💌 نوشتن نامه</a><a href="wishes.html">✨ آرزوها</a><a href="calendar.html">📅 رویداد تازه</a><a href="qa.html">💬 سؤال امروز</a><a href="pledge.html">📜 تعهدنامه</a><a href="chat.html">💌 چت دونفره</a><a href="games.html">🎮 بازی‌های دونفره</a><a href="map.html">📍 نقشه و GPS</a><a href="settings.html">⚙️ تنظیمات</a></div>'
+  V.innerHTML=b+'<div class="go"><a href="timeline.html">🕰️ خط زمانی رابطه</a><a href="story.html">📖 ثبت لحظه‌ی تازه</a><a href="letters.html">💌 نوشتن نامه</a><a href="wishes.html">✨ آرزوها</a><a href="calendar.html">📅 رویداد تازه</a><a href="qa.html">💬 سؤال امروز</a><a href="pledge.html">📜 تعهدنامه</a><a href="chat.html">💌 چت دونفره</a><a href="games.html">🎮 بازی‌های دونفره</a><a href="map.html">📍 نقشه و GPS</a><a href="settings.html">⚙️ تنظیمات</a></div>'
    +'<p><small>'+(cfg.id?'خاطرات، نامه‌ها، آرزوها، رویدادها و تغییرات بین هر دو نفر تقریباً زنده همگام می‌شوند.':'برای همگام‌سازی خاطرات و دسترسی پارتنر، فضای مشترک بسازید و لینک دعوت را بفرستید؛ تا قبل از آن اطلاعات فقط روی همین دستگاه است.')+'</small></p>'+sy;
   if($('#sc'))$('#sc').onclick=function(){
     if(!confirm('یک فضای مشترک ساخته می‌شود و نوشته‌های فعلی داخلش می‌رود. سپس «ارسال لینک پارتنر» را بزنید و لینک را فقط برای پارتنرتان بفرستید این لینک فقط برای پارتنر است و امکان ویرایش دارد. ادامه؟'))return;
@@ -396,6 +396,24 @@ function wishes(){
     wishes();focusB();
   };
 }
+function timelinePage(){
+  var role=cfg.me==='b'?'b':'a';
+  var custom=customItems('timeline').filter(function(x){return x.v&&typeof x.v==='object'&&ISO.test(x.v.d)&&typeof x.v.t==='string';});
+  var items=[];
+  D.story.forEach(function(x){items.push({id:'story:'+x.id,d:x.d,t:x.t,x:x.x||'',kind:'memory',at:x.d+'T12:00:00'})});
+  D.events.forEach(function(x){items.push({id:'events:'+x.id,d:x.d,t:x.t,x:x.r?'مناسبت تکرارشونده':'مناسبت',kind:'event',at:x.d+'T12:00:00'})});
+  D.letters.forEach(function(x){items.push({id:'letters:'+x.id,d:x.c,t:x.t,x:x.x||'',kind:'letter',at:x.c+'T12:00:00'})});
+  custom.forEach(function(x){items.push({id:'timeline:'+x.id,d:x.v.d,t:x.v.t,x:x.v.x||'',kind:x.v.k||'moment',at:x.v.at||x.v.d+'T12:00:00',from:x.v.from})});
+  items.sort(function(a,b){return b.d.localeCompare(a.d)||String(b.at).localeCompare(String(a.at))});
+  var icon={memory:'📸',event:'🎉',letter:'💌',moment:'✨',future:'🔮',goal:'🌱'};
+  var h=items.map(function(x){return '<article class="card timeline-item"><div class="timeline-marker">'+(icon[x.kind]||'💗')+'</div><div class="timeline-copy"><small>'+sh(x.d)+' · '+(x.kind==='memory'?'خاطره':x.kind==='event'?'مناسبت':x.kind==='letter'?'نامه':x.kind==='future'?'آینده':x.kind==='goal'?'هدف':'لحظه‌ی ثبت‌شده')+'</small><h3>'+E(x.t)+'</h3>'+(x.x?'<p>'+E(x.x)+'</p>':'')+'</div>'+(x.id.indexOf('timeline:')===0?'<button type="button" class="x" data-del="'+E(x.id)+'" aria-label="حذف '+E(x.t)+'">حذف</button>':'')+'</article>'}).join('');
+  var recent=customItems('affection').filter(function(x){return x.v&&x.v.from!==role;}).sort(function(a,b){return (b.v.at||b.t)-(a.v.at||a.t)}).slice(0,8);
+  var feelings=[['miss','💗','دلم برات تنگ شده'],['hug','🤗','یه بغل مجازی'],['love','❤️','دوستت دارم'],['proud','🥹','بهت افتخار می‌کنم'],['thinking','💭','الان بهت فکر می‌کنم'],['call','📞','وقتی تونستی بهم زنگ بزن']];
+  V.innerHTML='<h2>خط زمانی رابطه 🕰️</h2><p class="muted">لحظه‌های ثبت‌شده، مناسبت‌ها و نامه‌ها را در یک مسیر زمانی ببینید. رویدادهای این صفحه با داده‌های فعلی پروژه همگام می‌شوند.</p><section class="card affection-panel"><h3>یه حس خوب بفرست 💌</h3><p>با یک لمس، یک اشاره‌ی کوچک و فوری برای پارتنرت بفرست.</p><div class="affection-grid">'+feelings.map(function(f){return '<button type="button" class="affection-button" data-affection="'+f[0]+'" data-text="'+E(f[2])+'"><span>'+f[1]+'</span><small>'+E(f[2])+'</small></button>'}).join('')+'</div><p class="muted" id="affection-status" role="status" aria-live="polite">'+(cfg.id?'ارسال بین دو نفر فعال است؛ اعلان سیستم به اجازه‌ی مرورگر وابسته است.':'برای ارسال به گوشی پارتنر، ابتدا فضای مشترک را فعال کنید.')+'</p></section><form class="card" id="timeline-form"><h3>ثبت یک نقطه در داستان ما</h3><label for="timeline-date">تاریخ</label><input id="timeline-date" type="date" value="'+iso()+'" required><label for="timeline-kind">نوع اتفاق</label><select id="timeline-kind"><option value="moment">لحظه‌ی مهم</option><option value="future">برنامه‌ی آینده</option><option value="goal">هدف مشترک</option></select><label for="timeline-title">عنوان</label><input id="timeline-title" maxlength="120" placeholder="مثلاً: روزی که برای سفر برنامه ریختیم" required><label for="timeline-note">جزئیات (اختیاری)</label><textarea id="timeline-note" rows="3" maxlength="1200" placeholder="چیزی که دوست دارید به خاطر بماند"></textarea><button type="submit">افزودن به خط زمانی</button></form><h3>مسیر رابطه</h3><div class="timeline-list">'+(h||'<div class="card muted">هنوز رویدادی ثبت نشده؛ اولین نقطه را اضافه کنید.</div>')+'</div><section class="card"><h3>آخرین اشاره‌های پارتنر</h3>'+(recent.length?recent.map(function(x){var f=feelings.find(function(y){return y[0]===x.v.kind});return '<p class="affection-history">'+(f?f[1]:'💗')+' <b>'+E(x.v.text||'یه حس خوب')+'</b><small>'+E(new Date(x.v.at||x.t).toLocaleString('fa-IR'))+'</small></p>'}).join(''):'<p class="muted">هنوز اشاره‌ای دریافت نشده.</p>')+'</section>';
+  $('#timeline-form').onsubmit=function(e){e.preventDefault();var d=$('#timeline-date').value,t=$('#timeline-title').value.trim(),x=$('#timeline-note').value.trim(),k=$('#timeline-kind').value;if(!ISO.test(d)||!t)return toast('تاریخ و عنوان را کامل کن.');set('timeline:'+rid(),{d:d,t:t,x:x,k:k,from:role,at:Date.now()});toast('به خط زمانی اضافه شد ❤️');timelinePage();};
+  V.querySelectorAll('[data-affection]').forEach(function(b){b.onclick=function(){if(!cfg.id||!API)return toast('برای فرستادن به پارتنر، فضای مشترک را فعال کن.');var text=b.getAttribute('data-text'),kind=b.getAttribute('data-affection'),key='affection:'+rid(),at=Date.now();set(key,{kind:kind,text:text,from:role,at:at});var status=$('#affection-status');if(status)status.textContent='اشاره‌ی «'+text+'» برای همگام‌سازی ارسال شد؛ اعلان در حالت بسته هنوز به راه‌اندازی Web Push نیاز دارد.';toast('فرستاده شد: '+text+' ❤️');};});
+}
+
 function cal(){
   var h='';
   D.events.map(function(e){return{e:e,n:until(e.d,e.r)}}).sort(function(a,b){return ((a.n<0)-(b.n<0))||Math.abs(a.n)-Math.abs(b.n)}).forEach(function(o){
@@ -453,11 +471,17 @@ function refreshChatBadge(){
   badge.textContent=unread?fa(unread):'';badge.hidden=!unread;badge.setAttribute('aria-label',unread?'پیام خوانده‌نشده: '+fa(unread):'پیام خوانده‌نشده‌ای نیست');
 }
 function notifyIncoming(r){
-  if(!r||!r.items||P==='chat'||document.hidden)return;
+  if(!r||!r.items)return;
   var role=cfg.me==='b'?'b':'a';
   Object.keys(r.items).forEach(function(k){
-    if(k.indexOf('chat:')!==0||k.indexOf('chat:read:')===0)return;
     var x=r.items[k],v=x&&x.v,at=v&&Number(v.at)||x&&x.t||0;
+    if(k.indexOf('affection:')===0&&v&&v.from!==role&&at>appBootAt&&!notifiedAffection[k]){
+      notifiedAffection[k]=1;var msg=String(v.text||'یه حس خوب برات فرستاده ❤️').slice(0,120);
+      if(!document.hidden)toast('💗 پارتنرت می‌گه: '+msg);
+      if('Notification' in window&&Notification.permission==='granted')try{var an=new Notification('یه پیام عاشقانه داری 💗',{body:msg,tag:'ourhome-'+k,icon:'icon.svg'});an.onclick=function(){try{window.focus()}catch(_){}location.href='timeline.html';an.close()}}catch(_){}
+      return;
+    }
+    if(k.indexOf('chat:')!==0||k.indexOf('chat:read:')===0||P==='chat'||document.hidden)return;
     if(!v||typeof v.text!=='string'||v.from===role||at<=appBootAt||notifiedChat[k])return;
     notifiedChat[k]=1;toast('💌 پیام تازه‌ای از پارتنرت داری.');
     if('Notification' in window&&Notification.permission==='granted'){
@@ -798,7 +822,7 @@ function settings(){
   $('#clearlocal').onclick=function(){if(!confirm('همه داده‌های محلی این مرورگر پاک شود؟ قبل از ادامه مطمئن شوید فایل پشتیبان امنی دارید.'))return;localStorage.removeItem(K);location.reload();};
 }
 
-var R={list:listPage,album:albumPage,index:home,story:story,letters:letters,wishes:wishes,calendar:cal,qa:qa,chat:chat,games:games,draw:drawPage,challenges:challengesPage,achievements:achievementsPage,map:mapPage,settings:settings};
+var R={list:listPage,album:albumPage,index:home,timeline:timelinePage,story:story,letters:letters,wishes:wishes,calendar:cal,qa:qa,chat:chat,games:games,draw:drawPage,challenges:challengesPage,achievements:achievementsPage,map:mapPage,settings:settings};
 V.addEventListener('click',function(e){
   var d=e.target.getAttribute&&e.target.getAttribute('data-del');
   if(d&&I[d]&&confirm('حذف شود؟')){set(d,null);R[P]()}
