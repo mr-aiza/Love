@@ -252,3 +252,50 @@ body>nav[aria-label="منوی اصلی"] .chat-unread{position:absolute;top:2px;
 
 /* Chat polish: message actions, reactions and saved drafts. */
 .chat-msg-actions{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;margin-top:.6rem}.chat-react{border-radius:999px;padding:.35rem .8rem}.chat-reaction-summary{opacity:.85}.chat-msg-actions .x{margin-inline-start:auto}#chatDraftStatus{display:block;margin:.4rem 0}
+
+
+/* Global UI repair pass: prevent overflow, improve controls and keep mobile layouts usable. */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;text-size-adjust:100%;-webkit-text-size-adjust:100%;overflow-x:clip}
+body{min-width:0;overflow-x:clip;overflow-wrap:anywhere}
+main,#v,section,article,.card,.row,.go{min-width:0}
+img,video,canvas,iframe,svg{max-width:100%}
+img{height:auto}
+input,textarea,select,button{max-width:100%;min-width:0}
+input,textarea,select{min-height:44px;line-height:1.6}
+textarea{resize:vertical;overflow-wrap:anywhere}
+button,a,input,textarea,select{-webkit-tap-highlight-color:transparent}
+button{min-height:42px;touch-action:manipulation;overflow-wrap:anywhere;transition:filter .16s ease,transform .16s ease,border-color .16s ease}
+button:active{transform:translateY(1px)}
+a{overflow-wrap:anywhere}
+.card{overflow-wrap:anywhere;box-shadow:0 3px 14px #24112608}
+.row{flex-wrap:wrap}
+.row>.grow{min-width:min(100%,180px)}
+.go a{display:flex;align-items:center;justify-content:center;min-height:64px;overflow-wrap:anywhere;transition:border-color .16s ease,transform .16s ease}
+.go a:hover{border-color:var(--wine);transform:translateY(-1px)}
+nav{overscroll-behavior-x:contain;scrollbar-width:none;padding-inline:max(4px,env(safe-area-inset-left,0px)) max(4px,env(safe-area-inset-right,0px));backdrop-filter:saturate(1.15) blur(14px)}
+nav::-webkit-scrollbar{display:none}
+nav a{min-width:62px;flex:1 0 62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 5px 6px}
+nav a.on{background:color-mix(in srgb,var(--wine) 7%,transparent)}
+.chat-unread{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#c92d63;color:#fff;font-size:.68rem;font-weight:700;line-height:1}
+.chat-unread[hidden]{display:none!important}
+:where(input,textarea,select,button,a,[tabindex]):focus-visible{outline:3px solid color-mix(in srgb,var(--wine) 75%,white);outline-offset:2px}
+input:disabled,textarea:disabled,select:disabled,button:disabled{opacity:.58;cursor:not-allowed}
+#v>*:first-child{margin-top:0}
+#v h2{overflow-wrap:anywhere}
+#v pre,#v code{white-space:pre-wrap;overflow-wrap:anywhere}
+#v table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse}
+#v [hidden]{display:none!important}
+@media(max-width:420px){
+ body{font-size:15px;line-height:1.85}
+ main{padding:14px 12px}
+ .card{padding:12px;margin:9px 0;border-radius:13px}
+ .hero{padding:24px 14px;border-radius:22px}
+ .go{gap:8px}
+ .go a{padding:10px 7px;font-size:.9rem;min-height:60px}
+ .row{gap:8px}
+ .row>.grow{flex:1 1 140px}
+ button{padding:8px 12px}
+ nav a{font-size:.67rem;min-width:59px;flex-basis:59px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
