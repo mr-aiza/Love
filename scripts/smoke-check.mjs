@@ -83,6 +83,7 @@ if (existsSync(join(root, 'worker.js'))) {
 
 const app = readFileSync(join(root, 'app.js'), 'utf8');
 const worker = readFileSync(join(root, 'worker.js'), 'utf8');
+const sw = readFileSync(join(root, 'sw.js'), 'utf8');
 
 // Check that every page declared in the router exists.
 const routeMatch = app.match(/var R\s*=\s*\{([\s\S]*?)\};/);
