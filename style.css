@@ -302,3 +302,6 @@ input:disabled,textarea:disabled,select:disabled,button:disabled{opacity:.58;cur
 
 /* Small chat quality-of-life controls */
 .chat-fav-filter{display:flex;align-items:center;gap:.45rem;margin:.6rem 0}.chat-quoted{border-inline-start:3px solid var(--wine);padding:.45rem .7rem;margin:.5rem 0;background:rgba(160,90,130,.08);border-radius:.5rem;font-size:.9em}.chat-reply-status{padding:.6rem .75rem;margin-bottom:.65rem;border:1px solid var(--wine);border-radius:.65rem;background:rgba(160,90,130,.08);font-size:.9rem}.chat-reply-status button{margin-inline-start:.5rem;padding:.2rem .55rem}.chat-msg-actions button{min-height:36px}
+
+/* Shared couple checklist */
+.shared-list-item{position:relative;padding-inline-end:76px}.shared-list-label{display:flex;align-items:center;gap:10px;font-weight:600}.shared-list-label input{width:20px;height:20px;accent-color:var(--wine);flex:0 0 auto}.shared-list-item small{display:block;margin:8px 0;color:var(--mute)}.shared-list-item .x{position:absolute;inset-inline-end:12px;top:12px}.shared-list-item.is-done .shared-list-label span{text-decoration:line-through;opacity:.6}.list-actions{display:flex;flex-wrap:wrap;gap:8px}.list-actions button{flex:1}
