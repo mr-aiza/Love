@@ -12,7 +12,7 @@ async function hashPassword(password,salt){const key=await crypto.subtle.importK
 async function verifyPassword(password,rec){try{return (await hashPassword(password,rec.salt))===rec.ph}catch{return false}}
 
 const b64uBytes=s=>{s=String(s||'').replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return Uint8Array.from(atob(s),c=>c.charCodeAt(0))};
-const b64u=b=>{let s='';for(const c of new Uint8Array(b))s+=String.fromCharCode(c);return btoa(s).replace(/=/g,'').replace(/\\+/g,'-').replace(/\\//g,'_')};
+const b64u=b=>{let s='';for(const c of new Uint8Array(b))s+=String.fromCharCode(c);return btoa(s).replace(/=/g,'').replace(/[+]/g,'-').replace(/[/]/g,'_')};
 const concat=(...parts)=>{const n=parts.reduce((a,p)=>a+p.length,0),out=new Uint8Array(n);let i=0;for(const p of parts){out.set(p,i);i+=p.length}return out};
 async function hkdf(ikm,salt,info,length){const k=await crypto.subtle.importKey('raw',ikm,'HKDF',false,['deriveBits']);return new Uint8Array(await crypto.subtle.deriveBits({name:'HKDF',hash:'SHA-256',salt,info:enc(info)},k,length*8))}
 function pushSubKey(id,role){return 'push:'+id+':'+role}
