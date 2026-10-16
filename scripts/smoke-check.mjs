@@ -278,6 +278,17 @@ const chatCopyChecks = [
 ];
 for (const [label, ok] of chatCopyChecks) { if (ok) pass(label); else fail.push('Chat copy regression check failed: ' + label); }
 
+// Chat reply and saved-message regression checks.
+const chatPolishChecks = [
+  ['chat supports reply references between messages', app.includes('replyTo:replyTarget?replyTarget.id') && app.includes('m.v.replyTo?msgs.find')],
+  ['chat supports per-user saved messages and favorites filter', app.includes('chat:fav:') && app.includes('chat-favorites-only') && app.includes('data-chat-favorite')],
+  ['chat reply and favorite controls are styled', readFileSync(join(root, 'style.css'), 'utf8').includes('.chat-quoted') && readFileSync(join(root, 'style.css'), 'utf8').includes('.chat-reply-status')]
+];
+for (const [label, ok] of chatPolishChecks) {
+  if (ok) pass(label);
+  else fail.push('Chat polish regression check failed: ' + label);
+}
+
 // Chat draft and reaction regression checks.
 const chatChecks = [
   [
