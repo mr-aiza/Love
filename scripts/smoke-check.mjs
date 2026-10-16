@@ -272,6 +272,12 @@ const chatSearchChecks = [
 ];
 for (const [label, ok] of chatSearchChecks) { if (ok) pass(label); else fail.push('Chat search regression check failed: ' + label); }
 
+// Chat copy-message regression check.
+const chatCopyChecks = [
+  ['chat messages offer a copy action with clipboard fallback', app.includes('data-chat-copy=') && app.includes('navigator.clipboard.writeText') && app.includes("document.execCommand('copy')") && app.includes('متن پیام کپی شد.')]
+];
+for (const [label, ok] of chatCopyChecks) { if (ok) pass(label); else fail.push('Chat copy regression check failed: ' + label); }
+
 // Chat draft and reaction regression checks.
 const chatChecks = [
   [
