@@ -441,6 +441,17 @@ for (const [label, ok] of backupChecks) {
   else fail.push('Backup regression check failed: ' + label);
 }
 
+// Daily-question archive regression checks.
+const qaArchiveChecks = [
+  ['daily questions archive is rendered from previously completed shared answers', app.includes('گنجینهٔ سؤال‌های قبلی') && app.includes('Object.keys(D.qa||{})') && app.includes('!String(ans[0]||\'\').trim()||!String(ans[1]||\'\').trim()')],
+  ['daily question archive is bounded to the latest 60 entries', app.includes('var shown=archive.slice(0,60)')],
+  ['daily question archive supports live search and empty-result feedback', app.includes('id="qa-search"') && app.includes('qa-search-empty') && app.includes("addEventListener('input'")]
+];
+for (const [label, ok] of qaArchiveChecks) {
+  if (ok) pass(label);
+  else fail.push('Daily-question archive regression check failed: ' + label);
+}
+
 // Global responsive and accessibility visual regression checks.
 const visualChecks = [
   ['global styles prevent horizontal overflow and improve mobile form targets', style.includes('overflow-x:clip') && style.includes('min-height:44px') && style.includes('@media(max-width:420px)')],
