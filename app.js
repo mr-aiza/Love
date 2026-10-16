@@ -190,7 +190,7 @@ function link(){
   shareUrl(u,'دعوت به خانه‌ی ما','لینک ویرایش پارتنر آماده‌ی ارسال است.');
 }
 /* ---------- منو ---------- */
-var N=[['index','🏠','خانه'],['story','📖','داستان ما'],['album','🖼️','آلبوم'],['letters','💌','نامه‌ها'],['wishes','✨','آرزوها'],['calendar','📅','تقویم'],['qa','💬','سؤال'],['pledge','📜','تعهدنامه'],['chat','💌','چت'],['games','🎮','بازی‌ها'],['draw','🎨','نقاشی زنده'],['challenges','🌟','چالش‌ها'],['achievements','🏆','دستاوردها'],['map','📍','نقشه'],['settings','⚙️','تنظیمات']];
+var N=[['index','🏠','خانه'],['story','📖','داستان ما'],['album','🖼️','آلبوم'],['letters','💌','نامه‌ها'],['wishes','✨','آرزوها'],['calendar','📅','تقویم'],['qa','💬','سؤال'],['pledge','📜','تعهدنامه'],['chat','💌','چت'],['games','🎮','بازی‌ها'],['draw','🎨','نقاشی زنده'],['challenges','🌟','چالش‌ها'],['achievements','🏆','دستاوردها'],['map','📍','نقشه'],['list','🛒','فهرست'],['settings','⚙️','تنظیمات']];
 var nv=document.createElement('nav');nv.setAttribute('aria-label','منوی اصلی');
 nv.innerHTML=N.map(function(n){return '<a href="'+n[0]+'.html"'+(n[0]===P?' class="on" aria-current="page"':'')+'><b aria-hidden="true">'+n[1]+'</b>'+n[2]+(n[0]==='chat'?' <span id="chat-unread" class="chat-unread" hidden></span>':'')+'</a>'}).join('');
 document.body.appendChild(nv);refreshChatBadge();
@@ -550,6 +550,15 @@ function games(){
   $('#word-next').onclick=function(){set('game:word',{index:Math.floor(Math.random()*words.length)});games()};
 }
 
+function listPage(){
+ var items=customItems('list').filter(function(x){return x.v&&typeof x.v.text==='string'}).sort(function(a,b){return (b.v.at||b.t)-(a.v.at||a.t)}),done=items.filter(function(x){return x.v.done}).length;
+ V.innerHTML='<h2>🛒 فهرست مشترک ما</h2><p class="muted">خریدها و کارهای کوچکی که می‌خواهید با هم انجام دهید.</p><form id="list-form" class="card"><label for="list-text">افزودن مورد جدید</label><input id="list-text" maxlength="160" placeholder="مثلاً خرید خوراکی برای فیلم امشب" required><button type="submit">＋ افزودن به فهرست</button></form><div class="card"><strong>پیشرفت</strong><p>'+fa(done)+' از '+fa(items.length)+' مورد انجام شده</p><progress max="'+Math.max(1,items.length)+'" value="'+done+'" aria-label="پیشرفت فهرست"></progress><div class="list-actions"><button type="button" class="secondary" id="list-clear-done" '+(done?'':'disabled')+'>پاک‌کردن انجام‌شده‌ها</button><button type="button" class="secondary" id="list-clear-all" '+(items.length?'':'disabled')+'>خالی‌کردن فهرست</button></div></div><section id="shared-list" aria-live="polite">'+(items.length?items.map(function(x){return '<div class="card shared-list-item '+(x.v.done?'is-done':'')+'"><label class="shared-list-label"><input type="checkbox" data-list-done="'+E(x.id)+'" '+(x.v.done?'checked':'')+'><span>'+E(x.v.text)+'</span></label><small>'+E(x.v.by||'یکی از شما')+' · '+E(new Date(x.v.at||x.t).toLocaleDateString('fa-IR'))+'</small><button type="button" class="x" data-list-delete="'+E(x.id)+'">حذف</button></div>'}).join(''):'<div class="card muted">فهرست خالی است؛ اولین مورد را اضافه کنید 💗</div>')+'</section><p class="muted"><small>'+(cfg.id?'تغییرات با فضای مشترک همگام می‌شوند.':'این داده‌ها فعلاً فقط روی همین دستگاه ذخیره می‌شوند؛ برای استفاده دونفره وارد فضای مشترک شوید.')+'</small></p>';
+ $('#list-form').onsubmit=function(e){e.preventDefault();var t=$('#list-text').value.trim();if(!t)return;set('list:'+rid(),{text:t,done:false,by:D.names[cfg.me==='b'?1:0],at:Date.now()});listPage();$('#list-text').focus();toast('به فهرست اضافه شد.')};
+ $('#shared-list').addEventListener('change',function(e){var b=e.target.closest('[data-list-done]');if(!b)return;var k='list:'+b.getAttribute('data-list-done'),v=I[k]&&I[k].v;if(v)set(k,Object.assign({},v,{done:b.checked,at:Date.now()}));listPage()});
+ $('#shared-list').addEventListener('click',function(e){var b=e.target.closest('[data-list-delete]');if(b&&confirm('این مورد حذف شود؟')){set('list:'+b.getAttribute('data-list-delete'),null);listPage()}});
+ $('#list-clear-done').onclick=function(){if(confirm('همه موارد انجام‌شده حذف شوند؟')){items.filter(function(x){return x.v.done}).forEach(function(x){set('list:'+x.id,null)});listPage()}};
+ $('#list-clear-all').onclick=function(){if(confirm('کل فهرست پاک شود؟')){items.forEach(function(x){set('list:'+x.id,null)});listPage()}};
+}
 function drawPage(){
   var palette=['#e84375','#6c4bd3','#1e9d83','#f39c12','#253047','#111111'];
   V.innerHTML='<h2>🎨 بوم نقاشی دونفره</h2><p class="muted">خطوط در حین کشیدن نیز همگام می‌شوند. برای تجربه‌ی بهتر هر دو نفر این صفحه را باز نگه دارید.</p><div class="card draw-tools"><label>رنگ <select id="draw-color">'+palette.map(function(c){return '<option value="'+c+'">'+c+'</option>'}).join('')+'</select></label><label>ضخامت <input id="draw-width" type="range" min="2" max="18" value="5"></label><button id="draw-undo" class="secondary">پاک‌کردن آخرین خط من</button><button id="draw-clear" class="secondary">پاک‌کردن کل بوم</button></div><div class="card draw-wrap"><canvas id="draw-canvas" aria-label="بوم نقاشی مشترک"></canvas></div><div class="card"><h3>💡 ایده‌های نقاشی</h3><p>چشم‌بسته یکدیگر را بکشید، خانه‌ی رؤیایی‌تان را طراحی کنید یا هر نفر نصف یک قلب را بکشد.</p><small id="draw-status" aria-live="polite"></small></div>';
@@ -763,7 +772,7 @@ function settings(){
   $('#clearlocal').onclick=function(){if(!confirm('همه داده‌های محلی این مرورگر پاک شود؟ قبل از ادامه مطمئن شوید فایل پشتیبان امنی دارید.'))return;localStorage.removeItem(K);location.reload();};
 }
 
-var R={album:albumPage,index:home,story:story,letters:letters,wishes:wishes,calendar:cal,qa:qa,chat:chat,games:games,draw:drawPage,challenges:challengesPage,achievements:achievementsPage,map:mapPage,settings:settings};
+var R={list:listPage,album:albumPage,index:home,story:story,letters:letters,wishes:wishes,calendar:cal,qa:qa,chat:chat,games:games,draw:drawPage,challenges:challengesPage,achievements:achievementsPage,map:mapPage,settings:settings};
 V.addEventListener('click',function(e){
   var d=e.target.getAttribute&&e.target.getAttribute('data-del');
   if(d&&I[d]&&confirm('حذف شود؟')){set(d,null);R[P]()}
