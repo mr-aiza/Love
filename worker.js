@@ -14,7 +14,7 @@ async function verifyPassword(password,rec){try{return (await hashPassword(passw
 const b64uBytes=s=>{s=String(s||'').replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return Uint8Array.from(atob(s),c=>c.charCodeAt(0))};
 const b64u=b=>{let s='';for(const c of new Uint8Array(b))s+=String.fromCharCode(c);return btoa(s).replace(/=/g,'').replace(/[+]/g,'-').replace(/[/]/g,'_')};
 const concat=(...parts)=>{const n=parts.reduce((a,p)=>a+p.length,0),out=new Uint8Array(n);let i=0;for(const p of parts){out.set(p,i);i+=p.length}return out};
-async function hkdf(ikm,salt,info,length){const k=await crypto.subtle.importKey('raw',ikm,'HKDF',false,['deriveBits']);return new Uint8Array(await crypto.subtle.deriveBits({name:'HKDF',hash:'SHA-256',salt,info:enc(info)},k,length*8))}
+async function hkdf(ikm,salt,info,length){const k=await crypto.subtle.importKey('raw',ikm,'HKDF',false,['deriveBits']);return new Uint8Array(await crypto.subtle.deriveBits({name:'HKDF',hash:'SHA-256',salt,info:typeof info==='string'?enc(info):info},k,length*8))}
 function pushSubKey(id,role){return 'push:'+id+':'+role}
 async function vapidAuth(endpoint,env){
  const pub=b64uBytes(env.VAPID_PUBLIC_KEY),d=b64uBytes(env.VAPID_PRIVATE_KEY);
@@ -34,7 +34,7 @@ async function encryptPush(sub,payload){
  const clientKey=await crypto.subtle.importKey('raw',clientPub,{name:'ECDH',namedCurve:'P-256'},false,[]);
  const shared=new Uint8Array(await crypto.subtle.deriveBits({name:'ECDH',public:clientKey},server.privateKey,256));
  const info=concat(enc('WebPush: info\\0'),clientPub,serverPub);
- const ikm=await hkdf(shared,auth,Array.from(info).map(x=>String.fromCharCode(x)).join(''),32);
+ const ikm=await hkdf(shared,auth,info,32);
  const salt=crypto.getRandomValues(new Uint8Array(16));
  const cek=await hkdf(ikm,salt,'Content-Encoding: aes128gcm\\0',16);
  const nonce=await hkdf(ikm,salt,'Content-Encoding: nonce\\0',12);
