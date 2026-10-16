@@ -470,3 +470,13 @@ if (fail.length) {
 }
 
 console.log('\nSMOKE TEST PASSED');
+// Timeline and affection notification regression checks.
+const timelineChecks = [
+  ['timeline page is included in the app route and navigation', app.includes("timeline:timelinePage") && app.includes("['timeline','🕰️','خط زمانی']")],
+  ['timeline aggregates real memories, calendar events and letters', app.includes('D.story.forEach') && app.includes('D.events.forEach') && app.includes('D.letters.forEach')],
+  ['affection quick actions are stored as shared events and incoming affection is detected', app.includes("set('affection:'+rid()") && app.includes("k.indexOf('affection:')===0")],
+  ['incoming affection can show a browser notification when permission is granted', app.includes("new Notification('یه پیام عاشقانه داری 💗'")],
+  ['service worker has a push display handler and click navigation', readFileSync(join(root, 'sw.js'), 'utf8').includes("addEventListener('push'") && readFileSync(join(root, 'sw.js'), 'utf8').includes("addEventListener('notificationclick'")],
+  ['timeline page exists and is precached', existsSync(join(root, 'timeline.html')) && readFileSync(join(root, 'sw.js'), 'utf8').includes("'timeline.html'")]
+];
+for (const [label, ok] of timelineChecks) { if (ok) pass(label); else fail.push('Timeline regression check failed: ' + label); }
