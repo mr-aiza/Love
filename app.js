@@ -173,7 +173,7 @@ function flush(){
     if(merge(r)&&!editing())(R[P]||home)();ensureSharedStart();save();status();
   }).catch(function(e){
     if(e&&(e.status===401||e.status===404)){dead=true;status('لینک یا توکن فضای مشترک معتبر نیست',1);return}
-    if(e&&e.status===413){syncBlocked=(e.error&&/فضای مشترک|سند بیش از حد بزرگ|حجم درخواست|بیش از حد بزرگ/.test(e.error))?'فضای مشترک به سقف ظرفیت رسیده؛ تغییرات ارسال نشدند.':'درخواست برای سرور بیش از حد بزرگ است؛ تغییرات ارسال نشدند.';status(syncBlocked,1);return}
+    if(e&&e.status===413){syncBlocked=(e.error&&/فضای مشترک|سند بیش از حد بزرگ|حجم درخواست|بیش از حد بزرگ/.test(e.error))?'فضای مشترک به سقف ظرفیت رسیده؛ تغییرات ارسال نشدند.':'درخواست برای سرور بیش از حد بزرگ است؛ تغییرات ارسال نشدند.';status();return}
     status((e&&e.error)||'ارتباط با سرور برقرار نیست؛ دوباره تلاش می‌شود',1);
   }).then(function(){busy=false;if(!dead&&!syncBlocked&&Object.keys(dirty).length&&!timer)timer=setTimeout(function(){timer=null;flush()},4000);if(succeeded&&!dead)status()});
 }
