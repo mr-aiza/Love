@@ -17,6 +17,7 @@ const need = (p) => {
 // Required project files.
 for (const p of [
   'index.html',
+  'album.html',
   'story.html',
   'letters.html',
   'wishes.html',
@@ -299,7 +300,7 @@ const checklistChecks = [
 for (const [label, ok] of checklistChecks) { if (ok) pass(label); else fail.push('Checklist regression check failed: ' + label); }
 
 // Chat draft and reaction regression checks.
-const chatChecks = [
+const chatDraftChecks = [
   [
     'chat drafts are saved locally and restored for the current space and role',
     app.includes('ourhome-chat-draft:') && app.includes('localStorage.setItem(draftKey') && app.includes('localStorage.getItem(draftKey')
@@ -314,7 +315,7 @@ const chatChecks = [
   ]
 ];
 
-for (const [label, ok] of chatChecks) {
+for (const [label, ok] of chatDraftChecks) {
   if (ok) pass(label);
   else fail.push('Chat regression check failed: ' + label);
 }
