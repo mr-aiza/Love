@@ -305,3 +305,6 @@ input:disabled,textarea:disabled,select:disabled,button:disabled{opacity:.58;cur
 
 /* Shared couple checklist */
 .shared-list-item{position:relative;padding-inline-end:76px}.shared-list-label{display:flex;align-items:center;gap:10px;font-weight:600}.shared-list-label input{width:20px;height:20px;accent-color:var(--wine);flex:0 0 auto}.shared-list-item small{display:block;margin:8px 0;color:var(--mute)}.shared-list-item .x{position:absolute;inset-inline-end:12px;top:12px}.shared-list-item.is-done .shared-list-label span{text-decoration:line-through;opacity:.6}.list-actions{display:flex;flex-wrap:wrap;gap:8px}.list-actions button{flex:1}
+
+/* Searchable archive of completed daily couple questions */
+.qa-archive{margin-top:1.25rem}.qa-archive-item{margin:.65rem 0;padding:1rem}.qa-archive-item summary{cursor:pointer;line-height:1.9}.qa-archive-item summary::marker{color:var(--wine)}.qa-archive-item[hidden]{display:none!important}.qa-archive-answer{border-top:1px solid var(--line);margin-top:.8rem;padding-top:.65rem}.qa-archive-answer p{white-space:pre-wrap;overflow-wrap:anywhere;margin:.35rem 0 1rem}.qa-archive #qa-search{width:100%;margin:.5rem 0 1rem}
