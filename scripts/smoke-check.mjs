@@ -472,7 +472,9 @@ const timelineChecks = [
   ['timeline subscribes through authenticated Web Push endpoint', app.includes("API+'/api/push/public-key'") && app.includes("API+'/api/push/subscribe'") && app.includes('pushManager.subscribe')],
   ['Worker exposes public key and authenticated subscription endpoints', worker.includes("u.pathname==='/api/push/public-key'") && worker.includes("u.pathname==='/api/push/subscribe'")],
   ['Worker encrypts push payload and signs VAPID authorization', worker.includes('async function encryptPush') && worker.includes('async function vapidAuth') && worker.includes('Content-Encoding: aes128gcm')],
-  ['affection writes trigger push to the other account', worker.includes("k.indexOf('affection:')===0") && worker.includes('targetRole=role===\'a\'?\'b\':\'a\'') && worker.includes('sendWebPush(sub,payload,env)')],
+  ['new affection events trigger push to the other account', worker.includes("k.indexOf('affection:')===0") && worker.includes("type:'affection'") && worker.includes("targetRole=role==='a'?'b':'a'") && worker.includes('sendWebPush(sub,payload,env)')],
+  ['new chat messages trigger push and open the chat page', worker.includes("/^chat:[a-z0-9]+$/i.test(k)") && worker.includes("type:'chat'") && worker.includes("url:isChat?'/chat.html':'/timeline.html'") && worker.includes("title:isChat?('💌 پیام تازه از '+ev.fromName)")],
+  ['push events only fire for newly created recent items', worker.includes('if(!cur&&t>now-120000&&t<=now+60000')],
   ['service worker displays push and handles notification clicks', sw.includes("addEventListener('push'") && sw.includes("addEventListener('notificationclick'")],
   ['timeline page exists and is precached', existsSync(join(root, 'timeline.html')) && sw.includes("'timeline.html'")]
 ];
