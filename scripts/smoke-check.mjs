@@ -289,6 +289,15 @@ for (const [label, ok] of chatPolishChecks) {
   else fail.push('Chat polish regression check failed: ' + label);
 }
 
+// Shared checklist regression checks.
+const checklistChecks = [
+ ['shared checklist is reachable from navigation and routing', app.includes("['list','🛒','فهرست']") && app.includes('var R={list:listPage')],
+ ['checklist supports completion, deletion and progress', app.includes('data-list-done=') && app.includes('data-list-delete=') && app.includes('list-clear-done') && app.includes('aria-label="پیشرفت فهرست"')],
+ ['checklist items use the shared sync key namespace', app.includes("set('list:'+rid()") && app.includes("customItems('list')")],
+ ['checklist page is included in offline precache', sw.includes("'list.html'")]
+];
+for (const [label, ok] of checklistChecks) { if (ok) pass(label); else fail.push('Checklist regression check failed: ' + label); }
+
 // Chat draft and reaction regression checks.
 const chatChecks = [
   [
