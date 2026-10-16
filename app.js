@@ -407,8 +407,26 @@ function cal(){
 var Q=['کوچک‌ترین چیزی که امروز تو را خوشحال کرد چه بود؟','اگر فردا یک روز آزاد داشتیم، کجا می‌رفتیم؟','کدام خاطره‌ی ما را بیشتر از همه دوست داری؟','چه چیزی در من تو را آرام می‌کند؟','یک آرزوی کوچک برای این ماه؟','چه آهنگی تو را یاد من می‌اندازد؟','چه چیزی را امسال دوست داری با هم یاد بگیریم؟','چه کاری از من تو را بی‌دلیل می‌خنداند؟','اگر قرار بود یک غذا را همیشه با هم بپزیم، کدام؟','امروز از من برای چه چیزی ممنونی؟'];
 function qa(){
   var n=day(),a=D.qa[n]||['',''],own=cfg.me==='b'?1:0,other=1-own,ready=!!(String(a[0]||'').trim()&&String(a[1]||'').trim());
-  V.innerHTML='<h2>سؤال امروز</h2><div class="card"><h3>'+Q[((n%Q.length)+Q.length)%Q.length]+'</h3></div><div class="card"><small>پاسخ '+E(D.names[own])+' · پاسخ خودت را بنویس</small><textarea rows="3" maxlength="3000" data-a="own" aria-label="پاسخ خودت">'+E(a[own])+'</textarea></div><div class="card"><small>پاسخ '+E(D.names[other])+'</small><p>'+(ready?E(a[other]):'پاسخ پارتنر پس از ثبت پاسخ هر دو نفر نمایش داده می‌شود.')+'</p></div><button id="ad">ثبت پاسخ من</button>';
+  var archive=[];
+  Object.keys(D.qa||{}).forEach(function(k){
+    if(!/^\\d+$/.test(k)||+k>=n)return;
+    var ans=D.qa[k];if(!Array.isArray(ans)||!String(ans[0]||'').trim()||!String(ans[1]||'').trim())return;
+    var d=new Date(S.getFullYear(),S.getMonth(),S.getDate()+Number(k));
+    archive.push({n:+k,date:d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),question:Q[((+k%Q.length)+Q.length)%Q.length],answers:ans});
+  });
+  archive.sort(function(x,y){return y.n-x.n});
+  var shown=archive.slice(0,60);
+  var archiveHtml=shown.length?shown.map(function(item){
+    return '<details class="card qa-archive-item" data-qa-search="'+E((item.question+' '+item.date+' '+item.answers.join(' ')).toLocaleLowerCase())+'"><summary><b>'+E(item.question)+'</b><br><small>'+E(sh(item.date))+' · پاسخ هر دو نفر ثبت شده</small></summary><div class="qa-archive-answer"><small>'+E(D.names[0])+'</small><p>'+E(item.answers[0])+'</p><small>'+E(D.names[1])+'</small><p>'+E(item.answers[1])+'</p></div></details>';
+  }).join(''):'<p id="qa-empty"><small>هنوز روزی با پاسخ کامل هر دو نفر برای مرور وجود ندارد. بعد از ثبت پاسخ‌های هر دو نفر، اینجا ذخیره می‌شود.</small></p>';
+  V.innerHTML='<h2>سؤال امروز</h2><div class="card"><h3>'+Q[((n%Q.length)+Q.length)%Q.length]+'</h3></div><div class="card"><small>پاسخ '+E(D.names[own])+' · پاسخ خودت را بنویس</small><textarea rows="3" maxlength="3000" data-a="own" aria-label="پاسخ خودت">'+E(a[own])+'</textarea></div><div class="card"><small>پاسخ '+E(D.names[other])+'</small><p>'+(ready?E(a[other]):'پاسخ پارتنر پس از ثبت پاسخ هر دو نفر نمایش داده می‌شود.')+'</p></div><button id="ad">ثبت پاسخ من</button><section class="qa-archive"><h3>📚 گنجینهٔ سؤال‌های قبلی</h3><p><small>پاسخ‌های روزهایی که هر دو نفر جواب داده‌اند؛ تا ۶۰ روز اخیر در این فهرست نمایش داده می‌شود.</small></p><input id="qa-search" type="search" placeholder="جست‌وجو در سؤال‌ها و پاسخ‌ها" aria-label="جست‌وجو در سؤال‌ها و پاسخ‌های قبلی">'+archiveHtml+'<p id="qa-search-empty" hidden><small>موردی با این عبارت پیدا نشد.</small></p></section>';
   $('#ad').onclick=function(){var t=document.querySelector('[data-a="own"]');if(t.value!==a[own])set('qa:'+n+':'+own,t.value);qa()};
+  var search=$('#qa-search');
+  if(search)search.addEventListener('input',function(){
+    var q=search.value.trim().toLocaleLowerCase(),items=V.querySelectorAll('.qa-archive-item'),visible=0;
+    items.forEach(function(item){var match=!q||(item.getAttribute('data-qa-search')||'').indexOf(q)!==-1;item.hidden=!match;if(match)visible++});
+    var empty=$('#qa-search-empty');if(empty)empty.hidden=visible!==0;
+  });
 }
 
 
