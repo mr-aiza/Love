@@ -1,9 +1,19 @@
-var C='our-home-v30',A=['index.html','timeline.html','album.html','draw.html','challenges.html','achievements.html','story.html','letters.html','wishes.html','calendar.html','list.html','qa.html','pledge.html','chat.html','games.html','map.html','settings.html','style.css','app.js','auth.js','auth-lock.css','config.js','v2-enhance.js','v2-enhance.css','icon.svg','manifest.webmanifest'];
+var C='our-home-v31',A=['index.html','timeline.html','album.html','draw.html','challenges.html','achievements.html','story.html','letters.html','wishes.html','calendar.html','list.html','qa.html','pledge.html','chat.html','games.html','map.html','settings.html','style.css','app.js','auth.js','auth-lock.css','config.js','v2-enhance.js','v2-enhance.css','icon.svg','manifest.webmanifest'];
 self.addEventListener('install',function(e){e.waitUntil(caches.open(C).then(function(c){return c.addAll(A)}));self.skipWaiting()});
 self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x!==C}).map(function(x){return caches.delete(x)}))}));self.clients.claim()});
 self.addEventListener('fetch',function(e){
-  var r=e.request;if(r.method!=='GET'||new URL(r.url).origin!==location.origin)return;
-  e.respondWith(fetch(r).then(function(x){if(x&&x.ok){var c=x.clone();caches.open(C).then(function(h){h.put(r,c)})}return x}).catch(function(){return caches.match(r).then(function(m){if(m)return m;if(r.mode==='navigate')return caches.match('index.html');return new Response('این فایل در حالت آفلاین در دسترس نیست.',{status:503,headers:{'content-type':'text/plain;charset=utf-8'}})})}));
+  var r=e.request;
+  if(r.method!=='GET'||new URL(r.url).origin!==location.origin)return;
+  /* Serve cached pages/assets immediately, while refreshing them in the background.
+     This avoids making every page navigation wait for a slow mobile connection. */
+  e.respondWith(caches.match(r,{ignoreSearch:true}).then(function(cached){
+    var refresh=fetch(r).then(function(response){
+      if(response&&response.ok){var copy=response.clone();caches.open(C).then(function(cache){cache.put(r,copy)});}
+      return response;
+    });
+    if(cached){e.waitUntil(refresh.then(function(){}).catch(function(){}));return cached;}
+    return refresh.catch(function(){if(r.mode==='navigate')return caches.match('index.html');return new Response('این فایل در حالت آفلاین در دسترس نیست.',{status:503,headers:{'content-type':'text/plain;charset=utf-8'}})});
+  }));
 });
 
 self.addEventListener('push',function(event){var data={title:'خانه‌ی ما 💗',body:'یه حس خوب از پارتنرت داری.',url:'/timeline.html',tag:'ourhome-push'};try{if(event.data){var payload=event.data.json();data.title=payload.title||data.title;data.body=payload.body||data.body;data.url=payload.url||data.url;data.tag=payload.tag||data.tag}}catch(_){try{if(event.data)data.body=event.data.text()}catch(__){}}event.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(function(clients){var visible=clients.some(function(c){return c.focused&&c.visibilityState==='visible'});if(visible)return;return self.registration.showNotification(data.title,{body:data.body,icon:'icon.svg',badge:'icon.svg',tag:data.tag,data:{url:data.url}})}));});
