@@ -1,9 +1,14 @@
-var C='our-home-v31',A=['index.html','timeline.html','album.html','draw.html','challenges.html','achievements.html','story.html','letters.html','wishes.html','calendar.html','list.html','qa.html','pledge.html','chat.html','games.html','map.html','settings.html','style.css','app.js','auth.js','auth-lock.css','config.js','v2-enhance.js','v2-enhance.css','icon.svg','manifest.webmanifest'];
+var C='our-home-v32',A=['index.html','timeline.html','album.html','draw.html','challenges.html','achievements.html','story.html','letters.html','wishes.html','calendar.html','list.html','qa.html','pledge.html','chat.html','games.html','map.html','settings.html','style.css','app.js','auth.js','auth-lock.css','config.js','v2-enhance.js','v2-enhance.css','icon.svg','manifest.webmanifest'];
 self.addEventListener('install',function(e){e.waitUntil(caches.open(C).then(function(c){return c.addAll(A)}));self.skipWaiting()});
 self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x!==C}).map(function(x){return caches.delete(x)}))}));self.clients.claim()});
 self.addEventListener('fetch',function(e){
   var r=e.request;
   if(r.method!=='GET'||new URL(r.url).origin!==location.origin)return;
+  /* Always refresh config.js first: it contains the API endpoint and must not stay stale in an old tab. */
+  if(new URL(r.url).pathname.endsWith('/config.js')){
+    e.respondWith(fetch(new Request(r,{cache:'no-store'})).then(function(response){if(response&&response.ok){var copy=response.clone();caches.open(C).then(function(cache){cache.put(r,copy)});}return response;}).catch(function(){return caches.match(r).then(function(cached){return cached||new Response('تنظیمات اتصال در دسترس نیست.',{status:503,headers:{'content-type':'text/plain;charset=utf-8'}})})}));
+    return;
+  }
   /* Serve cached pages/assets immediately, while refreshing them in the background.
      This avoids making every page navigation wait for a slow mobile connection. */
   e.respondWith(caches.match(r,{ignoreSearch:true}).then(function(cached){
