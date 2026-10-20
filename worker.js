@@ -56,6 +56,16 @@ export default {
   const origin=req.headers.get('Origin')||'';
   const cors={'access-control-allow-origin':env.ORIGIN||origin||'null','access-control-allow-headers':'content-type,x-token','access-control-allow-methods':'GET,PUT,POST,DELETE,OPTIONS','access-control-max-age':'86400','vary':'Origin'};
   const J=(x,s=200)=>new Response(JSON.stringify(x),{status:s,headers:{...cors,'content-type':'application/json;charset=utf-8','cache-control':'no-store'}});
+  const u=new URL(req.url);
+  // سلامت‌سنجی مستقل: با بازکردن مستقیم /api/health مرورگر Origin نمی‌فرستد.
+  // برای این مسیر فقط همان دامنه‌ی تنظیم‌شده در ORIGIN مجاز است.
+  if(req.method==='GET'&&u.pathname==='/api/health'){
+   if(!env.ORIGIN)return J({ok:false,stage:'config',error:'متغیر ORIGIN در تنظیمات Worker تعریف نشده است'},503);
+   let allowedHost='';try{allowedHost=new URL(env.ORIGIN).host}catch{}
+   if(origin!==env.ORIGIN&&u.host!==allowedHost)return J({ok:false,stage:'origin',error:'دامنه یا Route به Worker درست متصل نیست'},403);
+   if(!env.DB)return J({ok:false,stage:'kv',error:'اتصال KV با نام DB در Worker برقرار نیست'},503);
+   return J({ok:true,api:true,db:true,origin:env.ORIGIN});
+  }
   if(!env.ORIGIN)return J({error:'متغیر ORIGIN را در تنظیمات Worker تعریف کنید'},503);
   if(req.method==='OPTIONS'){if(origin!==env.ORIGIN)return J({error:'دامنه مجاز نیست'},403);return new Response(null,{status:204,headers:cors})}
   try{
